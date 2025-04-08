@@ -1,13 +1,17 @@
-import { useState } from 'react'
-import './App.css'
+import AllRoutes from './routes/AllRoutes';
+import './App.css';
+import SideHeader from './components/layout/SideHeader';
 
 function App() {
 
   return (
     <>
-      <h1>Hello everyone</h1>
+    {/* <SideHeader> */}
+      <AllRoutes />
+    {/* </SideHeader> */}
+      
     </>
-  )
+  );
 }
 
-export default App
+export default App;
