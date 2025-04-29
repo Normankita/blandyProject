@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { auth } from '../configs/firebase';
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setUser } from "../store/userSlice";
 
 const RegisterPage = () => {
 
-    const [user, setUser] = useState({
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const [userForm, setUserForm] = useState({
         email: "",
         password: "",
         rePassword: "",
@@ -15,33 +20,59 @@ const RegisterPage = () => {
     const [error, setError] = useState(null);
 
     const handleChange = (e) => {
-        const {name, value} = e.target;
-        setUser({
-            ...user,
+        const { name, value } = e.target;
+        setUserForm({
+            ...userForm,
             [name]: value
         });
     };
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
-        if (user.password !== user.rePassword) {
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(userForm.email)) {
+            setError("Please enter a valid email address.");
+            setLoading(false);
+            return;
+        }
+
+        if (userForm.password !== userForm.rePassword) {
             setError("Passwords do not match");
             setLoading(false);
             return;
         }
         try {
-            const response =await createUserWithEmailAndPassword(auth, user.email, user.password);
-            console.log(response);
-            alert("User created successfully");
-        } catch (error) {
-            setError(error.message);
+            const res = await createUserWithEmailAndPassword(auth, userForm.email, userForm.password);
+            const token = await res.user.getIdToken();
+
+            dispatch(setUser({
+                userState: {
+                    uid: res.user.uid,
+                    email: res.user.email,
+                    displayName: res.user.displayName,
+                    photoURL: res.user.photoURL,
+                },
+                token: token,
+            }));
+
+            navigate("/dashboard"); // redirect on success
+        }
+        catch (err) {
+            if (err.code === "auth/email-already-in-use") {
+                setError("This email is already in use.");
+            } else if (err.code === "auth/weak-password") {
+                setError("Password should be at least 6 characters.");
+            } else {
+                setError("An error occurred. Please try again.");
+            }
         } finally {
             setLoading(false);
         }
-    }
+    };
+
     return (
         <div>
             <section className="bg-gray-50 dark:bg-gray-900">
@@ -63,7 +94,7 @@ const RegisterPage = () => {
                                         name="email"
                                         id="email"
                                         onChange={handleChange}
-                                        value={user.email}
+                                        value={userForm.email}
                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required />
                                 </div>
                                 <div>
@@ -76,7 +107,7 @@ const RegisterPage = () => {
                                         id="password"
                                         placeholder="••••••••"
                                         onChange={handleChange}
-                                        value={user.password}
+                                        value={userForm.password}
                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                                 </div>
                                 <div>
@@ -87,21 +118,33 @@ const RegisterPage = () => {
                                         id="confirm-password"
                                         placeholder="••••••••"
                                         onChange={handleChange}
-                                        value={user.rePassword}
+                                        value={userForm.rePassword}
                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                                 </div>
                                 <div className="flex items-start">
                                     <div className="flex items-center h-5">
-                                        <input id="terms" aria-describedby="terms"
-                                        value={user.acceptTerms}
-                                        onChange={(e) => setUser({ ...user, acceptTerms: e.target.checked })}
-                                        type="checkbox" className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" required/>
+                                        <input
+                                            id="terms"
+                                            aria-describedby="terms-description"
+                                            checked={userForm.acceptTerms}
+                                            onChange={(e) => setUserForm({ ...userForm, acceptTerms: e.target.checked })}
+                                            type="checkbox"
+                                            className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
+                                            required
+                                        />
+                                        <span id="terms-description" className="sr-only">Accept terms and conditions</span>
                                     </div>
                                     <div className="ml-3 text-sm">
                                         <label htmlFor="terms" className="font-light text-gray-500 dark:text-gray-300">I accept the <a className="font-medium text-primary-600 hover:underline dark:text-primary-500" href="#">Terms and Conditions</a></label>
                                     </div>
                                 </div>
-                                <button type="submit" className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Create an account</button>
+                                <button
+                                    type="submit"
+                                    className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                                    disabled={loading}
+                                >
+                                    {loading ? "Creating account..." : "Create an account"}
+                                </button>
                                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                                     Already have an account? <Link to="/login" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Login here</Link>
                                 </p>

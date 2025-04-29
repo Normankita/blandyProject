@@ -1,0 +1,57 @@
+.flatpickr-calendar {
+  background: transparent !important; /* Make the calendar background transparent */
+  color: inherit !important; /* Inherit text color from parent */
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.flatpickr-input {
+  background: transparent !important; /* Apply transparent background */
+  color: inherit !important; /* Inherit text color */
+}
+
+.flatpickr-calendar .day {
+  background: transparent !important; /* Transparent days */
+}
+
+.flatpickr-calendar .selected {
+  background: #2D3748 !important; /* Example for selected date in dark mode */
+}
+
+.dark {
+  /* Translucent background with blur */
+  .flatpickr-calendar {
+      background-color: rgba(255, 255, 255, 0.8); /* Light translucent white */
+      backdrop-filter: blur(10px); /* Apply blur effect */
+      color: #d4dae7; /* Dark text for readability */
+      border: 1px solid rgba(20, 13, 13, 0.5); /* Optional border for separation */
+      border-radius: 8px; /* Smooth corners */
+  }
+
+  /* Dark mode */
+  .flatpickr-calendar.dark {
+      background-color: rgba(45, 55, 72, 0.8); /* Dark translucent background */
+      backdrop-filter: blur(10px); /* Same blur effect */
+      color: #e2e8f0; /* Light text for dark mode */
+      border: 1px solid rgba(100, 100, 100, 0.5); /* Optional border for separation */
+      
+  }
+
+  /* Selected day styles */
+  .flatpickr-calendar .selected {
+      background-color: rgba(49, 130, 206, 0.8); /* Translucent blue */
+      color: #ffffff !important; /* Ensure selected text is white */
+  }
+
+  /* Hover effect */
+  .flatpickr-calendar .day:hover {
+      background-color: rgba(237, 242, 247, 0.5); /* Light translucent hover */
+      color: #1a202c; /* Text stays dark */
+  }
+  /* Custom style for the year in the calendar (smokewhite color) */
+.flatpickr-calendar .flatpickr-month .flatpickr-year {
+  color: whitesmoke !important; /* Apply smokewhite color to the year */
+}
+
+}
+

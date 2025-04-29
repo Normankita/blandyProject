@@ -1,0 +1,94 @@
+import React from "react";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Bold from "@tiptap/extension-bold";
+import Italic from "@tiptap/extension-italic";
+import Underline from "@tiptap/extension-underline";
+import Link from "@tiptap/extension-link";
+import BulletList from "@tiptap/extension-bullet-list";
+import OrderedList from "@tiptap/extension-ordered-list";
+import ListItem from "@tiptap/extension-list-item";
+import TextAlign from "@tiptap/extension-text-align";
+import Strike from "@tiptap/extension-strike";
+import Superscript from "@tiptap/extension-superscript";
+import Subscript from "@tiptap/extension-subscript";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css"; // Import default tooltip styles
+
+const TipTapEditor = ({ content, setContent }) => {
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Bold,
+      Italic,
+      Underline,
+      Link,
+      BulletList,
+      OrderedList,
+      ListItem,
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
+      Strike,
+      Superscript,
+      Subscript,
+    ],
+    content,
+    onUpdate: ({ editor }) => {
+      setContent(editor.getHTML());
+    },
+  });
+
+  if (!editor) return null;
+
+  return (
+    <div className="p-2 rounded-md">
+      {/* Toolbar */}
+      <div className="flex gap-2 mb-2 pb-2 flex-wrap">
+        {[
+          { action: () => editor.chain().focus().toggleBold().run(), label: "Bold", symbol: "B", style: "bold" },
+          { action: () => editor.chain().focus().toggleItalic().run(), label: "Italic", symbol: "I", style: "italic" },
+          { action: () => editor.chain().focus().toggleUnderline().run(), label: "Underline", symbol: "U", style: "underline" },
+          { action: () => editor.chain().focus().toggleStrike().run(), label: "Strikethrough", symbol: "S̶", style: "strike" },
+          { action: () => editor.chain().focus().toggleSuperscript().run(), label: "Superscript", symbol: "X²", style: "superscript" },
+          { action: () => editor.chain().focus().toggleSubscript().run(), label: "Subscript", symbol: "X₂", style: "subscript" },
+          { action: () => editor.chain().focus().toggleBulletList().run(), label: "Bullet List", symbol: "•", style: "bulletList" },
+          { action: () => editor.chain().focus().toggleOrderedList().run(), label: "Ordered List", symbol: "1.", style: "orderedList" },
+          { action: () => editor.chain().focus().setTextAlign("left").run(), label: "Align Left", symbol: "⬅️", style: "leftAlign" },
+          { action: () => editor.chain().focus().setTextAlign("center").run(), label: "Align Center", symbol: "⬜", style: "centerAlign" },
+          { action: () => editor.chain().focus().setTextAlign("right").run(), label: "Align Right", symbol: "➡️", style: "rightAlign" },
+          {
+            action: () => {
+              const url = prompt("Enter URL:");
+              if (url) editor.chain().focus().setLink({ href: url }).run();
+            },
+            label: "Insert Link",
+            symbol: "🔗",
+            style: "link",
+          },
+        ].map(({ action, label, symbol, style }, index) => (
+          <Tippy key={index} content={label} delay={[100, 0]}>
+            <button
+              onClick={action}
+              className={`p-2 w-10 h-10 rounded ${editor.isActive(style) ? "bg-blue-400 dark:bg-blue-500" : "bg-gray-200 dark:bg-gray-950"
+                }`}
+            >
+              {symbol}
+            </button>
+          </Tippy>
+        ))}
+      </div>
+
+      {/* Editor */}
+      <div
+        onClick={() => editor.chain().focus().run()}
+      >
+        <EditorContent
+          editor={editor}
+          className="block p-2.5 min-h-40 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        />
+      </div>
+
+    </div>
+  );
+};
+
+export default TipTapEditor;
