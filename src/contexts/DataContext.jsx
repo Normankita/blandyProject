@@ -3,6 +3,7 @@ import { db } from "../configs/firebase";
 import {
   collection,
   getDocs,
+  getDoc,
   addDoc,
   updateDoc,
   deleteDoc,
@@ -18,6 +19,29 @@ export const DataProvider = ({ children }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+
+
+const fetchSingleDoc = async (path, id) => {
+  setLoading(true);
+  setError(null);
+  try {
+    const ref = doc(db, path, id);
+    const snapshot = await getDoc(ref);
+
+    if (!snapshot.exists()) {
+      throw new Error("Document not found");
+    }
+
+    return { id: snapshot.id, ...snapshot.data() };
+  } catch (err) {
+    console.error("Fetch single doc error:", err);
+    setError(err.message);
+    return null;
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Fetch once and set global data
   const fetchData = async ({ path, filters = [], sort = null }) => {
@@ -93,6 +117,7 @@ export const DataProvider = ({ children }) => {
         loading,
         error,
         fetchData,
+        fetchSingleDoc,
         setData, // Export if you ever need to force-set from outside
         addData,
         updateData,

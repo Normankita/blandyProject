@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signOut } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 // import { getStorage } from "firebase/storage";
 // import { getMessaging } from "firebase/messaging";
@@ -20,6 +20,15 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const loginGoogle = new GoogleAuthProvider()
 export const db = getFirestore(app);
+export const signOutUser = () => {
+  signOut(auth)
+    .then(() => {
+      console.log("User signed out successfully");
+    })
+    .catch((error) => {
+      console.error("Error signing out: ", error);
+    });
+}
 // export const storage = getStorage(app);
 // export const messaging = getMessaging(app);
 

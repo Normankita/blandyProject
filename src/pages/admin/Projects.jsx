@@ -1,8 +1,11 @@
 import React from 'react'
+import TableComponent from './components/TableComponent';
 
 const Projects = () => {
   return (
-    <div>Projects</div>
+    <>
+    <TableComponent title='Projects'/>
+    </>
   )
 }
 

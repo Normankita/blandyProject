@@ -9,8 +9,8 @@ const DashboardPager = () => {
   },[])
 
   return (
-    <>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
+    <div className='p-6 bg-slate-50 dark:bg-slate-900 max-h-full shadow-lg shadow-slate-900/10 dark:shadow-black/40 dark:text-gray-300 text-gray-800 rounded-sm duration-300 mb-10'>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5 border-0">
         <CardDataStats title="Students" total={clients.length} rate="0.43%" levelUp>
           <svg
             className="fill-primary dark:fill-white"
@@ -89,12 +89,12 @@ const DashboardPager = () => {
         </CardDataStats>
 
       </div>
-      <div className="grid grid-cols-1 gap-4 mt-6 xl:grid-cols-2 2xl:grid-cols-3 2xl:gap-7.5">
+      <div className="grid grid-cols-1 gap-4 mt-6 xl:grid-cols-2 2xl:grid-cols-3 2xl:gap-7.5 border-0">
         <ChartOne />
         {/* <ChartTwo />
         <ChartThree /> */}
       </div>
-    </>
+    </div>
   );
 };
 
