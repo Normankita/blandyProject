@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import flatpickr from 'flatpickr';
 import "flatpickr/dist/flatpickr.min.css";
 import { useNavigate } from 'react-router-dom';
-// import "./flatpickr-overrides"
+import "./flatpickroverrides.css"
 
 
 
@@ -30,13 +30,7 @@ useEffect(() => {
 
 return (
   <div className=" min-h-screen bg-slate-50 dark:bg-slate-900 p-6 shadow-lg my-10 dark:text-gray-300 text-gray-800 rounded-sm duration-300">
-    <button onClick={()=>navigate(-1)}>
-      <span>
-        <svg className="w-6 h-6 text-gray-800 dark:text-white cursor-pointer" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12l4-4m-4 4 4 4" />
-        </svg>
-      </span>
-    </button>
+
     <div className="flex flex-wrap items-center">
 
       <div className="w-full border-stroke dark:border-strokedark ">
@@ -47,6 +41,7 @@ return (
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-12">
+
               {/* Full Name */}
               <div className='sm:col-span-4'>
                 <label className={`block mb-2 font-medium  ${error.fullNameError ? "text-red" : "text-black dark:text-white"}`}>{auth ? "Member Name" : "Dependant name"}</label>
@@ -114,21 +109,20 @@ return (
 
 
               {/* Gender */}
-              {auth && <div className='sm:col-span-5'>
+              <div className='sm:col-span-5'>
                 <label className="block mb-2 font-medium text-black dark:text-white">Gender</label>
                 <select
                   className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-meta-5 dark:text-white"
                   name='gender' value={formData.gender} onChange={handleChange} required
                 >
-                  <option value="">Select your gender</option>
+                  <option disabled value="">Select your gender</option>
                   <option value="male">Male</option>
                   <option value="female">Female</option>
-                  <option value="other">Other</option>
                 </select>
-              </div>}
+              </div>
 
               {/* Mobile Number */}
-              {auth && <div className='sm:col-span-4'>
+              <div className='sm:col-span-4'>
                 <label className={`block mb-2 font-medium  ${error.mobNoError ? "text-red" : "text-black dark:text-white"}`}>Mobile Number</label>
                 <div className="relative">
                   <input
@@ -146,37 +140,133 @@ return (
                 </div>
 
 
-              </div>}
+              </div>
 
-
-              {/* Member Category */}
+              {/* Role */}
               <div className='sm:col-span-3'>
                 <label className="block mb-2 font-medium text-black dark:text-white">Member Category</label>
                 <select
                   className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-meta-5 dark:text-white" name='category' value={formData.category} onChange={handleChange} required
                 >
-                  <option value="">Category</option>
-                  {/* <option value="member">Super User</option> */}
+                  <option value="" disabled>Category</option>
                   <option value="Admin">Admin</option>
-                  {/* <option value="kMsaidizi">User</option> */}
+                  <option value="Student">Student</option>
+                  <option value="Staff">Staff</option>
+                  <option disabled value="Alumni">Alumni</option>
                 </select>
               </div>
 
-              {/* Region */}
-              {auth && <div className='sm:col-span-5'>
-                <label className="block mb-2 font-medium text-black dark:text-white">Region</label>
+              {/* Additionals */}
+
+               {/* Program */}
+               <div className='sm:col-span-4'>
+                <label className={`block mb-2 font-medium  ${error.program ? "text-red" : "text-black dark:text-white"}`}>Program Name</label>
                 <div className='relative'>
                   <input
                     type="text"
-                    placeholder="Enter Region of Origin"
-                    className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-meta-5 dark:text-white" name="region"
-                    value={formData.region}
+                    placeholder="John middle Doe"
+                    className={`w-full rounded-lg border  bg-transparent py-4 pl-6 text-black outline-none   dark:bg-meta-5 dark:text-white ${error.program ? "border-red" : " border-stroke dark:border-form-strokedark focus:border-primary"} `} name="program"
+                    value={formData.program}
                     onChange={handleChange} required
                   />
+                  {error.program && <p className='mt-2 text-sm text-red-600 dark:text-red-500'><span className='font-medium'>Oops!  </span> {error.program}</p>}
+                  <span className="absolute right-4 top-4">
+                    <svg
+                      className="fill-current"
+                      width="22"
+                      height="22"
+                      viewBox="0 0 22 22"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g opacity="0.5">
+                        <path
+                          d="M11.0008 9.52185C13.5445 9.52185 15.607 7.5281 15.607 5.0531C15.607 2.5781 13.5445 0.584351 11.0008 0.584351C8.45703 0.584351 6.39453 2.5781 6.39453 5.0531C6.39453 7.5281 8.45703 9.52185 11.0008 9.52185ZM11.0008 2.1656C12.6852 2.1656 14.0602 3.47185 14.0602 5.08748C14.0602 6.7031 12.6852 8.00935 11.0008 8.00935C9.31641 8.00935 7.94141 6.7031 7.94141 5.08748C7.94141 3.47185 9.31641 2.1656 11.0008 2.1656Z"
+                          fill=""
+                        />
+                        <path
+                          d="M13.2352 11.0687H8.76641C5.08828 11.0687 2.09766 14.0937 2.09766 17.7719V20.625C2.09766 21.0375 2.44141 21.4156 2.88828 21.4156C3.33516 21.4156 3.67891 21.0719 3.67891 20.625V17.7719C3.67891 14.9531 5.98203 12.6156 8.83516 12.6156H13.2695C16.0883 12.6156 18.4258 14.9187 18.4258 17.7719V20.625C18.4258 21.0375 18.7695 21.4156 19.2164 21.4156C19.6633 21.4156 20.007 21.0719 20.007 20.625V17.7719C19.9039 14.0937 16.9133 11.0687 13.2352 11.0687Z"
+                          fill=""
+                        />
+                      </g>
+                    </svg>
+                  </span>
                 </div>
+              </div>
 
+              {/* Department */}
+              <div className='sm:col-span-4'>
+                <label className={`block mb-2 font-medium  ${error.department ? "text-red" : "text-black dark:text-white"}`}>Department Name</label>
+                <div className='relative'>
+                  <input
+                    type="text"
+                    placeholder="John middle Doe"
+                    className={`w-full rounded-lg border  bg-transparent py-4 pl-6 text-black outline-none   dark:bg-meta-5 dark:text-white ${error.department ? "border-red" : " border-stroke dark:border-form-strokedark focus:border-primary"} `} name="department"
+                    value={formData.department}
+                    onChange={handleChange} required
+                  />
+                  {error.department && <p className='mt-2 text-sm text-red-600 dark:text-red-500'><span className='font-medium'>Oops!  </span> {error.department}</p>}
+                  <span className="absolute right-4 top-4">
+                    <svg
+                      className="fill-current"
+                      width="22"
+                      height="22"
+                      viewBox="0 0 22 22"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g opacity="0.5">
+                        <path
+                          d="M11.0008 9.52185C13.5445 9.52185 15.607 7.5281 15.607 5.0531C15.607 2.5781 13.5445 0.584351 11.0008 0.584351C8.45703 0.584351 6.39453 2.5781 6.39453 5.0531C6.39453 7.5281 8.45703 9.52185 11.0008 9.52185ZM11.0008 2.1656C12.6852 2.1656 14.0602 3.47185 14.0602 5.08748C14.0602 6.7031 12.6852 8.00935 11.0008 8.00935C9.31641 8.00935 7.94141 6.7031 7.94141 5.08748C7.94141 3.47185 9.31641 2.1656 11.0008 2.1656Z"
+                          fill=""
+                        />
+                        <path
+                          d="M13.2352 11.0687H8.76641C5.08828 11.0687 2.09766 14.0937 2.09766 17.7719V20.625C2.09766 21.0375 2.44141 21.4156 2.88828 21.4156C3.33516 21.4156 3.67891 21.0719 3.67891 20.625V17.7719C3.67891 14.9531 5.98203 12.6156 8.83516 12.6156H13.2695C16.0883 12.6156 18.4258 14.9187 18.4258 17.7719V20.625C18.4258 21.0375 18.7695 21.4156 19.2164 21.4156C19.6633 21.4156 20.007 21.0719 20.007 20.625V17.7719C19.9039 14.0937 16.9133 11.0687 13.2352 11.0687Z"
+                          fill=""
+                        />
+                      </g>
+                    </svg>
+                  </span>
+                </div>
+              </div>
 
-              </div>}
+              {/* githubUrl */}
+              <div className='sm:col-span-4'>
+                <label className={`block mb-2 font-medium  ${error.gitHubUrl ? "text-red" : "text-black dark:text-white"}`}>github url</label>
+                <div className='relative'>
+                  <input
+                    type="text"
+                    placeholder="John middle Doe"
+                    className={`w-full rounded-lg border  bg-transparent py-4 pl-6 text-black outline-none   dark:bg-meta-5 dark:text-white ${error.gitHubUrl ? "border-red" : " border-stroke dark:border-form-strokedark focus:border-primary"} `} name="gitHubUrl"
+                    value={formData.gitHubUrl}
+                    onChange={handleChange} required
+                  />
+                  {error.gitHubUrl && <p className='mt-2 text-sm text-red-600 dark:text-red-500'><span className='font-medium'>Oops!  </span> {error.gitHubUrl}</p>}
+                  <span className="absolute right-4 top-4">
+                    <svg
+                      className="fill-current"
+                      width="22"
+                      height="22"
+                      viewBox="0 0 22 22"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g opacity="0.5">
+                        <path
+                          d="M11.0008 9.52185C13.5445 9.52185 15.607 7.5281 15.607 5.0531C15.607 2.5781 13.5445 0.584351 11.0008 0.584351C8.45703 0.584351 6.39453 2.5781 6.39453 5.0531C6.39453 7.5281 8.45703 9.52185 11.0008 9.52185ZM11.0008 2.1656C12.6852 2.1656 14.0602 3.47185 14.0602 5.08748C14.0602 6.7031 12.6852 8.00935 11.0008 8.00935C9.31641 8.00935 7.94141 6.7031 7.94141 5.08748C7.94141 3.47185 9.31641 2.1656 11.0008 2.1656Z"
+                          fill=""
+                        />
+                        <path
+                          d="M13.2352 11.0687H8.76641C5.08828 11.0687 2.09766 14.0937 2.09766 17.7719V20.625C2.09766 21.0375 2.44141 21.4156 2.88828 21.4156C3.33516 21.4156 3.67891 21.0719 3.67891 20.625V17.7719C3.67891 14.9531 5.98203 12.6156 8.83516 12.6156H13.2695C16.0883 12.6156 18.4258 14.9187 18.4258 17.7719V20.625C18.4258 21.0375 18.7695 21.4156 19.2164 21.4156C19.6633 21.4156 20.007 21.0719 20.007 20.625V17.7719C19.9039 14.0937 16.9133 11.0687 13.2352 11.0687Z"
+                          fill=""
+                        />
+                      </g>
+                    </svg>
+                  </span>
+                </div>
+              </div>
+
+              
 
               {/* Email */}
               {auth && <div className="sm:col-span-4">
@@ -242,16 +332,17 @@ return (
                 </>}
 
                  {/* Member Status */}
+              {auth &&
               <div className='sm:col-span-3'>
-                <label className="block mb-2 font-medium text-black dark:text-white">Member Status</label>
-                <select
-                  className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-meta-5 dark:text-white" name='isActive' value={formData.isActive} onChange={handleChange} required
-                >
-                  <option value="">Status</option>
-                  <option value={true} >Active</option>
-                  <option value={false}>In-Active</option>
-                </select>
-              </div>
+              <label className="block mb-2 font-medium text-black dark:text-white">User Status</label>
+              <select
+                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-meta-5 dark:text-white" name='isActive' value={formData.isActive} onChange={handleChange} required
+              >
+                <option value="">Status</option>
+                <option value={true} >Active</option>
+                <option value={false}>In-Active</option>
+              </select>
+            </div>}
 
             </div>
 
@@ -260,22 +351,11 @@ return (
           "stripClasses": "hs-strong-password:opacity-100 hs-strong-password-accepted:bg-teal-500 h-2 flex-auto rounded-full bg-yellow-500 opacity-50 mx-1"
         }' className="flex mt-2 -mx-1 sm:col-span-8 h-6"></div>
 
-
-
-            {/* Submit Button */}
-            {/* <div>
-              <input
-                type="submit"
-                value={auth ? "Add Member" : "Add Dependant"}
-                className="w-full cursor-pointer curs0r-n0t-all0wed rounded-lg bg-primary p-4 text-white transition hover:bg-opacity-90 bg-gradient-to-br from-purple-600 to-yellow-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-yellow-300 dark:focus:ring-yellow-800 font-medium rounded-lg text-center me-2 mb-2 duration-300 transition-all"
-              // disabled="disabled"
-              />
-            </div> */}
             <div>
               <input
                 type="submit"
                 value={auth ? "Add Member" : "Add Dependant"}
-                className={`w-full ${submitting? `cursor-not-allowed` : `cursor-pointer`} curs0r-n0t-all0wed cursor-pointer rounded-lg mb-4 px-4 py-2 bg-blue-500 lg:w-sm text-white rounded`}
+                className={`w-full ${submitting? `cursor-not-allowed` : `cursor-pointer`} curs0r-n0t-all0wed cursor-pointer rounded-lg mb-4 px-4 py-2 bg-blue-500 lg:w-sm text-white font-semibold hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50`}
               disabled={submitting}
               />
             </div>

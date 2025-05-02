@@ -19,13 +19,14 @@ const LoginPage = () => {
     try {
       const { user } = await login(form.email, form.password);
       console.log("Logged in as:", user.email);
-      // navigate("/admin-dashboard");
-      const userId = user.uid;
-      checkUserExistsInUsersTable(userId)
+      navigate("/admin-dashboard");
+      // const userId = user.uid;
+      // checkUserExistsInUsersTable(userId)
     } catch (error) {
       console.error("Login error:", error.message);
     }
   };
+  
 
   if (loading) return <p>Loading auth...</p>;
 
@@ -34,6 +35,7 @@ const LoginPage = () => {
       .then((userDoc) => {
         if (userDoc) {
           alert("User exists in users table:", userDoc);
+          console.log("User exists in users table:", userDoc);
           return true;
         } else {
           alert("User does not exist in users table");
@@ -52,8 +54,8 @@ const LoginPage = () => {
   const handleGoogleLogin = async () => {
     try {
       const { user, token } = await loginWithGoogle();
-;
-
+      const userId = user.uid;
+      // checkUserExistsInUsersTable(userId);
       navigate("/admin-dashboard");
     } catch (err) {
       console.error("Google login failed:", err.message);

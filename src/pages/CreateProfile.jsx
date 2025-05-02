@@ -1,0 +1,124 @@
+// Customized CreateProfile with correct field mappings and createdAt timestamp
+import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { toast } from 'react-toastify';
+import DragAndDrop from './components/DragAndDrop';
+import { UserForm } from './admin/components/UserForm';
+import { serverTimestamp, setDoc, doc } from "firebase/firestore";
+import { db } from "../configs/firebase";
+
+const CreateProfile = () => {
+  const datepickerRef = useRef(null);
+  const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState({
+    nameError: "",
+    doBError: "",
+    genderError: "",
+    maritalStatError: "",
+    categoryError: "",
+    regionError: "",
+    isActiveError: "",
+    mobNoError: "",
+    emailError: "",
+    passwordError: "",
+    department: "",
+    program: "",
+    gitHubUrl: ""
+  });
+
+  const [formData, setFormData] = useState({
+    fullName: "",
+    doB: "",
+    gender: "",
+    category: "",
+    region: "",
+    isActive: false,
+    mobNo: "",
+    email: "",
+    password: "",
+    repassword: "",
+    department: "",
+    program: "",
+    gitHubUrl: ""
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "mobNo") {
+      const cleaned = "+" + value.replace(/[^0-9]/g, '').slice(0, 12);
+      setFormData(prev => ({ ...prev, mobNo: cleaned }));
+      setError(prev => ({ ...prev, mobNoError: cleaned.length !== 13 ? "Invalid phone number" : "" }));
+    } else if (name === "password") {
+      const strength = [/[0-9]/, /[a-z]/, /[A-Z]/, /[^0-9a-zA-Z]/].reduce((acc, regex) => acc + regex.test(value), 0);
+      setError(prev => ({ ...prev, passwordError: strength < 4 ? "Weak Password" : "" }));
+      setFormData(prev => ({ ...prev, password: value }));
+    } else if (name === "repassword") {
+      setError(prev => ({ ...prev, passwordError: value !== formData.password ? "Passwords do not match!" : "" }));
+      setFormData(prev => ({ ...prev, repassword: value }));
+    } else if (name === "fullName") {
+      const parts = value.trim().split(" ");
+      setError(prev => ({ ...prev, nameError: parts.length < 2 ? "Please enter first and last name" : "" }));
+      setFormData(prev => ({ ...prev, fullName: value }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    const updatedFormData = {
+      ...formData,
+      name: formData.fullName,
+      doB: new Date(formData.doB).toISOString(),
+      createdAt: serverTimestamp(),
+    };
+    delete updatedFormData.fullName;
+
+    try {
+      const { user, token } = await register(updatedFormData.email, updatedFormData.password);
+
+      if (user && token) {
+        await setDoc(doc(db, "users", user.uid), updatedFormData);
+        toast.success("Profile created successfully");
+        navigate("/Users");
+      }
+    } catch (err) {
+      console.error("Error creating profile:", err);
+      toast.error("Failed to create profile");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ type: "tween", duration: 0.5 }}
+    >
+      <DragAndDrop />
+      <button onClick={() => navigate(-1)} className="mx-10">
+        <svg className="w-6 h-6 text-gray-800 dark:text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14M5 12l4-4m-4 4 4 4" /></svg>
+      </button>
+
+      <UserForm
+        handleSubmit={handleSubmit}
+        error={error}
+        handleChange={handleChange}
+        formData={formData}
+        setFormData={setFormData}
+        datepickerRef={datepickerRef}
+        auth={false}
+        submitting={submitting}
+      />
+    </motion.div>
+  );
+};
+
+export default CreateProfile;

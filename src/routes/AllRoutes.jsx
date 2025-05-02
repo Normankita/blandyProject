@@ -5,10 +5,11 @@ import admin from '../pages/admin';
 import student from '../pages/student';
 import ProtectedRoutes from './ProtectedRoutes';
 import useTitle from '../hooks/useTitle';
+import ProfiledRoutes from './ProfiledRoutes';  
 
 
 const AllRoutes = () => {
-    const { LoginPage, RegisterPage, PageNotFound } = pages;
+    const { LoginPage, RegisterPage, PageNotFound, CreateProfile } = pages;
     const { DashboardPage, Invoice, Projects, RegisterAdmin, Users, UserProfile } = admin;
     const { StudentDashboardPage } = student;
     const location = useLocation();
@@ -20,7 +21,9 @@ const AllRoutes = () => {
                 <Route path='/' element={<LoginPage />} />
                 <Route path='/login' element={<LoginPage />} />
                 <Route path='/register' element={<RegisterPage/>}/>
-                <Route path='/admin-dashboard' element={<ProtectedRoutes><DashboardPage/></ProtectedRoutes>}/>
+                <Route path='/create-profile' element={<ProtectedRoutes><CreateProfile/></ProtectedRoutes>}/>
+                <Route path='/student-dashboard' element={<ProtectedRoutes><StudentDashboardPage/></ProtectedRoutes>}/>
+                <Route path='/admin-dashboard' element={<ProfiledRoutes><ProtectedRoutes><DashboardPage/></ProtectedRoutes></ProfiledRoutes>}/>
                 <Route path='/invoice' element={<ProtectedRoutes><Invoice/></ProtectedRoutes>}/>
                 <Route path='/profile' element={<ProtectedRoutes><UserProfile/></ProtectedRoutes>}/>
                 <Route path='/projects' element={<ProtectedRoutes><Projects/></ProtectedRoutes>}/>

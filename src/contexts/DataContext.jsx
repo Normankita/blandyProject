@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { db } from "../configs/firebase";
 import {
   collection,
@@ -12,6 +12,7 @@ import {
   where,
   orderBy,
 } from "firebase/firestore";
+import { useAuth } from "../contexts/AuthContext";
 
 const DataContext = createContext();
 
@@ -20,30 +21,32 @@ export const DataProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const [userProfile, setUserProfile] = useState(null);
+  const [userProfileLoading, setUserProfileLoading] = useState(true);
 
+  const { user } = useAuth(); // Firebase user
 
-const fetchSingleDoc = async (path, id) => {
-  setLoading(true);
-  setError(null);
-  try {
-    const ref = doc(db, path, id);
-    const snapshot = await getDoc(ref);
+  const fetchSingleDoc = async (path, id) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const ref = doc(db, path, id);
+      const snapshot = await getDoc(ref);
 
-    if (!snapshot.exists()) {
-      throw new Error("Document not found");
+      if (!snapshot.exists()) {
+        throw new Error("Document not found");
+      }
+
+      return { id: snapshot.id, ...snapshot.data() };
+    } catch (err) {
+      console.error("Fetch single doc error:", err);
+      setError(err.message);
+      return null;
+    } finally {
+      setLoading(false);
     }
+  };
 
-    return { id: snapshot.id, ...snapshot.data() };
-  } catch (err) {
-    console.error("Fetch single doc error:", err);
-    setError(err.message);
-    return null;
-  } finally {
-    setLoading(false);
-  }
-};
-
-  // Fetch once and set global data
   const fetchData = async ({ path, filters = [], sort = null }) => {
     setLoading(true);
     setError(null);
@@ -69,7 +72,7 @@ const fetchSingleDoc = async (path, id) => {
         id: doc.id,
         ...doc.data(),
       }));
-      setData(result); // Store in global state
+      setData(result);
       return result;
     } catch (err) {
       console.error("Fetch error:", err);
@@ -110,6 +113,24 @@ const fetchSingleDoc = async (path, id) => {
     }
   };
 
+  // Load user profile on auth state change
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      if (!user) {
+        setUserProfile(null);
+        setUserProfileLoading(false);
+        return;
+      }
+
+      setUserProfileLoading(true);
+      const profile = await fetchSingleDoc("users", user.uid);
+      setUserProfile(profile); // null if not found
+      setUserProfileLoading(false);
+    };
+
+    loadUserProfile();
+  }, [user]);
+
   return (
     <DataContext.Provider
       value={{
@@ -118,10 +139,12 @@ const fetchSingleDoc = async (path, id) => {
         error,
         fetchData,
         fetchSingleDoc,
-        setData, // Export if you ever need to force-set from outside
+        setData,
         addData,
         updateData,
         deleteData,
+        userProfile,
+        userProfileLoading,
       }}
     >
       {children}

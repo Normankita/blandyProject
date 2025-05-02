@@ -77,7 +77,7 @@ const SideHeader = ({ children }) => {
                                 <div className={`z-50 ${profile ? "block" : "hidden"} absolute top-16 right-4 w-44 rounded-lg shadow-xl bg-white border-b border-gray-200 dark:bg-gray-800 dark:    border-gray-700`} id="dropdown-user" role="menu" aria-orientation="vertical" aria-labelledby="dropdown-user">
                                     <div className="px-4 py-3" role="none">
                                         <p className="text-sm text-gray-900 dark:text-white" role="none">
-                                            Neil Sims
+                                            {`${auth.currentUser.displayName? auth.currentUser.displayName: `User Account`}`}
                                         </p>
                                         <p className="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
                                             {auth.currentUser.email}

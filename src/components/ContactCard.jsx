@@ -11,7 +11,7 @@ const ContactCard = () => {
         <img
           src={`${auth.currentUser.photoURL?auth.currentUser.photoURL:'some image'}`} // Replace with actual image path
           alt="Profile"
-          className="w-16 h-16 rounded-full object-cover"
+          className="w-full h-full min-w-full min-h-full rounded-full object-cover"
         />
         </div>
         <div>
