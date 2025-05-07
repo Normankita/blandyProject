@@ -23,6 +23,7 @@ export const db = getFirestore(app);
 export const signOutUser = () => {
   signOut(auth)
     .then(() => {
+      sessionStorage.removeItem("userProfile");
       console.log("User signed out successfully");
     })
     .catch((error) => {

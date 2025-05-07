@@ -11,21 +11,33 @@ import {
   query,
   where,
   orderBy,
+  setDoc,
 } from "firebase/firestore";
 import { useAuth } from "../contexts/AuthContext";
 
 const DataContext = createContext();
 
+/**
+ * DataProvider component wraps the application and provides data-related state and functions.
+ * @param {Object} param0 - Props containing children components.
+ * @returns {JSX.Element} - The DataContext.Provider wrapping the children.
+ */
 export const DataProvider = ({ children }) => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [data, setData] = useState([]); // Stores the fetched data
+  const [loading, setLoading] = useState(false); // Indicates whether data is being loaded
+  const [error, setError] = useState(null); // Stores any error messages
 
-  const [userProfile, setUserProfile] = useState(null);
-  const [userProfileLoading, setUserProfileLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState(null); // Stores the user's profile data
+  const [userProfileLoading, setUserProfileLoading] = useState(true); // Indicates whether the user profile is being loaded
 
-  const { user } = useAuth(); // Firebase user
+  const { user } = useAuth(); // Firebase user from AuthContext
 
+  /**
+   * Fetches a single document from Firestore.
+   * @param {string} path - The Firestore collection path.
+   * @param {string} id - The document ID.
+   * @returns {Object|null} - The document data or null if not found.
+   */
   const fetchSingleDoc = async (path, id) => {
     setLoading(true);
     setError(null);
@@ -47,6 +59,14 @@ export const DataProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Fetches multiple documents from Firestore with optional filters and sorting.
+   * @param {Object} param0 - Options for fetching data.
+   * @param {string} param0.path - The Firestore collection path.
+   * @param {Array} param0.filters - Array of filter conditions.
+   * @param {Object|null} param0.sort - Sorting options.
+   * @returns {Array} - The fetched documents.
+   */
   const fetchData = async ({ path, filters = [], sort = null }) => {
     setLoading(true);
     setError(null);
@@ -83,10 +103,23 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  const addData = async (path, newData) => {
+  /**
+   * Adds a new document to Firestore.
+   * @param {string} path - The Firestore collection path.
+   * @param {Object} newData - The data to add.
+   * @param {string|null} id - Optional custom document ID.
+   * @returns {string|null} - The document ID or null if an error occurs.
+   */
+  const addData = async (path, newData, id = null) => {
     try {
-      const docRef = await addDoc(collection(db, path), newData);
-      return docRef.id;
+      if (id) {
+        const ref = doc(db, path, id);
+        await setDoc(ref, newData); // setDoc allows custom ID
+        return id;
+      } else {
+        const docRef = await addDoc(collection(db, path), newData); // auto-ID
+        return docRef.id;
+      }
     } catch (err) {
       console.error("Add error:", err);
       setError(err.message);
@@ -94,6 +127,12 @@ export const DataProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Updates an existing document in Firestore.
+   * @param {string} path - The Firestore collection path.
+   * @param {string} id - The document ID.
+   * @param {Object} updates - The updates to apply.
+   */
   const updateData = async (path, id, updates) => {
     try {
       const ref = doc(db, path, id);
@@ -104,6 +143,11 @@ export const DataProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Deletes a document from Firestore.
+   * @param {string} path - The Firestore collection path.
+   * @param {string} id - The document ID.
+   */
   const deleteData = async (path, id) => {
     try {
       await deleteDoc(doc(db, path, id));
@@ -113,38 +157,56 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  // Load user profile on auth state change
+  /**
+   * Loads the user's profile from Firestore or sessionStorage.
+   * Automatically triggered on authentication state change.
+   */
   useEffect(() => {
     const loadUserProfile = async () => {
       if (!user) {
         setUserProfile(null);
         setUserProfileLoading(false);
+        sessionStorage.removeItem("userProfile");
         return;
       }
-
+  
       setUserProfileLoading(true);
+  
+      // Check sessionStorage first
+      const cachedProfile = sessionStorage.getItem("userProfile");
+      if (cachedProfile) {
+        setUserProfile(JSON.parse(cachedProfile));
+        setUserProfileLoading(false);
+        return;
+      }
+  
+      // Fetch from Firestore if not cached
       const profile = await fetchSingleDoc("users", user.uid);
-      setUserProfile(profile); // null if not found
+      if (profile) {
+        sessionStorage.setItem("userProfile", JSON.stringify(profile));
+      }
+      setUserProfile(profile);
       setUserProfileLoading(false);
     };
-
+  
     loadUserProfile();
   }, [user]);
 
   return (
     <DataContext.Provider
       value={{
-        data,
-        loading,
-        error,
-        fetchData,
-        fetchSingleDoc,
-        setData,
-        addData,
-        updateData,
-        deleteData,
-        userProfile,
-        userProfileLoading,
+        data, // The fetched data
+        loading, // Loading state for data operations
+        error, // Error state for data operations
+        fetchData, // Function to fetch multiple documents
+        fetchSingleDoc, // Function to fetch a single document
+        setData, // Function to manually set the data state
+        addData, // Function to add a new document
+        updateData, // Function to update an existing document
+        deleteData, // Function to delete a document
+        userProfile, // The user's profile data
+        userProfileLoading, // Loading state for the user's profile
+        setUserProfile, // Function to manually set the user's profile
       }}
     >
       {children}
@@ -152,4 +214,8 @@ export const DataProvider = ({ children }) => {
   );
 };
 
+/**
+ * Custom hook to access the DataContext.
+ * @returns {Object} - The data context value.
+ */
 export const useData = () => useContext(DataContext);

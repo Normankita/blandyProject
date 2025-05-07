@@ -5,10 +5,15 @@ import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import DragAndDrop from './components/DragAndDrop';
 import { UserForm } from './admin/components/UserForm';
-import { serverTimestamp, setDoc, doc } from "firebase/firestore";
-import { db } from "../configs/firebase";
+import { serverTimestamp } from "firebase/firestore";
+import { auth } from "../configs/firebase";
+import {useData} from '../contexts/DataContext'
+import { useAuth } from '../contexts/AuthContext';
 
 const CreateProfile = () => {
+
+  const {addData, setUserProfile} = useData()
+  const {user} = useAuth()
   const datepickerRef = useRef(null);
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
@@ -17,7 +22,7 @@ const CreateProfile = () => {
     doBError: "",
     genderError: "",
     maritalStatError: "",
-    categoryError: "",
+    roleError: "",
     regionError: "",
     isActiveError: "",
     mobNoError: "",
@@ -32,16 +37,14 @@ const CreateProfile = () => {
     fullName: "",
     doB: "",
     gender: "",
-    category: "",
-    region: "",
+    role: "",
     isActive: false,
     mobNo: "",
-    email: "",
-    password: "",
-    repassword: "",
     department: "",
     program: "",
-    gitHubUrl: ""
+    gitHubUrl: "",
+    photoUrl:"",
+    registrationNumber:"",
   });
 
   const handleChange = (e) => {
@@ -71,21 +74,30 @@ const CreateProfile = () => {
     e.preventDefault();
     setSubmitting(true);
 
+    if (!user || !user.uid) {
+      toast.error("User not authenticated");
+      return;
+    }
+
     const updatedFormData = {
-      ...formData,
-      name: formData.fullName,
-      doB: new Date(formData.doB).toISOString(),
-      createdAt: serverTimestamp(),
-    };
-    delete updatedFormData.fullName;
+  ...formData,
+  name: formData.fullName,
+  doB: new Date(formData.doB).toISOString(),
+  createdAt: serverTimestamp(),
+  uid: user.uid,
+  email: user.email, // include for easy reference
+};
+
+delete updatedFormData.fullName;
 
     try {
-      const { user, token } = await register(updatedFormData.email, updatedFormData.password);
+      const id = await addData("users", updatedFormData, user.uid);
 
-      if (user && token) {
-        await setDoc(doc(db, "users", user.uid), updatedFormData);
+      if (id) {
         toast.success("Profile created successfully");
-        navigate("/Users");
+        setUserProfile(updatedFormData)
+        sessionStorage.setItem("userProfile", JSON.stringify(updatedFormData));
+        navigate("/admin-dashboard");
       }
     } catch (err) {
       console.error("Error creating profile:", err);

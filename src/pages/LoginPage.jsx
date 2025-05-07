@@ -3,12 +3,44 @@ import { useData } from "../contexts/DataContext";
 import { Link, useNavigate } from "react-router-dom";
 import { SiGoogle } from 'react-icons/si';
 import { useAuth } from "../contexts/AuthContext";
+import SiteButton from "../components/SiteButton";
 
 const LoginPage = () => {
-  const { fetchSingleDoc, addData } = useData();
-  const { login, user, loading, loginWithGoogle } = useAuth();
+  const { fetchSingleDoc } = useData();
+  const { login, loading, loginWithGoogle } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const navigate = useNavigate();
+
+  const checkUserExistsInUsersTable = async (userId) => {
+    fetchSingleDoc("users", userId)
+      .then((userDoc) => {
+
+        if (userDoc) {
+          console.log(userDoc);
+          if(userDoc.role){
+            if (userDoc.role === "Admin") {
+              navigate("/admin-dashboard");
+            }
+            if (userDoc.role === "Student") {
+              navigate("/student-dashboard");
+            }
+            return true;
+          }else{
+            alert("user has no role")
+          }
+        } else {
+          navigate("/create-profile");
+          return false;
+        }
+      }
+      )
+      .catch((error) => {
+        alert("Error checking user in users table:", error);
+        return false;
+      }
+      );
+    // addData
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value.trim() });
@@ -18,45 +50,18 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const { user } = await login(form.email, form.password);
-      console.log("Logged in as:", user.email);
-      navigate("/admin-dashboard");
-      // const userId = user.uid;
-      // checkUserExistsInUsersTable(userId)
+      const userId = user.uid;
+      checkUserExistsInUsersTable(userId);
     } catch (error) {
       console.error("Login error:", error.message);
     }
   };
-  
-
-  if (loading) return <p>Loading auth...</p>;
-
-  const checkUserExistsInUsersTable = async (userId) => {
-    fetchSingleDoc("users", userId)
-      .then((userDoc) => {
-        if (userDoc) {
-          alert("User exists in users table:", userDoc);
-          console.log("User exists in users table:", userDoc);
-          return true;
-        } else {
-          alert("User does not exist in users table");
-          return false;
-        }
-      }
-      )
-      .catch((error) => {
-       alert("Error checking user in users table:", error);
-        return false;
-      }
-      );
-    // addData
-  }
 
   const handleGoogleLogin = async () => {
     try {
       const { user, token } = await loginWithGoogle();
       const userId = user.uid;
-      // checkUserExistsInUsersTable(userId);
-      navigate("/admin-dashboard");
+      checkUserExistsInUsersTable(userId);
     } catch (err) {
       console.error("Google login failed:", err.message);
     }
@@ -89,7 +94,7 @@ const LoginPage = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-start">
                   <div className="flex items-center h-5">
-                    <input id="remember" aria-describedby="remember" type="checkbox" className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"/>
+                    <input id="remember" aria-describedby="remember" type="checkbox" className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" />
                   </div>
                   <div className="ml-3 text-sm">
                     <label htmlFor="remember" className="text-gray-500 dark:text-gray-300">Remember me</label>
@@ -97,18 +102,15 @@ const LoginPage = () => {
                 </div>
                 <a href="#" className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot password?</a>
               </div>
-              <button type="submit" className="w-full text-white bg-blue-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 cursor-pointer shadow"> Sign in</button>
-             
-
-              
+              <SiteButton text={"Sign in"} loading={loading}/>
             </form>
-            <button onClick={handleGoogleLogin} className="flex items-center space-x-2 border-0 text-black border px-4 py-2 rounded cursor-pointer shadow bg-red-300 hover:bg-red-400 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm text-center dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-500">
-                <SiGoogle className="text-red-500 text-xl" />
-                <span>Sign in with Google</span>
-              </button> 
+            <button disabled ={true} onClick={handleGoogleLogin} className="flex items-center space-x-2 border-0 text-black border px-4 py-2 rounded cursor-pointer shadow bg-red-300 hover:bg-red-400 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm text-center dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-500">
+              <SiGoogle className="text-red-500 text-xl" />
+              <span>Sign in with Google</span>
+            </button>
             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Don’t have an account yet? <Link to="/register" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</Link>
-              </p>
+              Don’t have an account yet? <Link to="/register" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</Link>
+            </p>
           </div>
         </div>
       </div>

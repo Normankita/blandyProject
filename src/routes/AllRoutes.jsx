@@ -22,13 +22,13 @@ const AllRoutes = () => {
                 <Route path='/login' element={<LoginPage />} />
                 <Route path='/register' element={<RegisterPage/>}/>
                 <Route path='/create-profile' element={<ProtectedRoutes><CreateProfile/></ProtectedRoutes>}/>
-                <Route path='/student-dashboard' element={<ProtectedRoutes><StudentDashboardPage/></ProtectedRoutes>}/>
-                <Route path='/admin-dashboard' element={<ProfiledRoutes><ProtectedRoutes><DashboardPage/></ProtectedRoutes></ProfiledRoutes>}/>
-                <Route path='/invoice' element={<ProtectedRoutes><Invoice/></ProtectedRoutes>}/>
-                <Route path='/profile' element={<ProtectedRoutes><UserProfile/></ProtectedRoutes>}/>
-                <Route path='/projects' element={<ProtectedRoutes><Projects/></ProtectedRoutes>}/>
+                <Route path='/student-dashboard' element={<ProtectedRoutes><ProfiledRoutes><StudentDashboardPage/></ProfiledRoutes></ProtectedRoutes>}/>
+                <Route path='/admin-dashboard' element={<ProtectedRoutes><ProfiledRoutes><DashboardPage/></ProfiledRoutes></ProtectedRoutes>}/>
+                <Route path='/invoice' element={<ProtectedRoutes><ProfiledRoutes><Invoice/></ProfiledRoutes></ProtectedRoutes>}/>
+                <Route path='/profile' element={<ProtectedRoutes><ProfiledRoutes><UserProfile/></ProfiledRoutes></ProtectedRoutes>}/>
+                <Route path='/projects' element={<ProtectedRoutes><ProfiledRoutes><Projects/></ProfiledRoutes></ProtectedRoutes>}/>
                 <Route path='/admin-register' element={<ProtectedRoutes><RegisterAdmin/></ProtectedRoutes>}/>
-                <Route path='/users' element={<ProtectedRoutes><Users/></ProtectedRoutes>}/>
+                <Route path='/users' element={<ProtectedRoutes><ProfiledRoutes><Users/></ProfiledRoutes></ProtectedRoutes>}/>
                 <Route path='/*' element={<PageNotFound />} />
             </Routes>
         </AnimatePresence>
