@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import CardDataStats from './components/CardDataStats';//done
-import ChartOne from './components/charts/ChartOne'; 
+import CardDataStats from '../components/CardDataStats';
+import ChartOne from '../components/charts/ChartTwo';
 
 const DashboardPager = () => {
   const [clients, setClients] = useState([])

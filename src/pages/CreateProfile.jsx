@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
-import DragAndDrop from './components/DragAndDrop';
+import DragAndDrop from '../components/DragAndDrop';
 import { UserForm } from './admin/components/UserForm';
 import { serverTimestamp } from "firebase/firestore";
 import { auth } from "../configs/firebase";

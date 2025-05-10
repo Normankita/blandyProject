@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import useTitle from '../../hooks/useTitle';
-import DragAndDrop from '../components/DragAndDrop';
+import DragAndDrop from '../../components/DragAndDrop';
 const RegisterAdmin= () => {
   useTitle("Register"); // Custom hook to set the document title
 
