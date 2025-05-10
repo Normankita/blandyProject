@@ -5,7 +5,7 @@ import {
   signOut,
   onAuthStateChanged,
   signInWithPopup,
-  GoogleAuthProvider
+  GoogleAuthProvider,
 } from "firebase/auth";
 import { auth } from "../configs/firebase";
 
@@ -28,15 +28,21 @@ export const AuthProvider = ({ children }) => {
    */
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        const freshToken = await firebaseUser.getIdToken(); // Fetches a fresh token for the user
-        setUser(firebaseUser); // Sets the authenticated user
-        setToken(freshToken); // Sets the user's token
-      } else {
-        setUser(null); // Clears the user state if not authenticated
-        setToken(null); // Clears the token state if not authenticated
+      setLoading(true);
+      try {
+        if (firebaseUser) {
+          const freshToken = await firebaseUser.getIdToken(); // Fetches a fresh token for the user
+          setUser(firebaseUser); // Sets the authenticated user
+          setToken(freshToken); // Sets the user's token
+        } else {
+          setUser(null); // Clears the user state if not authenticated
+          setToken(null); // Clears the token state if not authenticated
+        }
+      } catch (error) {
+        console.error("Error in auth state change:", error);
+      } finally {
+        setLoading(false); // Marks loading as complete
       }
-      setLoading(false); // Marks loading as complete
     });
 
     return () => unsubscribe(); // Cleanup subscription on unmount
@@ -50,6 +56,7 @@ export const AuthProvider = ({ children }) => {
    * @throws {Error} - Throws an error if registration fails.
    */
   const register = async (email, password) => {
+    setLoading(true);
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
       const token = await user.getIdToken(); // Fetches the token for the new user
@@ -57,7 +64,10 @@ export const AuthProvider = ({ children }) => {
       setToken(token); // Sets the user's token
       return { user, token };
     } catch (error) {
+      console.error("Registration error:", error);
       throw error; // Propagates the error to the caller
+    } finally {
+      setLoading(false); // Ensure loading is set to false
     }
   };
 
@@ -66,36 +76,63 @@ export const AuthProvider = ({ children }) => {
    * @param {string} email - The user's email.
    * @param {string} password - The user's password.
    * @returns {Object} - The logged-in user and their token.
+   * @throws {Error} - Throws an error if login fails.
    */
   const login = async (email, password) => {
-    const { user } = await signInWithEmailAndPassword(auth, email, password);
-    const token = await user.getIdToken(); // Fetches the token for the logged-in user
-    setUser(user); // Sets the authenticated user
-    setToken(token); // Sets the user's token
-    return { user, token };
+    setLoading(true);
+    try {
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      const token = await user.getIdToken(); // Fetches the token for the logged-in user
+      setUser(user); // Sets the authenticated user
+      setToken(token); // Sets the user's token
+      return { user, token };
+    } catch (error) {
+      console.error("Login error:", error);
+      throw error; // Propagates the error to the caller
+    } finally {
+      setLoading(false); // Ensure loading is set to false
+    }
   };
 
   /**
    * Logs in a user using Google authentication.
    * @returns {Object} - The logged-in user and their token.
+   * @throws {Error} - Throws an error if login fails.
    */
   const loginWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-    const res = await signInWithPopup(auth, provider); // Opens a popup for Google login
-    const token = await res.user.getIdToken(); // Fetches the token for the logged-in user
-    setUser(res.user); // Sets the authenticated user
-    setToken(token); // Sets the user's token
-    return { user: res.user, token };
+    setLoading(true);
+    try {
+      const provider = new GoogleAuthProvider();
+      const res = await signInWithPopup(auth, provider); // Opens a popup for Google login
+      const token = await res.user.getIdToken(); // Fetches the token for the logged-in user
+      setUser(res.user); // Sets the authenticated user
+      setToken(token); // Sets the user's token
+      return { user: res.user, token };
+    } catch (error) {
+      console.error("Google login error:", error);
+      throw error; // Propagates the error to the caller
+    } finally {
+      setLoading(false); // Ensure loading is set to false
+    }
   };
 
   /**
    * Logs out the currently authenticated user.
    * Resets the user and token state to null.
+   * @throws {Error} - Throws an error if logout fails.
    */
   const logout = async () => {
-    await signOut(auth); // Signs out the user
-    setUser(null); // Clears the user state
-    setToken(null); // Clears the token state
+    setLoading(true);
+    try {
+      await signOut(auth); // Signs out the user
+      setUser(null); // Clears the user state
+      setToken(null); // Clears the token state
+    } catch (error) {
+      console.error("Logout error:", error);
+      throw error; // Propagates the error to the caller
+    } finally {
+      setLoading(false); // Ensure loading is set to false
+    }
   };
 
   /**
@@ -114,7 +151,7 @@ export const AuthProvider = ({ children }) => {
         login, // Function to log in a user
         logout, // Function to log out the user
         loginWithGoogle, // Function to log in with Google
-        getToken // Function to retrieve the current token
+        getToken, // Function to retrieve the current token
       }}
     >
       {children}

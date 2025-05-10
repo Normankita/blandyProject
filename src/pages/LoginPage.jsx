@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { SiGoogle } from 'react-icons/si';
 import { useAuth } from "../contexts/AuthContext";
 import SiteButton from "../components/SiteButton";
+import { toast } from "react-toastify";
 
 const LoginPage = () => {
   const { fetchSingleDoc } = useData();
@@ -53,7 +54,7 @@ const LoginPage = () => {
       const userId = user.uid;
       checkUserExistsInUsersTable(userId);
     } catch (error) {
-      console.error("Login error:", error.message);
+      toast.error(`Login error: ${error.message}`);
     }
   };
 
@@ -63,7 +64,7 @@ const LoginPage = () => {
       const userId = user.uid;
       checkUserExistsInUsersTable(userId);
     } catch (err) {
-      console.error("Google login failed:", err.message);
+      toast.error(`Google login failed:${err.message}`);
     }
   };
 
