@@ -6,6 +6,7 @@ import student from '../pages/student';
 import ProtectedRoutes from './ProtectedRoutes';
 import useTitle from '../hooks/useTitle';
 import ProfiledRoutes from './ProfiledRoutes';  
+import AdminRoutes from './AdminRoutes';
 
 
 const AllRoutes = () => {

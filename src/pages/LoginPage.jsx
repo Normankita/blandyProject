@@ -5,6 +5,7 @@ import { SiGoogle } from 'react-icons/si';
 import { useAuth } from "../contexts/AuthContext";
 import SiteButton from "../components/SiteButton";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
 
 const LoginPage = () => {
   const { fetchSingleDoc } = useData();
@@ -23,7 +24,9 @@ const LoginPage = () => {
               navigate("/admin-dashboard");
             }
             if (userDoc.role === "Student") {
-              navigate("/student-dashboard");
+              // navigate("/student-dashboard");
+              navigate("/admin-dashboard");
+
             }
             return true;
           }else{
@@ -60,6 +63,7 @@ const LoginPage = () => {
 
   const handleGoogleLogin = async () => {
     try {
+      alert("login with google");
       const { user, token } = await loginWithGoogle();
       const userId = user.uid;
       checkUserExistsInUsersTable(userId);
@@ -70,7 +74,13 @@ const LoginPage = () => {
 
 
   return (
-    <section className="bg-gray-50 dark:bg-gray-900 min-h-screen min-w-screen max-w-screen max-h-screen">
+    <motion.div
+    initial={{ opacity: 0 }}
+        animate={{ opacity: "100%" }}
+        exit={{ opacity: 0 }}
+        transition={{ type: "tween", duration: 0.5 }}
+    >
+      <section className="bg-gray-50 dark:bg-gray-900 min-h-screen min-w-screen max-w-screen max-h-screen">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <a href="#" className="flex flex-col items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
           <span><img src="/sitelogo.png" alt="" /></span>
@@ -105,7 +115,7 @@ const LoginPage = () => {
               </div>
               <SiteButton text={"Sign in"} loading={loading}/>
             </form>
-            <button disabled ={true} onClick={handleGoogleLogin} className="flex items-center space-x-2 border-0 text-black border px-4 py-2 rounded cursor-pointer shadow bg-red-300 hover:bg-red-400 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm text-center dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-500">
+            <button  onClick={handleGoogleLogin} className="flex items-center space-x-2 border-0 text-black border px-4 py-2 rounded cursor-pointer shadow bg-red-300 hover:bg-red-400 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm text-center dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-500">
               <SiGoogle className="text-red-500 text-xl" />
               <span>Sign in with Google</span>
             </button>
@@ -116,6 +126,8 @@ const LoginPage = () => {
         </div>
       </div>
     </section>
+    </motion.div>
+    
   );
 };
 
