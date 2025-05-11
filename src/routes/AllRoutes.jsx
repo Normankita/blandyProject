@@ -23,7 +23,7 @@ const AllRoutes = () => {
                 <Route path='/create-profile' element={<ProtectedRoutes><CreateProfile/></ProtectedRoutes>}/>
                 <Route path='/student-dashboard' element={<ProtectedRoutes student profiled><StudentDashboardPage/></ProtectedRoutes>}/>
                 <Route path='/admin-dashboard' element={<ProtectedRoutes admin profiled><DashboardPage/></ProtectedRoutes>}/>
-                <Route path='/invoice' element={<ProtectedRoutes admin student supervisor profiled><Invoice/></ProtectedRoutes>}/>
+                <Route path='/invoice' element={<ProtectedRoutes admin student staff profiled><Invoice/></ProtectedRoutes>}/>
                 <Route path='/profile' element={<ProtectedRoutes profiled><UserProfile/></ProtectedRoutes>}/>
                 <Route path='/projects' element={<ProtectedRoutes admin profiled><Projects/></ProtectedRoutes>}/>
                 <Route path='/admin-register' element={<ProtectedRoutes admin profiled><RegisterAdmin/></ProtectedRoutes>}/>

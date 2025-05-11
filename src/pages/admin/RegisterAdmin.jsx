@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import useTitle from '../../hooks/useTitle';
-import DragAndDrop from '../../components/DragAndDrop';
 const RegisterAdmin= () => {
   useTitle("Register"); // Custom hook to set the document title
 
@@ -213,8 +212,9 @@ if(user && token) {
       exit={{ opacity: 0 }}
       transition={{ type: "tween", duration: 0.5 }}
     >
-      <DragAndDrop/>
+      
       <UserForm
+      
               handleSubmit={handleSubmit}
               // splitNida={splitNida}
               error={error}
@@ -222,7 +222,7 @@ if(user && token) {
               formData={formData}
               setFormData={setFormData}
               datepickerRef={datepickerRef}
-              auth={true}
+              authorized={true}
               submitting={submitting}
             />
     </motion.div>

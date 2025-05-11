@@ -10,7 +10,7 @@ const ProtectedRoutes = ({
   children,
   admin = false,
   student = false,
-  supervisor = false,
+  staff = false,
   profiled = false,
 }) => {
   const navigate = useNavigate();
@@ -22,9 +22,9 @@ const ProtectedRoutes = ({
     // Figure out what role is needed for this route
     if (admin) return "admin";
     if (student) return "student";
-    if (supervisor) return "supervisor";
+    if (staff) return "staff";
     return null; // No specific role required
-  }, [admin, student, supervisor]);
+  }, [admin, student, staff]);
 
   // Check if we already have the user's profile cached, if not, fetch it
   useEffect(() => {
