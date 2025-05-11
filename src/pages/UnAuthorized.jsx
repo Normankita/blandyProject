@@ -1,4 +1,5 @@
 import React from 'react';
+import Goback from '../components/Goback';
 
 const UnAuthorized = () => {
     return (
@@ -28,6 +29,7 @@ const UnAuthorized = () => {
                     You don't have permission to access this page.
                 </p>
             </div>
+            <Goback page="login"/>
         </div>
     );
 };
