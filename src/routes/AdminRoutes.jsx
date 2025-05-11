@@ -8,13 +8,14 @@ const AdminRoutes = ({ children }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [checkingProfile, setCheckingProfile] = useState(true);
-  const [userIsAdmin, setUserIsAdmin]= useState(false)
+  const [userIsAdmin, setUserIsAdmin]= useState(true)
   const [profileExists, setProfileExists] = useState(false);
   const { fetchSingleDoc } = useData();
 
   useEffect(() => {
     const checkUserIsAdmin = async (user)=>{
         if(user.role!=="Admin"){
+          setUserIsAdmin(false)
             toast.error("Oops, you are not authorized to access this route!")
             navigate('/login')
         }
