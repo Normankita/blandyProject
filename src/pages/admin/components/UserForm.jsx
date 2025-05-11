@@ -205,8 +205,10 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
 
                 )}
 
-                {/* Department */}
-                <div className='sm:col-span-4'>
+            {formData.role !== "admin"  && (
+              <>
+                  {/* Department */}
+                  <div className='sm:col-span-4'>
                   <label className={`block mb-2 font-medium  ${error.department ? "text-red" : "text-black dark:text-white"}`}>Department Name</label>
                   <div className='relative'>
                     <input
@@ -219,6 +221,8 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
                     {error.department && <p className='mt-2 text-sm text-red-600 dark:text-red-500'><span className='font-medium'>Oops!  </span> {error.department}</p>}
                   </div>
                 </div>
+              </>
+            )}
 
                 {formData.role === "student" && (
                   <>
