@@ -16,24 +16,26 @@ const ProtectedRoutes = ({
   const navigate = useNavigate();
   const { token, loading, user, logout } = useAuth();
   const { userProfile, setUserProfile, userProfileLoading, fetchSingleDoc } = useData();
-  
-  const [redirecting, setRedirecting] = useState(false);  // To prevent multiple redirects
+
+  const [redirecting, setRedirecting] = useState(false); // Stops multiple redirects from happening
   const roleRequired = useMemo(() => {
+    // Figure out what role is needed for this route
     if (admin) return "admin";
     if (student) return "student";
     if (supervisor) return "supervisor";
-    return null;
+    return null; // No specific role required
   }, [admin, student, supervisor]);
 
-  // Fetch profile if not cached in the local storage or somethng
+  // Check if we already have the user's profile cached, if not, fetch it
   useEffect(() => {
     if (token && !userProfile && !userProfileLoading) {
       const cachedProfile = sessionStorage.getItem("userProfile");
 
       if (cachedProfile) {
-        setUserProfile(JSON.parse(cachedProfile));  // Use cached profile
+        // If we have it cached, just use it
+        setUserProfile(JSON.parse(cachedProfile));
       } else {
-        // If no cached profile, fetch it from the database
+        // No cache? Time to fetch it from the database
         fetchProfile();
       }
     }
@@ -41,51 +43,57 @@ const ProtectedRoutes = ({
 
   const fetchProfile = async () => {
     try {
-      const userProfileFromDb = await fetchSingleDoc("users", user.uid);  // Adjust this to your DB query
-      setUserProfile(userProfileFromDb);
-      sessionStorage.setItem("userProfile", JSON.stringify(userProfileFromDb)); // Cache profile
+      // Go to the database and grab the user's profile
+      const userProfileFromDb = await fetchSingleDoc("users", user.uid);
+      setUserProfile(userProfileFromDb); // Save it in state
+      sessionStorage.setItem("userProfile", JSON.stringify(userProfileFromDb)); // Cache it for later
     } catch (e) {
+      // Uh-oh, something went wrong
       toast.error("Error fetching user profile:", e);
       console.error("Error fetching user profile:", e);
-
     }
   };
 
-  // Role check and redirect
+  // Handle role checks and redirects
   useEffect(() => {
     if (!loading && !token) {
+      // If you're not logged in, go to the login page
       navigate("/login");
     } else if (token && !redirecting) {
-      // If logged in, redirect to appropriate dashboard based on role
+      // If you're logged in, let's figure out where you should go
       if (userProfile) {
-        const userRole = userProfile.role;
+        const userRole = userProfile.role; // Grab the user's role
         if (!roleRequired && !redirecting) {
+          // No specific role required? Just send them to their dashboard
           setRedirecting(true);
           navigate(`/${userRole}-dashboard`);
         }
         if (roleRequired && userRole !== roleRequired) {
+          // If the user's role doesn't match the required role, kick them out
           toast.error("You are not authorized to access this route!");
-          logout();
-          navigate("/unauthorized");
+          logout(); // Log them out
+          navigate("/unauthorized"); // Send them to the unauthorized page
         }
       }
     }
 
-    // Handle profile creation for users without a profile
+    // If the route requires a profile and the user doesn't have one, send them to create it
     if (!userProfileLoading && profiled && !userProfile) {
       navigate("/create-profile");
     }
   }, [loading, token, navigate, userProfile, roleRequired, redirecting, profiled, userProfileLoading]);
 
+  // Check if everything is ready for the user to access the route
   const isReady =
-    !loading &&
-    profiled?token:true &&
-    !userProfileLoading &&
-    (!profiled || userProfile) &&
-    (!roleRequired || userProfile?.role === roleRequired);
+    !loading && // Not loading auth state
+    (profiled ? token : true) && // If profile is required, make sure they're logged in
+    !userProfileLoading && // Not loading the user profile
+    (!profiled || userProfile) && // If profile is required, make sure we have it
+    (!roleRequired || userProfile?.role === roleRequired); // If a role is required, make sure it matches
 
-  if (!isReady) return <div>Loading...</div>;
+  if (!isReady) return <div>Loading...</div>; // If not ready, show a loading screen
 
+  // If everything checks out, render the children with the layout
   return userProfile ? (
     <SideHeader>
       <motion.div
