@@ -11,9 +11,7 @@ const DashboardPage = () => {
   useEffect(() => {
     
     fetchData({
-      path: "users",
-      filters,
-      sort,
+      path: "users"
     });
   }, [filters, sort]);
 

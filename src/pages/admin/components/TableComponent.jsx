@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import Skeleton from 'react-loading-skeleton'; // ensure this is installed
 import 'react-loading-skeleton/dist/skeleton.css';
 
-const TableComponent = ({ ItemData = [], headers = [], title = "", isLoading = true }) => {
+const TableComponent = ({ ItemData = [], headers = [], title = "", isLoading = false }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [entriesPerPage, setEntriesPerPage] = useState(5);
   const norow = useRef();

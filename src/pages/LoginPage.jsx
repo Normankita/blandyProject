@@ -113,7 +113,7 @@ const LoginPage = () => {
                 </div>
                 <a href="#" className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot password?</a>
               </div>
-              <SiteButton text={"Sign in"} loading={loading}/>
+              <SiteButton text={"Sign in"} loadText="Authenticating..." loading={loading}/>
             </form>
             <button  onClick={handleGoogleLogin} className="flex items-center space-x-2 border-0 text-black border px-4 py-2 rounded cursor-pointer shadow bg-red-300 hover:bg-red-400 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm text-center dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-500">
               <SiGoogle className="text-red-500 text-xl" />

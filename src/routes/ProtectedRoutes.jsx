@@ -1,10 +1,12 @@
+// components/ProtectedRoutes.js
 import { useNavigate } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
-import SideHeader from "../components/layout/SideHeader";
-import { useAuth } from "../contexts/AuthContext";
-import { useData } from "../contexts/DataContext";
+import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
+import { useAuth } from "../contexts/AuthContext";
+import { useData } from "../contexts/DataContext";
+import { useFetchProfile } from "../hooks/fetchProfile";// Import custom hook
+import SideHeader from "../components/layout/SideHeader";
 
 const ProtectedRoutes = ({
   children,
@@ -14,8 +16,9 @@ const ProtectedRoutes = ({
   profiled = false,
 }) => {
   const navigate = useNavigate();
-  const { token, loading, user, logout } = useAuth();
-  const { userProfile, setUserProfile, userProfileLoading, fetchSingleDoc } = useData();
+  const { token, loading} = useAuth();
+  const { userProfile, setUserProfile, userProfileLoading } = useData();
+  const fetchProfile = useFetchProfile(); // Get the fetchProfile function from the custom hook
 
   const [redirecting, setRedirecting] = useState(false); // Stops multiple redirects from happening
   const roleRequired = useMemo(() => {
@@ -32,27 +35,34 @@ const ProtectedRoutes = ({
       const cachedProfile = sessionStorage.getItem("userProfile");
 
       if (cachedProfile) {
-        // If we have it cached, just use it
         setUserProfile(JSON.parse(cachedProfile));
       } else {
-        // No cache? Time to fetch it from the database
-        fetchProfile();
+        const MAX_RETRIES = 2;
+        let attempt = 0;
+
+        const fetchWithRetry = async () => {
+          while (attempt < MAX_RETRIES) {
+            try {
+              const profile = await fetchProfile(); // Fetch the profile using the custom hook
+              setUserProfile(profile);
+              sessionStorage.setItem("userProfile", JSON.stringify(profile));
+              break; // Success, break the loop
+            } catch (err) {
+              console.error(`Profile fetch failed (attempt ${attempt + 1}):`, err);
+              attempt += 1;
+
+              if (attempt >= MAX_RETRIES) {
+                console.error("Max retries reached. Could not fetch user profile.");
+                // Optionally show a fallback or redirect to login
+              }
+            }
+          }
+        };
+
+        fetchWithRetry();
       }
     }
-  }, [token, userProfile, userProfileLoading, setUserProfile]);
-
-  const fetchProfile = async () => {
-    try {
-      // Go to the database and grab the user's profile
-      const userProfileFromDb = await fetchSingleDoc("users", user.uid);
-      setUserProfile(userProfileFromDb); // Save it in state
-      sessionStorage.setItem("userProfile", JSON.stringify(userProfileFromDb)); // Cache it for later
-    } catch (e) {
-      // Uh-oh, something went wrong
-      toast.error("Error fetching user profile:", e);
-      console.error("Error fetching user profile:", e);
-    }
-  };
+  }, [token, userProfile, userProfileLoading, setUserProfile, fetchProfile]);
 
   // Handle role checks and redirects
   useEffect(() => {
@@ -71,7 +81,6 @@ const ProtectedRoutes = ({
         if (roleRequired && userRole !== roleRequired) {
           // If the user's role doesn't match the required role, kick them out
           toast.error("You are not authorized to access this route!");
-          logout(); // Log them out
           navigate("/unauthorized"); // Send them to the unauthorized page
         }
       }
@@ -95,7 +104,7 @@ const ProtectedRoutes = ({
 
   // If everything checks out, render the children with the layout
   return userProfile ? (
-    <SideHeader>
+    <SideHeader role={userProfile.role}>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
