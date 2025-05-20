@@ -1,42 +1,44 @@
-import React, { useState, useEffect } from 'react';
 import TableComponent from './components/TableComponent';
-import { useData } from '../../contexts/DataContext';
+import useTableData from '../../hooks/useTableData'; // Adjust the path accordingly
 
 const Users = () => {
-  const { fetchData, data, loading } = useData();
-  const [formattedData, setFormattedData] = useState([]);
+  const { formattedData, loading } = useTableData({
+    path: 'users',
+    sort: { field: 'createdAt', direction: 'desc' },
+  });
 
-  useEffect(() => {
-    const getUsers = async () => {
-      const res = await fetchData({ path: 'users', sort: { field: "createdAt", direction: "desc" } });
-      const cleaned = res.data.map((user) => {
-        const formatted = { ...user };
+  const transform = {
+    email: (value) => (
+      <a href={`mailto:${value}`} className="text-blue-600 underline">
+        {value}
+      </a>
+    ),
+    role: (value) => <span className="capitalize">{value}</span>,
+    status: (value) => value,
+    createdAt: (value) => <span className="text-xs text-gray-500">{value}</span>,
+  };
 
-        // Format all timestamp fields
-        for (const key in formatted) {
-          if (formatted[key]?.seconds && formatted[key]?.nanoseconds) {
-            formatted[key] = new Date(formatted[key].seconds * 1000).toLocaleString();
-          }
-        }
+  const customHeaders = {
+    registrationNumber: 'Registration Number',
+    createdAt: 'Created',
+    updatedAt: 'Updated',
+    role: 'User Role',
+  };
 
-        return formatted;
-      });
-
-      setFormattedData(cleaned);
-    };
-
-    getUsers();
-  }, []);
+  const filterOut = ['password', 'repassword', 'createdBy', 'updatedBy','lastLoginAt', 'id', 'githubUrl', 'photoUrl'];
 
   return (
     <>
       {formattedData.length > 0 && (
-        <TableComponent
-          ItemData={formattedData}
-          headers={Object.keys(formattedData[0])}
-          title="Users"
-          isLoading={loading}
-        />
+      <TableComponent
+      ItemData={formattedData}
+      headers={Object.keys(formattedData[0])}
+      title="Users"
+      isLoading={loading}
+      excludeFields={filterOut}
+      transformFields={transform}
+      headerLabels={customHeaders} // <- corrected prop name
+    />
       )}
     </>
   );

@@ -1,10 +1,6 @@
-import React, { useEffect, useState }  from 'react';
-import { motion } from 'framer-motion';
-import useTitle from '../../hooks/useTitle';
-// import from "react";
+import { useEffect, useState }  from 'react';
 
-const Invoice = () => {
-  useTitle("Site Queries"); // Custom hook to set the document title
+const Invoice = () => {// Custom hook to set the document title
   const messages = []
 
 
@@ -12,12 +8,7 @@ const Invoice = () => {
   const [selectedMessage, setSelectedMessage] = useState(null);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: "100%" }}
-      exit={{ opacity: 0 }}
-      transition={{ type: "tween", duration: 0.5 }}
-    >
+    <>
       <div className="flex  bg-slate-50 dark:bg-slate-900 p-6 min-h-150 max-h-screen overflow-auto  shadow-lg shadow-slate-900/10 dark:shadow-black/40 dark:text-gray-300 text-gray-800  rounded-sm duration-300">
       {/* Left Sidebar - Message List */}
       <div className="w-1/3 backdrop-blur-3xl border-0 border-r border-gray-400 dark:border-gray-700 rounded-l-lg overflow-y-auto p-4">
@@ -50,7 +41,7 @@ const Invoice = () => {
       </div>
     </div>
 
-    </motion.div>
+    </>
   );
 };
 

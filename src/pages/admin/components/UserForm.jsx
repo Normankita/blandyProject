@@ -36,14 +36,14 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
 
         <div className="w-full border-stroke dark:border-strokedark ">
           <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-            
+
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-12">
                 <div className='md:col-span-6'>
-                <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-              {authorized ? "Create New Member" : "Create your profile"}
-            </h2>
+                  <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
+                    {authorized ? "Create New Member" : "Create your profile"}
+                  </h2>
                 </div>
                 <div className='col-span-6 flex justify-end'>
                   <div className='sm:w-1/2 w-full mb-2'>
@@ -156,7 +156,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
                 <div className='sm:col-span-3'>
                   <label className="block mb-2 font-medium text-black dark:text-white"> role</label>
                   <select
-                    className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-meta-5 dark:text-white" name='role' value={formData.role} onChange={handleChange} required
+                    className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-slate-900 dark:text-white" name='role' value={formData.role} onChange={handleChange} required
                   >
                     <option value="" disabled>role</option>
                     <option disabled={!authorized} value="admin">Admin</option>
@@ -205,24 +205,24 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
 
                 )}
 
-            {formData.role !== "admin"  && (
-              <>
-                  {/* Department */}
-                  <div className='sm:col-span-4'>
-                  <label className={`block mb-2 font-medium  ${error.department ? "text-red" : "text-black dark:text-white"}`}>Department Name</label>
-                  <div className='relative'>
-                    <input
-                      type="text"
-                      placeholder="Computer Science and Engineering"
-                      className={`w-full rounded-lg border  bg-transparent py-4 pl-6 text-black outline-none   dark:bg-meta-5 dark:text-white ${error.department ? "border-red" : " border-stroke dark:border-form-strokedark focus:border-primary"} `} name="department"
-                      value={formData.department}
-                      onChange={handleChange} required
-                    />
-                    {error.department && <p className='mt-2 text-sm text-red-600 dark:text-red-500'><span className='font-medium'>Oops!  </span> {error.department}</p>}
-                  </div>
-                </div>
-              </>
-            )}
+                {formData.role !== "admin" && (
+                  <>
+                    {/* Department */}
+                    <div className='sm:col-span-4'>
+                      <label className={`block mb-2 font-medium  ${error.department ? "text-red" : "text-black dark:text-white"}`}>Department Name</label>
+                      <div className='relative'>
+                        <input
+                          type="text"
+                          placeholder="Computer Science and Engineering"
+                          className={`w-full rounded-lg border  bg-transparent py-4 pl-6 text-black outline-none   dark:bg-meta-5 dark:text-white ${error.department ? "border-red" : " border-stroke dark:border-form-strokedark focus:border-primary"} `} name="department"
+                          value={formData.department}
+                          onChange={handleChange} required
+                        />
+                        {error.department && <p className='mt-2 text-sm text-red-600 dark:text-red-500'><span className='font-medium'>Oops!  </span> {error.department}</p>}
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 {formData.role === "student" && (
                   <>
@@ -334,7 +334,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
                   <div className='sm:col-span-3'>
                     <label className="block mb-2 font-medium text-black dark:text-white">User Status</label>
                     <select
-                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-meta-5 dark:text-white" name='isActive' value={formData.isActive} onChange={handleChange} required
+                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-slate-900 dark:text-white" name='isActive' value={formData.isActive} onChange={handleChange} required
                     >
                       <option value="">Status</option>
                       <option value={true} >Active</option>
@@ -346,7 +346,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
 
               <div data-hs-strong-password='{
           "target": "#hs-strong-password-base",
-          "stripClasses": "hs-strong-password:opacity-100 hs-strong-password-accepted:bg-teal-500 h-2 flex-auto rounded-full bg-yellow-500 opacity-50 mx-1"
+          "stripClasses": "hs-strong-password:opacity-100 hs-strong-password-accepted:bg-teal-500 h-2 flex-auto rounded-full bg-blue-500 opacity-50 mx-1"
         }' className="flex mt-2 -mx-1 sm:col-span-8 h-6"></div>
 
               <div>

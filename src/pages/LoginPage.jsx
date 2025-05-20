@@ -20,17 +20,11 @@ const LoginPage = () => {
         if (userDoc) {
           console.log(userDoc);
           if(userDoc.role){
-            if (userDoc.role === "Admin") {
-              navigate("/admin-dashboard");
-            }
-            if (userDoc.role === "Student") {
-              // navigate("/student-dashboard");
-              navigate("/admin-dashboard");
-
-            }
+            navigate(`/${userDoc.role}-dashboard`);
             return true;
           }else{
             alert("user has no role")
+            return false;
           }
         } else {
           navigate("/create-profile");

@@ -29,7 +29,6 @@ const SideHeader = ({ children, role }) => {
     };
 
 
-    console.log();
 
     const [profile, setProfile] = useState(false);
 
@@ -151,6 +150,7 @@ const SideHeader = ({ children, role }) => {
                             <span className="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">3</span>
                         </NavLink>
                     </li>
+                    
                     {role==="admin"&&<li>
                         <NavLink to="/users" className={({ isActive }) =>
                             `flex items-center p-2 rounded-lg group transition-colors dark:text-white duration-200 ${isActive
@@ -176,6 +176,19 @@ const SideHeader = ({ children, role }) => {
                             </svg>
 
                             <span className="flex-1 ms-3 whitespace-nowrap">Projects</span>
+                        </NavLink>
+                        </li>}
+                        {role==="student"&& <li>
+                        <NavLink to="/student-projects" className={({ isActive }) =>
+                            `flex items-center p-2 rounded-lg group transition-colors dark:text-white duration-200 ${isActive
+                                ? "bg-gray-200 text-gray-900 dark:bg-gray-700 "
+                                : "text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                            }`
+                        }>
+                            <svg className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20 14h-2.722L11 20.278a5.511 5.511 0 0 1-.9.722H20a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1ZM9 3H4a1 1 0 0 0-1 1v13.5a3.5 3.5 0 1 0 7 0V4a1 1 0 0 0-1-1ZM6.5 18.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2ZM19.132 7.9 15.6 4.368a1 1 0 0 0-1.414 0L12 6.55v9.9l7.132-7.132a1 1 0 0 0 0-1.418Z" />
+                            </svg>
+                             <span className="flex-1 ms-3 whitespace-nowrap">Project</span>
                         </NavLink>
                         </li>}
                         {role === "admin" && <li>
