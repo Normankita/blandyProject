@@ -33,7 +33,6 @@ const ProjectPage = () => {
         filters: [{ field: "studentId", op: "==", value: userProfile.uid }],
         sort: { field: "createdAt", direction: "desc" },
       });
-      console.log(data);
       setProjects(data);
     } catch (err) {
       toast.error("Failed to load projects");
@@ -60,19 +59,27 @@ const ProjectPage = () => {
   };
 
   const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleSave = async () => {
     const payload = {
       ...form,
       description: editorContent,
       studentId: userProfile.uid,
+      supervisorId: userProfile.supervisorId,
       createdAt: new Date(),
+    };
+        const payloadUpdate = {
+      ...form,
+      description: editorContent,
+      studentId: userProfile.uid,
+      supervisorId: userProfile.supervisorId,
+      updatedAt: new Date(),
     };
 
     try {
       if (currentProject) {
-        await updateData("projects", currentProject.id, payload);
+        await updateData("projects", currentProject.id, payloadUpdate);
         toast.success("Project updated");
       } else {
         await addData("projects", payload);
@@ -93,19 +100,23 @@ const ProjectPage = () => {
         toast.success("Project deleted");
         loadProjects();
       } catch (err) {
-        toast.error("Failed to delete");
+        toast.error("Failed to delete project");
       }
     }
   };
 
   return (
     <div className="p-6 space-y-6">
-      <button
-        className="bg-blue-600 text-white px-4 py-2 rounded"
-        onClick={() => openModal()}
-      >
-        Submit New Project
-      </button>
+      {userProfile.supervisorId ? (
+        <button
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+          onClick={() => openModal()}
+        >
+          Submit New Project
+        </button>
+      ) : (
+        <span>Please make sure you are assigned a supervisor</span>
+      )}
 
       {loading ? (
         <Skeleton count={4} />
@@ -127,6 +138,7 @@ const ProjectPage = () => {
                   href={p.github}
                   className="text-blue-500 underline"
                   target="_blank"
+                  rel="noopener noreferrer"
                 >
                   GitHub Link
                 </a>
@@ -170,7 +182,10 @@ const ProjectPage = () => {
               value={form.github}
               onChange={handleChange}
             />
-            <TipTapEditor content={editorContent} setContent={setEditorContent} />
+            <TipTapEditor
+              content={editorContent}
+              setContent={setEditorContent}
+            />
 
             <div className="flex justify-between">
               <button onClick={() => setIsModalOpen(false)}>Cancel</button>
@@ -186,3 +201,4 @@ const ProjectPage = () => {
 };
 
 export default ProjectPage;
+

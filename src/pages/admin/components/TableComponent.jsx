@@ -10,6 +10,7 @@ const TableComponent = ({
   excludeFields = [],
   transformFields = {},
   headerLabels = {},
+  customActions = () => null, // <-- Add this
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [entriesPerPage, setEntriesPerPage] = useState(5);
@@ -92,13 +93,11 @@ const TableComponent = ({
   };
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-900 p-6 shadow-lg rounded-sm dark:text-gray-300 text-gray-800 duration-300">
-      {/* Title */}
+    <div className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-950 p-6 rounded-sm dark:text-gray-300 text-gray-800 duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40">
       <div className="flex justify-center items-center mb-4">
         <h1 className="text-2xl font-bold text-gray-600 dark:text-gray-400">{title} Table</h1>
       </div>
 
-      {/* Search */}
       <div className="flex justify-center mb-4">
         <input
           type="text"
@@ -109,7 +108,6 @@ const TableComponent = ({
         />
       </div>
 
-      {/* Entries control */}
       <form className="flex justify-center items-center mb-5">
         <div className="relative flex items-center max-w-[8rem]">
           <button onClick={(e) => { e.preventDefault(); handleNumber("minus"); }} className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11">
@@ -122,7 +120,6 @@ const TableComponent = ({
         </div>
       </form>
 
-      {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full table-auto">
           <thead>
@@ -170,7 +167,7 @@ const TableComponent = ({
                   ))}
                   <td className="border-b py-5 px-4 dark:border-strokedark">
                     <div className="flex items-center space-x-3.5">
-                      {/* Add your edit/delete buttons here */}
+                      {customActions(item)}
                     </div>
                   </td>
                 </tr>
@@ -180,7 +177,6 @@ const TableComponent = ({
         </table>
       </div>
 
-      {/* Pagination */}
       <div className="flex justify-between items-center mt-4">
         <button
           onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}

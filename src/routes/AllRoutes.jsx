@@ -13,14 +13,14 @@ const AllRoutes = () => {
   useTitle();
 
   const { LoginPage, RegisterPage, PageNotFound, CreateProfile, UnAuthorized, Invoice } = pages;
-  const { DashboardPage, Projects, RegisterAdmin, Users, UserProfile } = admin;
+  const { DashboardPage, Projects, RegisterAdmin, Users, UserProfile, SupervisionPage } = admin;
   const { StudentDashboardPage, ProjectPage } = student;
   const { StaffDashboardPage } = staff;
 
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<ProtectedRoutes><LoginPage /></ProtectedRoutes>} />
+        <Route path="/" element={<ProtectedRoutes blockProfiled><LoginPage /></ProtectedRoutes>} />
         <Route path="/login" element={<ProtectedRoutes blockProfiled><LoginPage /></ProtectedRoutes>} />
         <Route path="/register" element={<ProtectedRoutes blockProfiled><RegisterPage /></ProtectedRoutes>} />
         <Route path="/create-profile" element={<ProtectedRoutes blockProfiled><CreateProfile /></ProtectedRoutes>} />
@@ -29,6 +29,7 @@ const AllRoutes = () => {
         <Route path="/student-dashboard" element={<ProtectedRoutes allow={["student"]} profiled><StudentDashboardPage /></ProtectedRoutes>} />
         <Route path="/admin-dashboard" element={<ProtectedRoutes allow={["admin"]} profiled><DashboardPage /></ProtectedRoutes>} />
         <Route path="/staff-dashboard" element={<ProtectedRoutes allow={["staff"]} profiled><StaffDashboardPage /></ProtectedRoutes>} />
+        <Route path="/supervision" element={<ProtectedRoutes allow={["admin"]} profiled><SupervisionPage /></ProtectedRoutes>} />
 
         {/* Functional Routes */}
         <Route path="/invoice" element={<ProtectedRoutes allow={["student", "staff", "admin"]} profiled><Invoice /></ProtectedRoutes>} />

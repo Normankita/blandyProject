@@ -4,7 +4,6 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUser } from "../store/userSlice";
-import { motion } from "framer-motion";
 import SiteButton from "../components/SiteButton";
 
 
@@ -77,12 +76,7 @@ const RegisterPage = () => {
     };
 
     return (
-        <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: "100%" }}
-        exit={{ opacity: 0 }}
-        transition={{ type: "tween", duration: 0.5 }}
-        >
+        <>
             <section className="bg-gray-50 dark:bg-gray-900">
                 <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
                     <a href="#" className="flex flex-col items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
@@ -156,7 +150,7 @@ const RegisterPage = () => {
                     </div>
                 </div>
             </section>
-        </motion.div>
+        </>
     );
 };
 

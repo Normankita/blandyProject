@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { useAuth } from "../contexts/AuthContext";
-import { useData } from "../contexts/DataContext";
-import { useFetchProfile } from "../hooks/fetchProfile";
-import SideHeader from "../components/layout/SideHeader";
+import { useAuth } from "@/contexts/AuthContext";
+import { useData } from "@/contexts/DataContext";
+import { useFetchProfile } from "@/hooks/fetchProfile";
+import SideHeader from "@/components/layout/SideHeader";
+
+// Optional: replace with a custom loader
+const FullPageLoader = () => <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
 const dashboardMap = {
   admin: "/admin-dashboard",
@@ -14,15 +17,61 @@ const dashboardMap = {
   staff: "/staff-dashboard",
 };
 
-const ProtectedRoutes = ({ children, allow = [], profiled = false, blockProfiled = false }) => {
+const useAccessControl = ({ token, authLoading, userProfile, userProfileLoading, profiled, blockProfiled, allow }) => {
   const navigate = useNavigate();
+  const [redirected, setRedirected] = useState(false);
+
+  useEffect(() => {
+    if (authLoading || redirected) return;
+
+    if (!token) {
+      if (blockProfiled) return;
+      setRedirected(true);
+      navigate("/login");
+      return;
+    }
+
+    if (blockProfiled && userProfile) {
+      const role = userProfile?.role;
+      if (role && dashboardMap[role]) {
+        setRedirected(true);
+        navigate(dashboardMap[role]);
+        return;
+      }
+    }
+
+    if (profiled && !userProfileLoading && !userProfile) {
+      setRedirected(true);
+      navigate("/create-profile");
+      return;
+    }
+
+    if (userProfile && allow.length > 0) {
+      const userRole = userProfile.role;
+      if (!allow.includes(userRole)) {
+        toast.error("You are not authorized to access this route!");
+        setRedirected(true);
+        navigate("/unauthorized");
+        return;
+      }
+    }
+  }, [token, authLoading, userProfile, userProfileLoading, profiled, blockProfiled, allow, redirected, navigate]);
+
+  const ready =
+    !authLoading &&
+    !userProfileLoading &&
+    token &&
+    (!profiled || (profiled && userProfile)) &&
+    (allow.length === 0 || (userProfile && allow.includes(userProfile.role)));
+
+  return { ready };
+};
+
+const ProtectedRoutes = ({ children, allow = [], profiled = false, blockProfiled = false }) => {
   const { token, loading: authLoading } = useAuth();
   const { userProfile, setUserProfile, userProfileLoading } = useData();
   const fetchProfile = useFetchProfile();
 
-  const [hasRedirected, setHasRedirected] = useState(false);
-
-  // Fetch profile when needed
   useEffect(() => {
     const loadProfile = async () => {
       try {
@@ -44,44 +93,7 @@ const ProtectedRoutes = ({ children, allow = [], profiled = false, blockProfiled
     }
   }, [token, userProfile, userProfileLoading, setUserProfile, fetchProfile]);
 
-  // Redirection logic
-  useEffect(() => {
-    if (authLoading || hasRedirected) return;
-
-    if (!token) {
-      setHasRedirected(true);
-      navigate("/login");
-      return;
-    }
-
-    // Redirect users with profile away from login/register/etc
-    if (blockProfiled && userProfile && token) {
-      const role = userProfile?.role;
-      if (role && dashboardMap[role]) {
-        setHasRedirected(true);
-        navigate(dashboardMap[role]);
-        return;
-      }
-    }
-
-    // Require profile to proceed
-    if (profiled && !userProfileLoading && !userProfile) {
-      setHasRedirected(true);
-      navigate("/create-profile");
-      return;
-    }
-
-    // Role-based restriction
-    if (userProfile && allow.length > 0) {
-      const userRole = userProfile.role;
-      if (!allow.includes(userRole)) {
-        toast.error("You are not authorized to access this route!");
-        setHasRedirected(true);
-        navigate("/unauthorized");
-        return;
-      }
-    }
-  }, [
+  const { ready } = useAccessControl({
     token,
     authLoading,
     userProfile,
@@ -89,18 +101,9 @@ const ProtectedRoutes = ({ children, allow = [], profiled = false, blockProfiled
     profiled,
     blockProfiled,
     allow,
-    hasRedirected,
-    navigate,
-  ]);
+  });
 
-  const readyToRender =
-    !authLoading &&
-    !userProfileLoading &&
-    token &&
-    (!profiled || (profiled && userProfile)) &&
-    (allow.length === 0 || (userProfile && allow.includes(userProfile.role)));
-
-  if (!readyToRender && !blockProfiled) return <div>Loading...</div>;
+  if (!ready && !blockProfiled) return <FullPageLoader />;
 
   return userProfile && !blockProfiled ? (
     <SideHeader role={userProfile.role}>

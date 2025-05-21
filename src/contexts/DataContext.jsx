@@ -113,6 +113,13 @@ export const DataProvider = ({ children }) => {
     }
   };
 
+  
+  /**
+   * Updates a document in the given path with the given ID.
+   * @param {string} path - The path to the document to update.
+   * @param {string} id - The ID of the document to update.
+   * @param {Object} updates - The updates to apply to the document.
+   */
   const updateData = async (path, id, updates) => {
     try {
       const ref = doc(db, path, id);
