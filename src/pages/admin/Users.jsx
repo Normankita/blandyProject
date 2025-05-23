@@ -43,7 +43,10 @@ const Users = () => {
   const filterOut = ['password', 'repassword', 'createdBy', 'updatedBy', 'lastLoginAt', 'id', 'githubUrl', 'photoUrl', 'isActive','gitHubUrl','uid','doB', 'supervisorId','registrationNumber','mobNo','email','department','gender','program' ];
 
   const handleStatusChange = async (userId, newStatus) => {
-   
+     if (userId === userProfile?.uid || userId === userProfile?.uid) {
+      toast.warn('You cannot deactivate the account you are currently logged in with.');
+      return;
+    }
 
     try {
       await updateData('users', userId, { status: newStatus });
