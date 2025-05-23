@@ -61,7 +61,6 @@ const LoginPage = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      alert("login with google");
       const { user, token } = await loginWithGoogle();
       const userId = user.uid;
       checkUserExistsInUsersTable(userId);
@@ -98,22 +97,12 @@ const LoginPage = () => {
               <div>
                 <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
                 <input type="password" value={form.password}
-                  onChange={handleChange} name="password" id="password" placeholder="••••••••••" className="bg-gray-50 border border-gray-300 text-gray-600 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                  onChange={handleChange} name="password" id="password" placeholder="••••••••••" className="bg-gray-50 border border-gray-300 text-gray-600 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-15" required />
               </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-start">
-                  <div className="flex items-center h-5">
-                    <input id="remember" aria-describedby="remember" type="checkbox" className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" />
-                  </div>
-                  <div className="ml-3 text-sm">
-                    <label htmlFor="remember" className="text-gray-500 dark:text-gray-300">Remember me</label>
-                  </div>
-                </div>
-                <a href="#" className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot password?</a>
-              </div>
+              
               <SiteButton text={"Sign in"} loadText="Authenticating..." loading={loading}/>
             </form>
-            <button  onClick={handleGoogleLogin} className="flex items-center space-x-2 border-0 text-black border px-4 py-2 rounded cursor-pointer shadow bg-red-300 hover:bg-red-400 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm text-center dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-500">
+            <button  onClick={handleGoogleLogin} className={`flex items-center space-x-2 text-black border px-4 py-2 rounded shadow bg-red-300 hover:bg-red-400 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium text-sm text-center dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-500 ${loading?'cursor-not-allowed':'cursor-pointer'}`} disabled={loading}>
               <SiGoogle className="text-red-500 text-xl" />
               <span>Sign in with Google</span>
             </button>

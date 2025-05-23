@@ -35,13 +35,13 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
       <div className="flex flex-wrap items-center">
 
         <div className="w-full border-stroke dark:border-strokedark ">
-          <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
+          <div className="w-full p-4 md:p-12.5 xl:p-17.5">
 
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-12">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-12">
                 <div className='md:col-span-6'>
-                  <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
+                  <h2 className="mb-9 text-2xl font-bold text-black dark:text-white md:text-title-xl2">
                     {authorized ? "Create New Member" : "Create your profile"}
                   </h2>
                 </div>
@@ -53,7 +53,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
 
                 {/* Full Name */}
 
-                <div className='sm:col-span-4'>
+                <div className='md:col-span-4'>
                   <label className={`block mb-2 font-medium  ${error.fullNameError ? "text-red" : "text-black dark:text-white"}`}>{authorized ? "Member Name" : "your full names (3)"}</label>
                   <div className='relative'>
                     <input
@@ -89,7 +89,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
                 </div>
 
                 {/* Date of Birth */}
-                <div className='sm:col-span-3'>
+                <div className='md:col-span-3'>
                   <label className="block mb-2 font-medium text-black dark:text-white">Date of Birth</label>
                   <div className="relative">
                     <input
@@ -119,7 +119,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
 
 
                 {/* Gender */}
-                <div className='sm:col-span-5'>
+                <div className='md:col-span-5'>
                   <label className="block mb-2 font-medium text-black dark:text-white">Gender</label>
                   <select
                     className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-meta-5 dark:text-white"
@@ -132,7 +132,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
                 </div>
 
                 {/* Mobile Number */}
-                <div className='sm:col-span-4'>
+                <div className='md:col-span-4'>
                   <label className={`block mb-2 font-medium  ${error.mobNoError ? "text-red" : "text-black dark:text-white"}`}>Mobile Number</label>
                   <div className="relative">
                     <input
@@ -153,7 +153,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
                 </div>
 
                 {/* Role */}
-                <div className='sm:col-span-3'>
+                <div className='md:col-span-3'>
                   <label className="block mb-2 font-medium text-black dark:text-white"> role</label>
                   <select
                     className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-slate-900 dark:text-white" name='role' value={formData.role} onChange={handleChange} required
@@ -172,7 +172,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
 
                   <>
                     {/* Registration Number */}
-                    <div className='sm:col-span-4'>
+                    <div className='md:col-span-4'>
                       <label className={`block mb-2 font-medium  ${error.registrationNumber ? "text-red" : "text-black dark:text-white"}`}>registration Number</label>
                       <div className='relative'>
                         <input
@@ -188,7 +188,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
 
                     {/* program name */}
 
-                    <div className='sm:col-span-4'>
+                    <div className='md:col-span-4'>
                       <label className={`block mb-2 font-medium  ${error.program ? "text-red" : "text-black dark:text-white"}`}>Program Name</label>
                       <div className='relative'>
                         <input
@@ -208,7 +208,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
                 {formData.role !== "admin" && (
                   <>
                     {/* Department */}
-                    <div className='sm:col-span-4'>
+                    <div className='md:col-span-4'>
                       <label className={`block mb-2 font-medium  ${error.department ? "text-red" : "text-black dark:text-white"}`}>Department Name</label>
                       <div className='relative'>
                         <input
@@ -227,7 +227,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
                 {formData.role === "student" && (
                   <>
                     {/* githubUrl */}
-                    <div className='sm:col-span-4'>
+                    <div className='md:col-span-4'>
                       <label className={`block mb-2 font-medium  ${error.gitHubUrl ? "text-red" : "text-black dark:text-white"}`}>github url</label>
                       <div className='relative'>
                         <input
@@ -267,7 +267,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
 
 
                 {/* Email */}
-                {authorized && <div className="sm:col-span-4">
+                {authorized && <div className="md:col-span-4">
                   <label className="block mb-2 font-medium text-black dark:text-white">Email</label>
                   <div className="relative">
                     <input
@@ -306,7 +306,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
                 {/* Password */}
                 {authorized &&
                   <>
-                    <div className='sm:col-span-4'>
+                    <div className='md:col-span-4'>
                       <label className={`block mb-2 font-medium  ${error.passwordError === " Weak Password " ? "text-red" : "text-black dark:text-white"}`}>Password</label>
                       <input
                         type="password" id="password"
@@ -318,7 +318,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
                     </div>
 
                     {/* Re-type Password */}
-                    <div className='sm:col-span-4'>
+                    <div className='md:col-span-4'>
                       <label className={`block mb-2 font-medium  ${error.passwordError === " Passwords do not match! " ? "text-red" : "text-black dark:text-white"}`}>Re-type Password</label>
                       <input
                         type="password"
@@ -331,7 +331,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
 
                 {/* Member Status */}
                 {authorized &&
-                  <div className='sm:col-span-3'>
+                  <div className='md:col-span-3'>
                     <label className="block mb-2 font-medium text-black dark:text-white">User Status</label>
                     <select
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-slate-900 dark:text-white" name='isActive' value={formData.isActive} onChange={handleChange} required
@@ -347,7 +347,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
               <div data-hs-strong-password='{
           "target": "#hs-strong-password-base",
           "stripClasses": "hs-strong-password:opacity-100 hs-strong-password-accepted:bg-teal-500 h-2 flex-auto rounded-full bg-blue-500 opacity-50 mx-1"
-        }' className="flex mt-2 -mx-1 sm:col-span-8 h-6"></div>
+        }' className="flex mt-2 -mx-1 md:col-span-8 h-6"></div>
 
               <div>
                 <input
