@@ -141,7 +141,7 @@ const RegisterPage = () => {
                                         <label htmlFor="terms" className="font-light text-gray-500 dark:text-gray-300">I accept the <a className="font-medium text-primary-600 hover:underline dark:text-primary-500" href="#">Terms and Conditions</a></label>
                                     </div>
                                 </div>
-                                <SiteButton text={"Sign in"} loadText="Creating account..." loading={loading}/>
+                                <SiteButton text={"Sign Up"} loadText="Creating account..." loading={loading}/>
                                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                                     Already have an account? <Link to="/login" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Login here</Link>
                                 </p>

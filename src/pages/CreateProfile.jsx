@@ -6,10 +6,8 @@ import { toast } from 'react-toastify';
 import DragAndDrop from '../components/DragAndDrop';
 import { UserForm } from './admin/components/UserForm';
 import { serverTimestamp } from "firebase/firestore";
-import { auth } from "../configs/firebase";
 import {useData} from '../contexts/DataContext'
 import { useAuth } from '../contexts/AuthContext';
-
 const CreateProfile = () => {
 
   const {addData, setUserProfile} = useData()
@@ -17,6 +15,7 @@ const CreateProfile = () => {
   const datepickerRef = useRef(null);
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
+  const {logout} = useAuth();
   const [error, setError] = useState({
     nameError: "",
     doBError: "",
@@ -85,7 +84,8 @@ const CreateProfile = () => {
   doB: new Date(formData.doB).toISOString(),
   createdAt: serverTimestamp(),
   uid: user.uid,
-  email: user.email, // include for easy reference
+  email: user.email,
+  status: formData.role==="student"?"active":"pending",
 };
 
 delete updatedFormData.fullName;
@@ -94,7 +94,12 @@ delete updatedFormData.fullName;
       const id = await addData("users", updatedFormData, user.uid);
 
       if (id) {
-        toast.success("Profile created successfully");
+        toast.success(`Profile created successfully ${updatedFormData.status==="pending"?'consult admin for activation':'loggin in'}`);
+        logout();
+        if(updatedFormData.status==="pending"){
+          navigate('/login');
+          return;
+        }
         setUserProfile(updatedFormData)
         sessionStorage.setItem("userProfile", JSON.stringify(updatedFormData));
         navigate("/admin-dashboard");

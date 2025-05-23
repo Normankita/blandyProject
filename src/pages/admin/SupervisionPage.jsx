@@ -74,7 +74,7 @@ const SupervisionPage = () => {
                     placeholder="Search supervisor"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="border p-2 rounded w-full max-w-md"
+                    className="border-2 border-gray-500 p-2 rounded w-full max-w-md duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40"
                 />
             </div>
 

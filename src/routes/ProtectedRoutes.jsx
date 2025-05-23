@@ -1,4 +1,3 @@
-// components/ProtectedRoutes.jsx
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -8,7 +7,6 @@ import { useData } from "@/contexts/DataContext";
 import { useFetchProfile } from "@/hooks/fetchProfile";
 import SideHeader from "@/components/layout/SideHeader";
 
-// Optional: replace with a custom loader
 const FullPageLoader = () => <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
 const dashboardMap = {
@@ -17,13 +15,23 @@ const dashboardMap = {
   staff: "/staff-dashboard",
 };
 
-const useAccessControl = ({ token, authLoading, userProfile, userProfileLoading, profiled, blockProfiled, allow }) => {
+const useAccessControl = ({
+  token,
+  authLoading,
+  userProfile,
+  userProfileLoading,
+  profiled,
+  blockProfiled,
+  allow,
+  logout,
+}) => {
   const navigate = useNavigate();
   const [redirected, setRedirected] = useState(false);
 
   useEffect(() => {
     if (authLoading || redirected) return;
 
+    // No token
     if (!token) {
       if (blockProfiled) return;
       setRedirected(true);
@@ -31,6 +39,22 @@ const useAccessControl = ({ token, authLoading, userProfile, userProfileLoading,
       return;
     }
 
+    // Check user status
+    if (userProfile?.status === "inactive") {
+      toast.info("Your account is deactivated. Please contact the administrator.");
+      logout();
+      setRedirected(true);
+      return;
+    }
+
+    if (userProfile?.status === "pending") {
+      toast.info("Your account is pending approval. Please wait for admin verification.");
+      logout();
+      setRedirected(true);
+      return;
+    }
+
+    // If blocked and already profiled, redirect to dashboard
     if (blockProfiled && userProfile) {
       const role = userProfile?.role;
       if (role && dashboardMap[role]) {
@@ -40,12 +64,14 @@ const useAccessControl = ({ token, authLoading, userProfile, userProfileLoading,
       }
     }
 
+    // If profiled required but no profile
     if (profiled && !userProfileLoading && !userProfile) {
       setRedirected(true);
       navigate("/create-profile");
       return;
     }
 
+    // If role is not allowed
     if (userProfile && allow.length > 0) {
       const userRole = userProfile.role;
       if (!allow.includes(userRole)) {
@@ -55,7 +81,18 @@ const useAccessControl = ({ token, authLoading, userProfile, userProfileLoading,
         return;
       }
     }
-  }, [token, authLoading, userProfile, userProfileLoading, profiled, blockProfiled, allow, redirected, navigate]);
+  }, [
+    token,
+    authLoading,
+    userProfile,
+    userProfileLoading,
+    profiled,
+    blockProfiled,
+    allow,
+    redirected,
+    navigate,
+    logout,
+  ]);
 
   const ready =
     !authLoading &&
@@ -68,7 +105,7 @@ const useAccessControl = ({ token, authLoading, userProfile, userProfileLoading,
 };
 
 const ProtectedRoutes = ({ children, allow = [], profiled = false, blockProfiled = false }) => {
-  const { token, loading: authLoading } = useAuth();
+  const { token, loading: authLoading, logout } = useAuth();
   const { userProfile, setUserProfile, userProfileLoading } = useData();
   const fetchProfile = useFetchProfile();
 
@@ -101,6 +138,7 @@ const ProtectedRoutes = ({ children, allow = [], profiled = false, blockProfiled
     profiled,
     blockProfiled,
     allow,
+    logout,
   });
 
   if (!ready && !blockProfiled) return <FullPageLoader />;

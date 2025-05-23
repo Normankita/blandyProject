@@ -1,19 +1,21 @@
 // hooks/useTableData.js
-import { useEffect, useState } from 'react';
-import { useData } from '../contexts/DataContext'; // Adjust path if needed
+import { useEffect, useState, useCallback } from 'react';
+import { useData } from '../contexts/DataContext'; // Adjust the path if necessary
 
 const useTableData = ({ path, sort, filters = [], transformData }) => {
   const { fetchData, loading } = useData();
   const [formattedData, setFormattedData] = useState([]);
 
-  useEffect(() => {
-    const loadData = async () => {
+  // Define and memoize the data loading function
+  const loadData = useCallback(async () => {
+    try {
       const res = await fetchData({ path, sort, filters });
       if (!res || !res.data) return;
 
       const cleaned = res.data.map((item) => {
         const formatted = { ...item };
 
+        // Convert Firestore timestamps to readable strings
         for (const key in formatted) {
           const value = formatted[key];
           if (value?.seconds && value?.nanoseconds) {
@@ -25,12 +27,22 @@ const useTableData = ({ path, sort, filters = [], transformData }) => {
       });
 
       setFormattedData(cleaned);
-    };
+    } catch (error) {
+      console.error("Failed to load data in useTableData:", error);
+    }
+  }, [fetchData, path, sort, filters, transformData]);
 
+  // Load data on mount or dependency change
+  useEffect(() => {
     loadData();
-  }, [path, sort, filters, fetchData, transformData]);
+  }, [loadData]);
 
-  return { formattedData, loading };
+  // Return data, loading state, and manual refresh function
+  return {
+    formattedData,
+    loading,
+    refreshData: loadData
+  };
 };
 
 export default useTableData;

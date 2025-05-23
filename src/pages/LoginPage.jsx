@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 
 const LoginPage = () => {
   const { fetchSingleDoc } = useData();
-  const { login, loading, loginWithGoogle } = useAuth();
+  const { login, loading, loginWithGoogle, logout } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
@@ -18,7 +18,11 @@ const LoginPage = () => {
       .then((userDoc) => {
 
         if (userDoc) {
-          console.log(userDoc);
+          if(userDoc.status==="pending"){
+            toast.info("Account not verified yet, consult admin to activate your account!")
+            logout()
+            return
+          }
           if(userDoc.role){
             navigate(`/${userDoc.role}-dashboard`);
             return true;

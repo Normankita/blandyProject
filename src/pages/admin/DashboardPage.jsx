@@ -32,7 +32,7 @@ const DashboardPage = () => {
 
   if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
 
-  const adminCount = data.filter((u) => u.role === "Admin").length;
+  const adminCount = data.filter((u) => u.role === "admin").length;
   const latestAdmins = data
     .filter((u) => u.role === "admin")
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))

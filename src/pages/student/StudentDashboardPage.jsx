@@ -1,14 +1,66 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Bell, FileText, MessageSquare, UploadCloud } from "lucide-react";
+import { useData } from "@/contexts/DataContext";
+
+const STATUS_PROGRESS_MAP = {
+  draft: 0,
+  in_progress: 40,
+  reviewed: 70,
+  approved: 100,
+};
 
 const StudentDashboardPage = () => {
+  const { userProfile, fetchData } = useData();
+  const [projects, setProjects] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [mous, setMous] = useState([]);
+
+  useEffect(() => {
+     fetchAllData();
+  }, []);
+
+  const fetchAllData = async () => {
+    const [studentData, projectData, mouData] = await Promise.all([
+      fetchData({
+        path: "users",
+        filters: [{ field: "supervisorId", op: "==", value: userProfile.uid }],
+      }),
+      fetchData({
+        path: "projects",
+        filters: [{ field: "studentId", op: "==", value: userProfile.uid }],
+        sort: { field: "createdAt", direction: "desc" },
+      }),
+      fetchData({
+        path: "mous",
+        filters: [{ field: "supervisorId", op: "==", value: userProfile.uid }],
+      }),
+    ]);
+    console.log("damn it", projectData);
+    setStudents(studentData.data);
+    setProjects(projectData.data);
+    setMous(mouData.data);
+  };
+
+  // Calculate average progress of accepted projects
+  const progressValues = projects
+    .filter((p) => p.acceptance)
+    .map((p) => STATUS_PROGRESS_MAP[p.status?.toLowerCase()] ?? 0);
+
+  const averageProgress =
+    progressValues.length > 0
+      ? Math.round(progressValues.reduce((a, b) => a + b, 0) / progressValues.length)
+      : 0;
+
+  // Get the most recent accepted project
+  const currentProject = projects.find((p) => p.acceptance);
+
   return (
     <div className="p-6 grid gap-6 lg:grid-cols-3">
       {/* Welcome Message */}
       <div className="col-span-full">
-        <h1 className="text-2xl font-bold">Welcome back, Norman 👋</h1>
+        <h1 className="text-2xl font-bold">Welcome back, {userProfile.name} 👋</h1>
         <p className="text-muted-foreground">Here's a quick overview of your project journey.</p>
       </div>
 
@@ -16,16 +68,22 @@ const StudentDashboardPage = () => {
       <Card className="lg:col-span-2">
         <CardContent className="p-6">
           <h2 className="text-xl font-semibold mb-2">Current Project</h2>
-          <p className="text-muted-foreground">AI-Based Tutoring System</p>
-          <div className="mt-4 text-sm">
-            <p>Status: <span className="font-semibold text-yellow-600">In Progress</span></p>
-            <p>Supervisor: Dr. Zubeda Ahmed</p>
-            <p>Next Deadline: <span className="font-medium">May 30, 2025</span></p>
-          </div>
-          <div className="mt-4 flex gap-4">
-            <Button>View Project</Button>
-            <Button variant="outline">Submit Report</Button>
-          </div>
+          {currentProject ? (
+            <>
+              <p className="text-muted-foreground">{currentProject.title}</p>
+              <div className="mt-4 text-sm">
+                <p>Status: <span className="font-semibold text-yellow-600 capitalize">{currentProject.status}</span></p>
+                <p>Supervisor: {currentProject.supervisor || "TBA"}</p>
+                <p>Next Deadline: <span className="font-medium">{currentProject.deadline || "TBD"}</span></p>
+              </div>
+              <div className="mt-4 flex gap-4">
+                <Button>View Project</Button>
+                <Button variant="outline">Submit Report</Button>
+              </div>
+            </>
+          ) : (
+            <p className="text-muted-foreground">No accepted project available.</p>
+          )}
         </CardContent>
       </Card>
 
@@ -65,9 +123,14 @@ const StudentDashboardPage = () => {
             <h3 className="text-lg font-medium">Project Progress</h3>
           </div>
           <div className="mt-4 w-full bg-gray-200 rounded-full h-4">
-            <div className="bg-purple-600 h-4 rounded-full" style={{ width: "60%" }}></div>
+            <div
+              className="bg-purple-600 h-4 rounded-full"
+              style={{ width: `${averageProgress}%` }}
+            ></div>
           </div>
-          <p className="text-right text-xs text-muted-foreground mt-1">60% complete</p>
+          <p className="text-right text-xs text-muted-foreground mt-1">
+            {averageProgress}% complete
+          </p>
         </CardContent>
       </Card>
 
@@ -79,8 +142,7 @@ const StudentDashboardPage = () => {
             <h3 className="text-lg font-medium">Supervisor Comments</h3>
           </div>
           <div className="text-sm text-muted-foreground">
-            <p><strong>Dr. Zubeda:</strong> "Good progress so far. Ensure your methodology chapter is well aligned with your objectives. Let's meet on Thursday."
-            </p>
+            <p><strong>Dr. Zubeda:</strong> "Good progress so far. Ensure your methodology chapter is well aligned with your objectives. Let's meet on Thursday."</p>
           </div>
         </CardContent>
       </Card>
