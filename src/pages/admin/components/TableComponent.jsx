@@ -171,7 +171,7 @@ const TableComponent = ({
                 <tr key={key}>
                   <td className='border-b py-5 px-4 dark:border-strokedark'>{key + 1}</td>
                   {visibleHeaders.map(field => (
-                    <td key={field} className="truncate border-b py-5 px-4 dark:border-strokedark">
+                    <td key={field} className="truncate border-b py-5 px-4 max-w-xs dark:border-strokedark">
                       <h5 className="font-medium text-black dark:text-white">
                         {
                           transformFields[field]

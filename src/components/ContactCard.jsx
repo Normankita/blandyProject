@@ -1,78 +1,121 @@
 import React from "react";
 import { auth } from "../configs/firebase";
 import { Link } from "react-router-dom";
+import { useData } from "@/contexts/DataContext";
 
 const ContactCard = () => {
+  const { userProfile } = useData();
+
+  if (!userProfile) return <div>Loading profile...</div>;
+
+  const {
+    name,
+    email,
+    photoUrl,
+    role,
+    gender,
+    doB,
+    mobNo,
+    department,
+    program,
+    gitHubUrl,
+    registrationNumber,
+    status,
+  } = userProfile;
+
+  const profileImage =
+    auth.currentUser?.photoURL ||
+    photoUrl ||
+    "https://flowbite.com/docs/images/people/profile-picture-5.jpg";
+
   return (
     <div className="bg-slate-50 dark:bg-slate-900 p-6 min-h-150 max-h-400 shadow-lg shadow-slate-900/10 dark:shadow-black/40 dark:text-gray-300 text-gray-800  rounded-sm duration-300">
       {/* Header */}
       <div className="flex items-center space-x-4">
-        <div className="w-35 h-35 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800 p-6 shadow-lg shadow-slate-900/10 dark:shadow-black/40 dark:text-gray-300 text-gray-800 duration-300">
+        <div className="w-30 h-30 rounded-full overflow-hidden bg-slate-300 dark:bg-slate-800 p-2 shadow-lg shadow-slate-900/10 dark:shadow-black/40 dark:text-gray-300 text-gray-800 duration-300">
         <img
-          src={`${auth.currentUser.photoURL?auth.currentUser.photoURL:'some image'}`} // Replace with actual image path
+          src={profileImage} // Replace with actual image path
           alt="Profile"
           className="w-full h-full min-w-full min-h-full rounded-full object-cover"
         />
         </div>
         <div>
-          <h2 className="text-2xl font-semibold">{`${auth.currentUser.displayName? auth.currentUser.displayName: `User Account`}`}</h2>
-          <div className="flex items-center space-x-2">
-            {/* section for diaplaying github account url */}
-            {/* <span className="bg-white text-black px-1 text-sm rounded">in</span>
-            <span className="text-xl">...</span> */}
-          </div>
+          <h2 className="text-2xl font-semibold">{name || "User Account"}</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">{role || "unknown role"}</p>
         </div>
-        
       </div>
 
-      {/* Tabs */}
-      <div className="flex space-x-6 mt-6 border-b border-gray-600">
-        <span className="pb-2 border-b-2 border-white">Overview</span>
+      {/* Divider */}
+      <div className="mt-6 border-b border-gray-600 pb-2">
+        <span className="text-lg font-semibold">Overview</span>
       </div>
 
-      {/* Contact Info */}
-      <div className="mt-6">
-        <h3 className="font-semibold mb-4">Contact information</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+      {/* Info Grid */}
+      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-sm">
+        {email && (
           <div>
             <p className="text-gray-400">Email</p>
-            <p>{auth.currentUser.email}</p>
+            <p>{email}</p>
           </div>
-          
-          <div>
-            <p className="text-gray-400">Work phone</p>
-            <p>255621381584</p>
-          </div>
+        )}
+        {mobNo && (
           <div>
             <p className="text-gray-400">Mobile</p>
-            <p>+255762028554</p>
+            <p>{mobNo}</p>
           </div>
+        )}
+        {registrationNumber && (
           <div>
-            <p className="text-gray-400">Home phone</p>
-            <p>+255673381584</p>
+            <p className="text-gray-400">Registration No.</p>
+            <p>{registrationNumber}</p>
           </div>
-        </div>
+        )}
+        {gender && (
+          <div>
+            <p className="text-gray-400">Gender</p>
+            <p>{gender}</p>
+          </div>
+        )}
+        {doB && (
+          <div>
+            <p className="text-gray-400">Date of Birth</p>
+            <p>{new Date(doB).toDateString()}</p>
+          </div>
+        )}
+        {role === "student" && program && (
+          <div>
+            <p className="text-gray-400">Program</p>
+            <p>{program}</p>
+          </div>
+        )}
+        {role === "staff" && department && (
+          <div>
+            <p className="text-gray-400">Department</p>
+            <p>{department}</p>
+          </div>
+        )}
+        {status && (
+          <div>
+            <p className="text-gray-400">Account Status</p>
+            <p>{status}</p>
+          </div>
+        )}
+        {gitHubUrl && (
+          <div>
+            <p className="text-gray-400">GitHub</p>
+            <a href={gitHubUrl} target="_blank" rel="noreferrer" className="text-blue-500 underline">
+              {gitHubUrl}
+            </a>
+          </div>
+        )}
+      </div>
 
+      {/* Edit Button */}
+      <div className="mt-6">
         <Link to="/admin/edit-profile">
-        <button className="mt-6 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200">
-            <span>
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 inline-block mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 4h2a2 2 0 012 2v2m-4-4h-2a2 2 0 00-2 2v2m4-4v4m0 0h4m-4 0H8m8 0v4m0-4h-8m8 0V8m0 4h4m-4 0H8m8 0v4m0-4H8"
-                    />
-                </svg>
-                Edit Profile
-            </span>
-        </button>
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition">
+            Edit Profile
+          </button>
         </Link>
       </div>
     </div>

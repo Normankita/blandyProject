@@ -155,7 +155,7 @@ export const DataProvider = ({ children }) => {
   // logic to delete file, any file anywhere 
   const deleteFile = async (path) => {
     try {
-      const fileRef = ref(storage, `mzumbeAcademicportal/${path}`);
+      const fileRef = ref(storage,path);
       await deleteObject(fileRef);
       return true;
     } catch (err) {

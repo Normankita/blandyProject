@@ -52,7 +52,8 @@ const ProjectModal = ({
   }, [reviewers]);
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center bg-black/60 z-50 p-4">
+    <div className="h-screen min-h-screen fixed z-50 w-full inset-0 backdrop-blur-xs bg-slate-50/20 dark:bg-slate-900/20 duration-300">
+      <div className="fixed inset-0 flex justify-center items-center bg-black/60 z-50 p-4">
       <div className="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-3xl w-full max-h-screen overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">{project.title}</h2>
@@ -64,6 +65,16 @@ const ProjectModal = ({
             <h4>Description</h4>
             <div dangerouslySetInnerHTML={{ __html: project.description }} />
           </div>
+          {project.documentUrl && (
+                <a href={project.documentUrl} className="text-blue-500 underline ml-4" target="_blank" rel="noopener noreferrer">
+                  <span className="flex">
+                    <svg className="w-8 h-8 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8v8a5 5 0 1 0 10 0V6.5a3.5 3.5 0 1 0-7 0V15a2 2 0 0 0 4 0V8" />
+                    </svg>
+                    <p>Download Document</p>
+                  </span>
+                </a>
+              )}
 
           {project.github && (
             <a href={project.github} target="_blank" rel="noreferrer" className="text-blue-600 underline">
@@ -121,7 +132,8 @@ const ProjectModal = ({
               </button>
               <button
                 onClick={() => onApproveReject(project.id, "rejected")}
-                className="bg-red-600 text-white px-4 py-2 rounded"
+                className={` text-white px-4 py-2 rounded ${project.status==="rejected"?"cursor-not-allowed bg-red-300":"bg-red-600"}`}
+                disabled={project.status==="rejected"}
               >
                 Reject
               </button>
@@ -146,6 +158,7 @@ const ProjectModal = ({
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };

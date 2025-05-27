@@ -2,8 +2,10 @@ import { Link, NavLink } from "react-router-dom";
 import Goback from "../Goback";
 import { auth, signOutUser } from "../../configs/firebase";
 import { useState, useEffect } from "react";
+import { useData } from "@/contexts/DataContext";
 
 const SideHeader = ({ children, role }) => {
+    const { userProfile } = useData();
 
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -68,7 +70,7 @@ const SideHeader = ({ children, role }) => {
                                     {/* activate profile options */}
                                     <button onClick={() => setProfile(!profile)} type="button" className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 md:mr-10" aria-expanded="false" data-dropdown-toggle="dropdown-user">
                                         <span className="sr-only">Open user menu</span>
-                                        <img className="w-8 h-8 rounded-full" src={auth.currentUser.photoURL ? auth.currentUser.photoURL : "https://flowbite.com/docs/images/people/profile-picture-5.jpg"} alt="user photo" />
+                                        <img className="w-8 h-8 rounded-full" src={auth.currentUser.photoURL ? auth.currentUser.photoURL : userProfile.photoUrl ? userProfile.photoUrl : "https://flowbite.com/docs/images/people/profile-picture-5.jpg"} alt="user photo" />
                                     </button>
                                 </div>
                                 {/* Profile options */}

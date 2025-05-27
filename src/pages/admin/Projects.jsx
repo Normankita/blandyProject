@@ -14,7 +14,7 @@ const Projects = () => {
 
   const { formattedData: projects, loading } = useTableData({
     path: "projects",
-    sort: { field: "title", direction: "desc" },
+    sort: { field: "title", direction: "desc" }
   });
 
   useEffect(() => {
@@ -67,12 +67,14 @@ const Projects = () => {
     "photoUrl",
     "reviewedBy",
     "reviewedAt",
+    "createdAt",
+    "updatedAt", 
     "averageRating",
     "feedback",
   ];
 
   const transform = {
-    status: (value) => <span className={`p-1 rounded px-2 ${value==="on review" ? "bg-yellow-500/60" : value==="draft"? "bg-gray-500/60" : value==="rejected"? "bg-red-500/60" : "bg-green-500/60"}`}>{value}</span>,
+    status: (value) => <span className={`p-1 rounded px-2 ${value === "on review" ? "bg-yellow-500/60" : value === "draft" ? "bg-gray-500/60" : value === "rejected" ? "bg-red-500/60" : value==="published"?"bg-yellow-800/60": value==="accepted"?"bg-green-500/60":"bg-blue-500/60"}`}>{value??"Unknown"}</span>,
     reviews: (value) => <span className="text-sm p-1 px-2 bg-gray-300 dark:bg-gray-700 rounded-sm">{`${value?.length || 0} reviews`}</span>,
     supervisorId: (value) => supervisorNames[value] || value,
     studentId: (value) => studentNames[value] || value, // Convert student ID to student name
@@ -161,9 +163,9 @@ const Projects = () => {
 
   return (
     <>
-      {projects.length > 0 && (
+      {projects.filter(p => p.status !== "draft").length > 0 ? (
         <TableComponent
-          ItemData={projects}
+          ItemData={projects.filter(p => p.status !== "draft")}
           headers={Object.keys(projects[0])}
           title="Projects"
           isLoading={loading}
@@ -172,7 +174,17 @@ const Projects = () => {
           customActions={renderActions}
           headerLabels={headerLabels}
         />
-      )}
+      ): (<div className="flex flex-col items-center justify-center">
+        <span>
+          <svg class="w-20 h-20 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h4V4m12 4h-4V4M4 16h4v4m12-4h-4v4" />
+      </svg>
+      
+        </span>
+        <p>Opps! No projects found</p>
+      </div>)}
+      
+
 
       {selectedProject && (
         <ProjectModal

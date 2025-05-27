@@ -1,23 +1,25 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signOut } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+
+
 const firebaseConfig = {
 
-  apiKey: "AIzaSyA7aqPYh1YbO-fj1_rY2Fz-rB6MoRPlxhY",
-  authDomain: "mzumbe-academic-portal-be18b.firebaseapp.com",
-  projectId: "mzumbe-academic-portal-be18b",
-  storageBucket: "mzumbe-academic-portal-be18b.firebasestorage.app",
-  messagingSenderId: "412710888829",
-  appId: "1:412710888829:web:9a68b7397998fea0e29814"
+  apiKey: "AIzaSyCjX1ojaPxXqEbG1cwUo5m5Ibnsv3bMWag",
+  authDomain: "mzumbe-academic-portal.firebaseapp.com",
+  projectId: "mzumbe-academic-portal",
+  storageBucket: "mzumbe-academic-portal.firebasestorage.app",
+  messagingSenderId: "946292180292",
+  appId: "1:946292180292:web:a40a3859612733fecf8311",
+  measurementId: "G-32J5904Z3S"
 };
+
 
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const loginGoogle = new GoogleAuthProvider();
 export const db = getFirestore(app);
-export const storage = getStorage(app);
 export const signOutUser = () => {
   signOut(auth)
     .then(() => {

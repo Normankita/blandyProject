@@ -6,44 +6,35 @@ import { Timestamp } from "firebase/firestore";
 const AssignedStudents = () => {
   const { userProfile, fetchData, updateData } = useData();
   const [students, setStudents] = useState([]);
-  const [selectedStudent, setSelectedStudent] = useState(null);
   const [projects, setProjects] = useState([]);
+  const [selectedStudent, setSelectedStudent] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
-    if (userProfile) loadStudents();
+    if (userProfile) {
+      loadStudentsAndProjects();
+    }
   }, [userProfile]);
 
-  const loadStudents = async () => {
+  const loadStudentsAndProjects = async () => {
     try {
-      const { data } = await fetchData({
-        path: "users",
-        filters: [{ field: "supervisorId", op: "==", value: userProfile.uid }],
-      });
-      setStudents(data);
+      const [studentsRes, projectsRes] = await Promise.all([
+        fetchData({
+          path: "users",
+          filters: [{ field: "supervisorId", op: "==", value: userProfile.uid }],
+        }),
+        fetchData({ path: "projects" }),
+      ]);
+
+      setStudents(studentsRes.data);
+      setProjects(projectsRes.data);
     } catch (err) {
-      toast.error("Failed to fetch students");
+      toast.error("Failed to load data");
     }
   };
 
-  const loadProjectsForStudent = async (studentId) => {
-    try {
-      const { data } = await fetchData({
-        path: "projects",
-        filters: [
-          { field: "studentId", op: "==", value: studentId },
-        ],
-      });
-      setProjects(data);
-    } catch (err) {
-      toast.error("Failed to load student projects");
-    }
-  };
-
-  const handleStudentClick = async (student) => {
+  const handleStudentClick = (student) => {
     setSelectedStudent(student);
-    setProjects([]);
-    await loadProjectsForStudent(student.id);
   };
 
   const handleProjectClick = (project) => {
@@ -61,11 +52,17 @@ const AssignedStudents = () => {
 
       toast.success(`Project ${newStatus}`);
       setSelectedProject(null);
-      loadProjectsForStudent(selectedStudent.id);
+      // Refresh all project data after status change
+      const refreshedProjects = await fetchData({ path: "projects" });
+      setProjects(refreshedProjects.data);
     } catch (err) {
       toast.error("Failed to update project");
     }
   };
+
+  const filteredProjects = selectedStudent
+    ? projects.filter((p) => p.studentId === selectedStudent.id)
+    : [];
 
   return (
     <div className="p-6 space-y-6">
@@ -80,12 +77,19 @@ const AssignedStudents = () => {
             className={`cursor-pointer p-4 rounded shadow-lg ${
               selectedStudent?.id === student.id
                 ? "bg-blue-100 dark:bg-blue-950/50 border-blue-500"
-                : "bg-white dark:bg-slate-800"
-            } hover:bg-blue-50 dark:hover:bg-blue-950 duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border`}
+                : "bg-slate-50 dark:bg-slate-800"
+            }  hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-950 p-6 rounded-sm dark:text-gray-300 text-gray-800 duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40`}
           >
-            <h3 className="text-lg font-semibold dark:text-gray-100">{student.name}</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-200">{student.registrationNumber}</p>
-            <p className="text-xs text-gray-400 dark:text-gray-300">{student.program}</p>
+            <h3 className="text-lg font-semibold dark:text-gray-100">
+              {student.name}
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-200">
+              {student.registrationNumber}
+            </p>
+            <p className="text-xs text-gray-400 dark:text-gray-300">
+              {student.program}
+            </p>
+            <span>{projects.filter((p) => p.studentId === student.id && p.status !== "draft").length}/{projects.filter((p) => p.studentId === student.id).length}</span>
           </div>
         ))}
       </div>
@@ -96,19 +100,19 @@ const AssignedStudents = () => {
           <h3 className="text-xl font-semibold mt-6 mb-2">
             Projects for {selectedStudent.name}
           </h3>
-          {projects.length === 0 ? (
+          {filteredProjects.length === 0 ? (
             <p className="text-gray-500">No projects submitted yet.</p>
           ) : (
             <ul className="space-y-2">
-              {projects.map((project) => (
+              {filteredProjects.map((project) => (
                 <li
                   key={project.id}
                   onClick={() => handleProjectClick(project)}
-                  className="bg-white dark:bg-gray-800 rounded p-4 cursor-pointer hover:ring duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border"
+                  className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-950 p-6 rounded-sm dark:text-gray-300 text-gray-800 duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40 "
                 >
                   <h4 className="font-semibold">{project.title}</h4>
                   <p className="text-sm text-gray-500">{project.abstract}</p>
-                  <p className="text-xs text-gray-400">Status: {project.status}</p>
+                  <p className="text-xs text-gray-400 mt-3">Status: <span className="font-semibold p-1 rounded-sm m-2 bg-gray-300 dark:bg-gray-700"> {project.status}</span></p>
                 </li>
               ))}
             </ul>
@@ -133,7 +137,7 @@ const AssignedStudents = () => {
             <div className="space-y-4">
               {/* Description */}
               <div className="prose dark:prose-invert max-w-none">
-                <h4>Description</h4>``
+                <h4>Description</h4>
                 <div
                   dangerouslySetInnerHTML={{ __html: selectedProject.description }}
                 />
@@ -151,6 +155,32 @@ const AssignedStudents = () => {
                     View GitHub Repository
                   </a>
                 </p>
+              )}
+              {selectedProject.documentUrl && (
+                <a
+                  href={selectedProject.documentUrl}
+                  className="text-blue-500 underline ml-4"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span className="flex">
+                    <svg
+                      className="w-8 h-8"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M7 8v8a5 5 0 1 0 10 0V6.5a3.5 3.5 0 1 0-7 0V15a2 2 0 0 0 4 0V8"
+                      />
+                    </svg>
+                    <p>Download Document</p>
+                  </span>
+                </a>
               )}
 
               {/* Feedback Textarea */}
@@ -172,14 +202,17 @@ const AssignedStudents = () => {
               {/* Approve/Reject */}
               <div className="flex gap-4 justify-end">
                 <button
-                  onClick={() => handleFeedback("approved")}
-                  className="bg-green-700 text-white px-4 py-2 rounded cursor-pointer duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border"
+                  onClick={() => handleFeedback("published")}
+                  className={`${selectedProject.status!=="draft" ? "bg-gray-500 cursor-not-allowed" : "cursor-pointer bg-green-500"} text-white px-4 py-2 rounded  duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border`}
+                  disabled={!selectedProject.status!=="draft"}
+
                 >
-                  Approve
+                  Publish
                 </button>
                 <button
                   onClick={() => handleFeedback("rejected")}
-                  className="bg-red-500 text-white px-4 py-2 rounded cursor-pointer duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border"
+                  className={`${selectedProject.status!=="draft" ? "bg-gray-500 cursor-not-allowed" : "cursor-pointer bg-red-500"} text-white px-4 py-2 rounded  duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border`}
+                  disabled={!selectedProject.status!=="draft"}
                 >
                   Reject
                 </button>
