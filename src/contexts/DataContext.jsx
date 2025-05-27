@@ -1,5 +1,14 @@
 import { createContext, useContext, useState, useEffect } from "react";
+
 import { db } from "../configs/firebase";
+import {storage} from '../configs/externalStorage'
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
+
 import {
   collection,
   getDocs,
@@ -113,7 +122,7 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  
+
   /**
    * Updates a document in the given path with the given ID.
    * @param {string} path - The path to the document to update.
@@ -128,6 +137,33 @@ export const DataProvider = ({ children }) => {
       console.error("Update error:", err);
     }
   };
+
+
+  // Logic to upload files, any file in any path 
+  const uploadFile = async (file, path) => {
+    try {
+      const storageRef = ref(storage, `mzumbeAcademicportal/${path}`); // e.g., 'profilePics/uid.jpg' or 'projectDocs/file.pdf'
+      const snapshot = await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(snapshot.ref);
+      return url;
+    } catch (err) {
+      console.error("File upload error:", err);
+      return null;
+    }
+  };
+
+  // logic to delete file, any file anywhere 
+  const deleteFile = async (path) => {
+    try {
+      const fileRef = ref(storage, `mzumbeAcademicportal/${path}`);
+      await deleteObject(fileRef);
+      return true;
+    } catch (err) {
+      console.error("File delete error:", err);
+      return false;
+    }
+  };
+
 
   const deleteData = async (path, id) => {
     try {
@@ -185,6 +221,8 @@ export const DataProvider = ({ children }) => {
         userProfile,
         userProfileLoading,
         setUserProfile,
+        uploadFile,
+        deleteFile,
       }}
     >
       {children}

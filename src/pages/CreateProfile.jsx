@@ -6,16 +6,17 @@ import { toast } from 'react-toastify';
 import DragAndDrop from '../components/DragAndDrop';
 import { UserForm } from './admin/components/UserForm';
 import { serverTimestamp } from "firebase/firestore";
-import {useData} from '../contexts/DataContext'
+import { useData } from '../contexts/DataContext';
 import { useAuth } from '../contexts/AuthContext';
 const CreateProfile = () => {
+  const [profileImage, setProfileImage] = useState(null);
 
-  const {addData, setUserProfile} = useData()
-  const {user} = useAuth()
+  const { addData, setUserProfile, uploadFile } = useData();
+  const { user } = useAuth();
   const datepickerRef = useRef(null);
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
-  const {logout} = useAuth();
+  const { logout } = useAuth();
   const [error, setError] = useState({
     nameError: "",
     doBError: "",
@@ -42,8 +43,8 @@ const CreateProfile = () => {
     department: "",
     program: "",
     gitHubUrl: "",
-    photoUrl:"",
-    registrationNumber:"",
+    photoUrl: "",
+    registrationNumber: "",
   });
 
   const handleChange = (e) => {
@@ -69,48 +70,66 @@ const CreateProfile = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
 
-    if (!user || !user.uid) {
-      toast.error("User not authenticated");
+  const handleSubmit = async (e) => {
+     console.log("form data", formData);
+  e.preventDefault();
+  setSubmitting(true);
+ 
+
+  if (!user || !user.uid) {
+    toast.error("User not authenticated");
+    return;
+  }
+
+  let photoUrl = "";
+
+  if (profileImage) {
+    const path = `profilePics/${user.uid}.jpg`;
+    const uploadedUrl = await uploadFile(profileImage, path);
+    if (uploadedUrl) {
+      photoUrl = uploadedUrl;
+    } else {
+      toast.error("Failed to upload profile picture");
+      setSubmitting(false);
       return;
     }
+  }
 
-    const updatedFormData = {
-  ...formData,
-  name: formData.fullName,
-  doB: new Date(formData.doB).toISOString(),
-  createdAt: serverTimestamp(),
-  uid: user.uid,
-  email: user.email,
-  status: formData.role==="student"?"active":"pending",
+  const updatedFormData = {
+    ...formData,
+    name: formData.fullName,
+    doB: new Date(formData.doB).toISOString(),
+    createdAt: serverTimestamp(),
+    uid: user.uid,
+    email: user.email,
+    photoUrl, // <-- include it here
+    status: formData.role === "student" ? "active" : "pending",
+  };
+
+  delete updatedFormData.fullName;
+
+  try {
+    const id = await addData("users", updatedFormData, user.uid);
+    if (id) {
+      toast.success(`Profile created successfully`);
+      if (updatedFormData.status === "pending") {
+        logout();
+        navigate('/login');
+        return;
+      }
+      setUserProfile(updatedFormData);
+      sessionStorage.setItem("userProfile", JSON.stringify(updatedFormData));
+      navigate("/admin-dashboard");
+    }
+  } catch (err) {
+    console.error("Error creating profile:", err);
+    toast.error("Failed to create profile");
+  } finally {
+    setSubmitting(false);
+  }
 };
 
-delete updatedFormData.fullName;
-
-    try {
-      const id = await addData("users", updatedFormData, user.uid);
-
-      if (id) {
-        toast.success(`Profile created successfully ${updatedFormData.status==="pending"?'consult admin for activation':'loggin in'}`);
-        logout();
-        if(updatedFormData.status==="pending"){
-          navigate('/login');
-          return;
-        }
-        setUserProfile(updatedFormData)
-        sessionStorage.setItem("userProfile", JSON.stringify(updatedFormData));
-        navigate("/admin-dashboard");
-      }
-    } catch (err) {
-      console.error("Error creating profile:", err);
-      toast.error("Failed to create profile");
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   return (
     <motion.div
@@ -124,6 +143,7 @@ delete updatedFormData.fullName;
       </button>
 
       <UserForm
+        imageFile={profileImage} setImageFile={setProfileImage}
         handleSubmit={handleSubmit}
         error={error}
         handleChange={handleChange}

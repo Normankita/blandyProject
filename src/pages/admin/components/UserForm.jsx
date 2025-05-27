@@ -7,7 +7,7 @@ import DragAndDrop from '../../../components/DragAndDrop';
 
 
 
-export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormData, datepickerRef, authorized, submitting }) => {
+export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormData, datepickerRef, authorized, submitting, imageFile, setImageFile }) => {
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -47,7 +47,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
                 </div>
                 <div className='col-span-6 flex justify-end'>
                   <div className='sm:w-1/2 w-full mb-2'>
-                    <DragAndDrop />
+                    <DragAndDrop imageFile={imageFile} setImageFile={setImageFile}/>
                   </div>
                 </div>
 
@@ -351,6 +351,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
 
               <div>
                 <input
+                
                   type="submit"
                   value={authorized ? "create user Profile" : "Create your profile"}
                   className={`w-full ${submitting ? `cursor-not-allowed` : `cursor-pointer`} curs0r-n0t-all0wed cursor-pointer rounded-lg mb-4 px-4 py-2 bg-blue-500 lg:w-sm text-white font-semibold hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50`}
