@@ -77,7 +77,7 @@ const LoginPage = () => {
         exit={{ opacity: 0 }}
         transition={{ type: "tween", duration: 0.5 }}
     >
-      <section className="bg-gray-50 dark:bg-gray-900 min-h-screen min-w-screen max-w-screen max-h-screen">
+      <section className="bg-slate-200 dark:bg-gray-900 min-h-screen min-w-screen max-w-screen max-h-screen">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <a href="#" className="flex flex-col items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
           <span><img src="/sitelogo.png" alt="" /></span>
@@ -85,25 +85,25 @@ const LoginPage = () => {
         </a>
         <div className="w-full bg-white rounded-lg dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 shadow-xl shadow-slate-900/10 dark:shadow-black/40">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              Sign in to your account
+            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white flex flex-col items-center w-full">
+              Sign in
             </h1>
             <form className="space-y-4 md:space-y-6" onSubmit={loginWithEmail} >
               <div>
-                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
+                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Email</label>
                 <input type="email" name="email" id="email" value={form.email}
-                  onChange={handleChange} className="bg-gray-50 border border-gray-300 text-gray-600 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required />
+                  onChange={handleChange} className="bg-gray-50 border border-gray-300 text-gray-600 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"  required />
               </div>
               <div>
                 <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
                 <input type="password" value={form.password}
-                  onChange={handleChange} name="password" id="password" placeholder="••••••••••" className="bg-gray-50 border border-gray-300 text-gray-600 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-15" required />
+                  onChange={handleChange} name="password" id="password"  className="bg-gray-50 border border-gray-300 text-gray-600 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-15" required />
               </div>
               
               <SiteButton text={"Sign in"} loadText="Authenticating..." loading={loading}/>
             </form>
-            <button  onClick={handleGoogleLogin} className={`flex items-center space-x-2 text-black border px-4 py-2 rounded shadow bg-red-300 hover:bg-red-400 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium text-sm text-center dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-500 ${loading?'cursor-not-allowed':'cursor-pointer'}`} disabled={loading}>
-              <SiGoogle className="text-red-500 text-xl" />
+            <button  onClick={handleGoogleLogin} className={`flex items-center space-x-2 text-black border px-4 py-2 rounded-3xl bg-red-400 hover:bg-red-300 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium text-sm text-center dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-500 shadow-xl shadow-slate-900/10 dark:shadow-black/40 ${loading?'cursor-not-allowed':'cursor-pointer'}`} disabled={loading}>
+              <SiGoogle className="text-red-600 text-xl" />
               <span>Sign in with Google</span>
             </button>
             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
