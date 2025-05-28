@@ -3,6 +3,8 @@ import Goback from "../Goback";
 import { auth, signOutUser } from "../../configs/firebase";
 import { useState, useEffect } from "react";
 import { useData } from "@/contexts/DataContext";
+import Woman from "@/assets/avatars/woman.svg";
+import Man from "@/assets/avatars/man.svg";
 
 const SideHeader = ({ children, role }) => {
     const { userProfile } = useData();
@@ -68,13 +70,13 @@ const SideHeader = ({ children, role }) => {
                             <div className="flex items-center ms-3">
                                 <div>
                                     {/* activate profile options */}
-                                    <button onClick={() => setProfile(!profile)} type="button" className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 md:mr-10" aria-expanded="false" data-dropdown-toggle="dropdown-user">
+                                    <button onClick={() => setProfile(!profile)} type="button" className="flex text-sm bg-gray-100 dark:bg-gray-900 rounded-full focus:ring-4 focus:ring-gray-500 dark:focus:ring-gray-500 md:mr-10 shadow-lg shadow-slate-900/20 dark:shadow-black/40 duration-300" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="dropdown-user">
                                         <span className="sr-only">Open user menu</span>
-                                        <img className="w-8 h-8 rounded-full" src={auth.currentUser.photoURL ? auth.currentUser.photoURL : userProfile.photoUrl ? userProfile.photoUrl : "https://flowbite.com/docs/images/people/profile-picture-5.jpg"} alt="user photo" />
+                                        <img className="w-10 h-10 rounded-full p-1  cursor-pointer" src={auth.currentUser.photoURL ? auth.currentUser.photoURL : userProfile.photoUrl ? userProfile.photoUrl : userProfile.gender === "female" ? Woman : Man} alt="user photo" />
                                     </button>
                                 </div>
                                 {/* Profile options */}
-                                <div className={`z-50 ${profile ? "block" : "hidden"} absolute top-16 right-4 w-44 rounded-lg shadow-xl bg-white border-b border-gray-200 dark:bg-gray-800 dark:    border-gray-700`} id="dropdown-user" role="menu" aria-orientation="vertical" aria-labelledby="dropdown-user">
+                                <div className={`z-50 ${profile ? "block" : "hidden"} absolute top-16 right-4 w-44 rounded-lg shadow-xl bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-600`} id="dropdown-user" role="menu" aria-orientation="vertical" aria-labelledby="dropdown-user">
                                     <div className="px-4 py-3" role="none">
                                         <p className="text-sm text-gray-900 dark:text-white" role="none">
                                             {`${auth.currentUser.displayName ? auth.currentUser.displayName : `User Account`}`}
@@ -85,7 +87,7 @@ const SideHeader = ({ children, role }) => {
                                     </div>
                                     <ul className="py-1" role="none">
                                         <li>
-                                            <NavLink to="/admin-dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Dashboard</NavLink>
+                                            <NavLink to={`/${role}-dashboard`} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Dashboard</NavLink>
                                         </li>
                                         <li>
                                             <NavLink to="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Settings</NavLink>
@@ -261,6 +263,17 @@ const SideHeader = ({ children, role }) => {
                                 <span className="flex-1 ms-3 whitespace-nowrap">Sign In as user</span>
                             </NavLink>
                         </li>}
+                        <NavLink to="/profile" className={({ isActive }) =>
+                            `flex items-center p-2 rounded-lg group transition-colors dark:text-white duration-200 ${isActive
+                                ? "bg-gray-200 text-gray-900 dark:bg-gray-700 "
+                                : "text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                            }`
+                        }>
+                            <svg className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" d="M4 4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H4Zm10 5a1 1 0 0 1 1-1h3a1 1 0 1 1 0 2h-3a1 1 0 0 1-1-1Zm0 3a1 1 0 0 1 1-1h3a1 1 0 1 1 0 2h-3a1 1 0 0 1-1-1Zm0 3a1 1 0 0 1 1-1h3a1 1 0 1 1 0 2h-3a1 1 0 0 1-1-1Zm-8-5a3 3 0 1 1 6 0 3 3 0 0 1-6 0Zm1.942 4a3 3 0 0 0-2.847 2.051l-.044.133-.004.012c-.042.126-.055.167-.042.195.006.013.02.023.038.039.032.025.08.064.146.155A1 1 0 0 0 6 17h6a1 1 0 0 0 .811-.415.713.713 0 0 1 .146-.155c.019-.016.031-.026.038-.04.014-.027 0-.068-.042-.194l-.004-.012-.044-.133A3 3 0 0 0 10.059 14H7.942Z" clip-rule="evenodd" />
+                            </svg>
+                            <span className="flex-1 ms-3 whitespace-nowrap">Profile</span>
+                        </NavLink>
                     </ul>
                 </div>
                 <div onClick={signOutUser} className=" m-6 pb-4 overflow-y-auto bg-white  dark:bg-gray-800 p-4 flex flex-row justify-around text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 group cursor-pointer duration-300 rounded-lg">
