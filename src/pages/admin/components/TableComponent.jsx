@@ -143,12 +143,12 @@ const TableComponent = ({
                 <th
                   key={heading}
                   onClick={() => handleSort(heading)}
-                  className="cursor-pointer select-none min-w-[220px] py-4 px-4 font-medium text-black dark:text-white"
+                  className="cursor-pointer select-none min-w-[100px] py-4 px-4 font-medium text-black dark:text-white"
                 >
                   {headerLabels[heading] || heading} <span>{getSortIcon(heading)}</span>
                 </th>
               ))}
-              <th className="py-4 px-4 font-medium text-black dark:text-white">Actions</th>
+              <th className="py-4 px-4 font-medium text-black dark:text-white flex flex-col items-center">Actions</th>
             </tr>
           </thead>
 
@@ -181,8 +181,8 @@ const TableComponent = ({
                       </h5>
                     </td>
                   ))}
-                  <td className="border-b py-5 px-4 dark:border-strokedark">
-                    <div className="flex items-center space-x-3.5">
+                  <td className="border-b py-1 px-4 dark:border-strokedark">
+                    <div className="flex flex-row items-center ">
                       {customActions(item)}
                     </div>
                   </td>

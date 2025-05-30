@@ -61,7 +61,7 @@ const CreateProfile = () => {
     } else if (name === "repassword") {
       setError(prev => ({ ...prev, passwordError: value !== formData.password ? "Passwords do not match!" : "" }));
       setFormData(prev => ({ ...prev, repassword: value }));
-    } else if (name === "name") {
+    } else if (name === "fullName") {
       const parts = value.trim().split(" ");
       setError(prev => ({ ...prev, nameError: parts.length < 2 ? "Please enter first and last name" : "" }));
       setFormData(prev => ({ ...prev, name: value }));
@@ -102,7 +102,7 @@ const CreateProfile = () => {
     createdAt: serverTimestamp(),
     uid: user.uid,
     email: user.email,
-    photoUrl, // <-- include it here
+    photoUrl, 
     status: formData.role === "student" ? "active" : "pending",
   };
 

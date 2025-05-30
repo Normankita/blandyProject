@@ -131,14 +131,14 @@ const DepartmentsPage = () => {
           transformFields={transform}
           headerLabels={customHeaders}
           customActions={(dept) => (
-            <div className="flex gap-2">
+            <div className="flex flex-row gap-1 items-center">
               <button
-                className="text-blue-600 underline"
+                className="text-gray-900 bg-white border border-blue-300 focus:outline-none hover:bg-blue-100 focus:ring-4 focus:ring-blue-100 font-bold rounded-full text-sm px-4 py-1.5 me-2 dark:bg-slate-900 dark:text-white dark:border-blue-600 dark:hover:bg-slate-950 dark:hover:border-blue-600 dark:focus:ring-gray-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 "
                 onClick={() => setSelectedDepartment(dept)}
               >
-                <span>
+                <span className='flex flex-row gap-1 items-center'>
                   <svg
-                    className="w-6 h-6 text-gray-800 dark:text-white"
+                    className="w-5 h-5 text-gray-800 dark:text-white"
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -157,18 +157,19 @@ const DepartmentsPage = () => {
                       d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
                     />
                   </svg>
+                  <p>View</p>
                 </span>
               </button>
 
               <button
-                className="text-green-600 underline"
+                className="text-gray-900 bg-white border border-blue-300 focus:outline-none hover:bg-blue-100 focus:ring-4 focus:ring-blue-100 font-bold rounded-full text-sm px-4 py-1.5 me-2 dark:bg-slate-900 dark:text-white dark:border-blue-600 dark:hover:bg-slate-950 dark:hover:border-blue-600 dark:focus:ring-gray-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 "
                 onClick={() => openEditModal(dept)}
               >
-                <span>
+                <span className='flex flex-row gap-1 items-center'>
                     <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28" />
                     </svg>
-
+                    <p>Edit</p>
                   </span>
               </button>
             </div>

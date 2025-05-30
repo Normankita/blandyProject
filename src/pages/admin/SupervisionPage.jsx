@@ -38,6 +38,10 @@ const SupervisionPage = () => {
             toast.warning('Student must belong to the same department as the supervisor.');
             return;
         }
+        if(!selectedSupervisor.panelId){
+            toast.warning('Supervisor must be belong to a panel.');
+            return;
+        }
 
         const updatedStudent = {
             ...student,

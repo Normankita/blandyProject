@@ -44,6 +44,7 @@ const RegisterAdmin = () => {
     repassword: "",
     category: "",
     secretpass: "",
+    department: "",
   });
 
   const ensureNumber = (confusedString) => confusedString.replace(/[^0-9]/g, '');
@@ -139,6 +140,7 @@ const RegisterAdmin = () => {
       category: formData.category,
       photoUrl, // include uploaded photo URL
       secretpass: formData.secretpass,
+      department: formData.department,
     };
 
     try {
