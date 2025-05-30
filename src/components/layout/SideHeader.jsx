@@ -161,7 +161,7 @@ const SideHeader = ({ children, role }) => {
                             </NavLink>
                         </li>
 
-                        {role === "admin" && <li>
+                        {userProfile.role === "admin" && <li>
                             <NavLink to="/users" className={({ isActive }) =>
                                 `flex items-center p-2 rounded-lg group transition-colors dark:text-white duration-200 ${isActive
                                     ? "bg-gray-200 text-gray-900 dark:bg-gray-700 "
@@ -175,30 +175,69 @@ const SideHeader = ({ children, role }) => {
                             </NavLink>
                         </li>}
 
+
+                        {/* Link for admin to create Departments */}
+                        {userProfile.role === "admin" && <li>
+                            <NavLink to="/departments" className={({ isActive }) =>
+                                `flex items-center p-2 rounded-lg group transition-colors dark:text-white duration-200 ${isActive
+                                    ? "bg-gray-200 text-gray-900 dark:bg-gray-700 "
+                                    : "text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                                }`
+                            }>
+                                <svg className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                    <path fillRule="evenodd" d="M4 4a1 1 0 0 1 1-1h14a1 1 0 1 1 0 2v14a1 1 0 1 1 0 2H5a1 1 0 1 1 0-2V5a1 1 0 0 1-1-1Zm5 2a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H9Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-1Zm-5 4a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H9Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-1Zm-3 4a2 2 0 0 0-2 2v3h2v-3h2v3h2v-3a2 2 0 0 0-2-2h-2Z" clipRule="evenodd" />
+                                </svg>
+
+
+                                <span className="flex-1 ms-3 whitespace-nowrap">Departments</span>
+                            </NavLink>
+                        </li>}
+
+                        {/* Link for admin assigning supervisor to panels */}
+                        {userProfile.role === "staff" && userProfile?.category==="coordinator" &&  <li>
+                            <NavLink to="/panel-management" className={({ isActive }) =>
+                                `flex items-center p-2 rounded-lg group transition-colors dark:text-white duration-200 ${isActive
+                                    ? "bg-gray-200 text-gray-900 dark:bg-gray-700 "
+                                    : "text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                                }`
+                            }>
+                                <svg className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                    <path fillRule="evenodd" d="M12 6a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm-1.5 8a4 4 0 0 0-4 4 2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-3Zm6.82-3.096a5.51 5.51 0 0 0-2.797-6.293 3.5 3.5 0 1 1 2.796 6.292ZM19.5 18h.5a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-1.1a5.503 5.503 0 0 1-.471.762A5.998 5.998 0 0 1 19.5 18ZM4 7.5a3.5 3.5 0 0 1 5.477-2.889 5.5 5.5 0 0 0-2.796 6.293A3.501 3.501 0 0 1 4 7.5ZM7.1 12H6a4 4 0 0 0-4 4 2 2 0 0 0 2 2h.5a5.998 5.998 0 0 1 3.071-5.238A5.505 5.505 0 0 1 7.1 12Z" clipRule="evenodd" />
+                                </svg>
+
+
+                                <span className="flex-1 ms-3 whitespace-nowrap">Panels Management</span>
+                            </NavLink>
+                        </li>}
+
                         {/* Link for admin assigning students to supervisor */}
-                        {role === "admin" && <li>
+                        {userProfile.role === "staff" && userProfile?.category==="coordinator" && <li>
                             <NavLink to="/supervision" className={({ isActive }) =>
                                 `flex items-center p-2 rounded-lg group transition-colors dark:text-white duration-200 ${isActive
                                     ? "bg-gray-200 text-gray-900 dark:bg-gray-700 "
                                     : "text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 group"
                                 }`
                             }>
-                                <svg className="w-6 h-6 text-gray-500 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                    <path fill-rule="evenodd" d="M7.50001 6.49476c-.00222.00067-.00443.00134-.00665.00202-1.36964.41615-2.57189 1.22541-3.40555 1.89335-.42318.33907-.76614.65372-1.00483.88517-.11959.11596-.21369.21169-.2793.27999-.03283.03417-.05857.06153-.07687.08118l-.02184.02361-.00665.00728-.00225.00247-.00152.00167c-.23565.26049-.31736.6255-.21524.9616l1.88966 6.2193c.28122.9255.90731 1.6328 1.59535 2.159.68925.5272 1.4966.9166 2.25327 1.198.76111.2832 1.50814.4708 2.10341.5791.2973.054.5684.0904.7934.1077.1117.0085.2238.0133.3286.0113.0814-.0016.2434-.0076.4111-.0586.1678-.051.3057-.1361.3743-.18.0882-.0566.1786-.123.2667-.1923.1774-.1395.3824-.3205.5994-.5309-.076-.0369-.1525-.0755-.2297-.1152-.6068-.312-1.3433-.7546-2.0675-1.3064-.4898-.3733-1.01068-.8242-1.48988-1.3492-.28662.4467-.87678.5935-1.34124.3253-.47829-.2761-.64217-.8877-.36603-1.366.01906-.033.03873-.0675.05915-.1034.10835-.1902.23774-.4173.40797-.6498C7.73454 14.6941 7.5 13.8935 7.5 13V6.5l.00001-.00524ZM5.72195 11.0461c-.52844.1606-.82665.7191-.6661 1.2476.16056.5284.7191.8266 1.24753.6661l.00957-.003c.52843-.1605.82665-.7191.66609-1.2475-.16056-.5284-.7191-.8266-1.24753-.6661l-.00956.0029Z" clip-rule="evenodd" />
-                                    <path fill-rule="evenodd" d="M15 4c-1.4315 0-2.8171.42479-3.8089.82152-.5035.2014-.9231.40276-1.21876.55482-.14814.07618-.26601.14043-.34864.1867-.04134.02315-.07393.04184-.09715.05533l-.02775.01624-.00849.00502-.00286.00171-.00195.00117C9.1843 5.82323 9 6.14874 9 6.5V13c0 .9673.39342 1.8261.89875 2.5296.50625.7048 1.16555 1.312 1.80765 1.8013.646.4922 1.3062.8889 1.8442 1.1655.2688.1382.5176.2518.7279.3338.1044.0407.2102.0778.3111.1063.0784.0222.2351.0635.4104.0635.1753 0 .332-.0413.4104-.0635.1009-.0285.2067-.0656.3111-.1063.2103-.082.4591-.1956.7279-.3338.538-.2766 1.1982-.6733 1.8442-1.1655.6421-.4893 1.3014-1.0965 1.8076-1.8013C20.6066 14.8261 21 13.9673 21 13V6.5c0-.35126-.1852-.67728-.4864-.85801l-.001-.00065-.0029-.00171-.0085-.00502-.0278-.01624c-.0232-.01349-.0558-.03218-.0971-.05533-.0826-.04627-.2005-.11052-.3486-.1867-.2957-.15206-.7153-.35342-1.2188-.55482C17.8171 4.42479 16.4315 4 15 4Zm5 2.5.5136-.85801S20.5145 5.64251 20 6.5ZM13 7c-.5523 0-1 .44772-1 1s.4477 1 1 1h.01c.5523 0 1-.44772 1-1s-.4477-1-1-1H13Zm4 0c-.5523 0-1 .44772-1 1s.4477 1 1 1h.01c.5523 0 1-.44772 1-1s-.4477-1-1-1H17Zm-4.7071 4.2929c-.3905.3905-.3905 1.0237 0 1.4142.0269.027.0549.0552.0838.0845.4776.4831 1.243 1.2574 2.6233 1.2574 1.3803 0 2.1457-.7743 2.6232-1.2573.029-.0294.057-.0576.0839-.0846.3905-.3905.3905-1.0237 0-1.4142-.3905-.3905-1.0237-.3905-1.4142 0-.5293.5293-.757.7561-1.2929.7561-.5359 0-.7636-.2268-1.2929-.7561-.3905-.3905-1.0237-.3905-1.4142 0Z" clip-rule="evenodd" />
+                                <svg className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                    <path fillRule="evenodd" d="M11.4453 3.16795c.3359-.22393.7735-.22393 1.1094 0l6 4c.4595.30635.5837.92722.2773 1.38675-.1925.28877-.5092.44511-.832.44541-.1748.00016-.3515-.04546-.5112-.1406-.0146-.00873-.0292-.01789-.0435-.02746L16 7.86853v8.59597l-.2322-.2323c-.9763-.9763-2.5593-.9763-3.5356 0-.9763.9763-.9763 2.5593 0 3.5356L13.4645 21H8V7.86853l-1.44532.96352c-.45952.30635-1.08039.18218-1.38675-.27735-.30635-.45953-.18217-1.0804.27735-1.38675l6.00002-4ZM11 11c-.5523 0-1 .4477-1 1s.4477 1 1 1h2c.5523 0 1-.4477 1-1s-.4477-1-1-1h-2Zm-1-2c0-.55228.4477-1 1-1h2c.5523 0 1 .44772 1 1s-.4477 1-1 1h-2c-.5523 0-1-.44772-1-1Z" clipRule="evenodd" />
+                                    <path d="M21 13.708v-1.583c0-.448-.298-.8414-.7293-.9627L18 10.5237v3.9408l.2322-.2323c.7484-.7483 1.853-.923 2.7678-.5242ZM6 10.5237l-2.27075.6386C3.29797 11.2836 3 11.677 3 12.125V20c0 .5523.44772 1 1 1h2V10.5237Z" />
+                                    <path fillRule="evenodd" d="M20.7071 15.2929c.3905.3905.3905 1.0237 0 1.4142l-4 4c-.3905.3905-1.0237.3905-1.4142 0l-2-2c-.3905-.3905-.3905-1.0237 0-1.4142.3905-.3905 1.0237-.3905 1.4142 0L16 18.5858l3.2929-3.2929c.3905-.3905 1.0237-.3905 1.4142 0Z" clipRule="evenodd" />
                                 </svg>
+
 
                                 <span className="flex-1 ms-3 whitespace-nowrap">Supervision</span>
                             </NavLink>
                         </li>}
-                        {(role === "admin" || role === "staff") && <li>
+
+
+                        {(userProfile.role === "admin" || userProfile.role === "staff") && <li>
                             <NavLink to="/projects" className={({ isActive }) =>
                                 `flex items-center p-2 rounded-lg group transition-colors dark:text-white duration-200 ${isActive
                                     ? "bg-gray-200 text-gray-900 dark:bg-gray-700 "
                                     : "text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 group"
                                 }`
                             }>
-                                <svg className="w-6 h-6 text-gray-500 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                <svg className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12.4472 2.10557c-.2815-.14076-.6129-.14076-.8944 0L5.90482 4.92956l.37762.11119c.01131.00333.02257.00687.03376.0106L12 6.94594l5.6808-1.89361.3927-.13363-5.6263-2.81313ZM5 10V6.74803l.70053.20628L7 7.38747V10c0 .5523-.44772 1-1 1s-1-.4477-1-1Zm3-1c0-.42413.06601-.83285.18832-1.21643l3.49538 1.16514c.2053.06842.4272.06842.6325 0l3.4955-1.16514C15.934 8.16715 16 8.57587 16 9c0 2.2091-1.7909 4-4 4-2.20914 0-4-1.7909-4-4Z" />
                                     <path d="M14.2996 13.2767c.2332-.2289.5636-.3294.8847-.2692C17.379 13.4191 19 15.4884 19 17.6488v2.1525c0 1.2289-1.0315 2.1428-2.2 2.1428H7.2c-1.16849 0-2.2-.9139-2.2-2.1428v-2.1525c0-2.1409 1.59079-4.1893 3.75163-4.6288.32214-.0655.65589.0315.89274.2595l2.34883 2.2606 2.3064-2.2634Z" />
                                 </svg>
@@ -208,7 +247,7 @@ const SideHeader = ({ children, role }) => {
                             </NavLink>
                         </li>}
 
-                        {(role === "staff") && <li>
+                        {(userProfile.role === "staff") && <li>
                             <NavLink to="/assigned-students" className={({ isActive }) =>
                                 `flex items-center p-2 rounded-lg group transition-colors dark:text-white duration-200 ${isActive
                                     ? "bg-gray-200 text-gray-900 dark:bg-gray-700 "
@@ -222,7 +261,7 @@ const SideHeader = ({ children, role }) => {
                                 <span className="flex-1 ms-3 whitespace-nowrap">Assigned </span>
                             </NavLink>
                         </li>}
-                        {role === "student" && <li>
+                        {userProfile.role === "student" && <li>
                             <NavLink to="/student-projects" className={({ isActive }) =>
                                 `flex items-center p-2 rounded-lg group transition-colors dark:text-white duration-200 ${isActive
                                     ? "bg-gray-200 text-gray-900 dark:bg-gray-700 "
@@ -235,7 +274,7 @@ const SideHeader = ({ children, role }) => {
                                 <span className="flex-1 ms-3 whitespace-nowrap">Project</span>
                             </NavLink>
                         </li>}
-                        {role === "admin" && <li>
+                        {userProfile.role === "admin" && <li>
                             <NavLink to="/admin-register" className={({ isActive }) =>
                                 `flex items-center p-2 rounded-lg group transition-colors dark:text-white duration-200 ${isActive
                                     ? "bg-gray-200 text-gray-900 dark:bg-gray-700 "
@@ -250,19 +289,6 @@ const SideHeader = ({ children, role }) => {
                                 <span className="flex-1 ms-3 whitespace-nowrap">Create new user</span>
                             </NavLink>
                         </li>}
-                        {role === "admin" && <li>
-                            <NavLink to="/login" className={({ isActive }) =>
-                                `flex items-center p-2 rounded-lg group transition-colors dark:text-white duration-200 ${isActive
-                                    ? "bg-gray-200 text-gray-900 dark:bg-gray-700 "
-                                    : "text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 group"
-                                }`
-                            }>
-                                <svg className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 16">
-                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 8h11m0 0L8 4m4 4-4 4m4-11h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3" />
-                                </svg>
-                                <span className="flex-1 ms-3 whitespace-nowrap">Sign In as user</span>
-                            </NavLink>
-                        </li>}
                         <NavLink to="/profile" className={({ isActive }) =>
                             `flex items-center p-2 rounded-lg group transition-colors dark:text-white duration-200 ${isActive
                                 ? "bg-gray-200 text-gray-900 dark:bg-gray-700 "
@@ -270,7 +296,7 @@ const SideHeader = ({ children, role }) => {
                             }`
                         }>
                             <svg className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                <path fill-rule="evenodd" d="M4 4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H4Zm10 5a1 1 0 0 1 1-1h3a1 1 0 1 1 0 2h-3a1 1 0 0 1-1-1Zm0 3a1 1 0 0 1 1-1h3a1 1 0 1 1 0 2h-3a1 1 0 0 1-1-1Zm0 3a1 1 0 0 1 1-1h3a1 1 0 1 1 0 2h-3a1 1 0 0 1-1-1Zm-8-5a3 3 0 1 1 6 0 3 3 0 0 1-6 0Zm1.942 4a3 3 0 0 0-2.847 2.051l-.044.133-.004.012c-.042.126-.055.167-.042.195.006.013.02.023.038.039.032.025.08.064.146.155A1 1 0 0 0 6 17h6a1 1 0 0 0 .811-.415.713.713 0 0 1 .146-.155c.019-.016.031-.026.038-.04.014-.027 0-.068-.042-.194l-.004-.012-.044-.133A3 3 0 0 0 10.059 14H7.942Z" clip-rule="evenodd" />
+                                <path fillRule="evenodd" d="M4 4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H4Zm10 5a1 1 0 0 1 1-1h3a1 1 0 1 1 0 2h-3a1 1 0 0 1-1-1Zm0 3a1 1 0 0 1 1-1h3a1 1 0 1 1 0 2h-3a1 1 0 0 1-1-1Zm0 3a1 1 0 0 1 1-1h3a1 1 0 1 1 0 2h-3a1 1 0 0 1-1-1Zm-8-5a3 3 0 1 1 6 0 3 3 0 0 1-6 0Zm1.942 4a3 3 0 0 0-2.847 2.051l-.044.133-.004.012c-.042.126-.055.167-.042.195.006.013.02.023.038.039.032.025.08.064.146.155A1 1 0 0 0 6 17h6a1 1 0 0 0 .811-.415.713.713 0 0 1 .146-.155c.019-.016.031-.026.038-.04.014-.027 0-.068-.042-.194l-.004-.012-.044-.133A3 3 0 0 0 10.059 14H7.942Z" clipRule="evenodd" />
                             </svg>
                             <span className="flex-1 ms-3 whitespace-nowrap">Profile</span>
                         </NavLink>

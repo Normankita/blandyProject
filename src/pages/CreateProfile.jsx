@@ -3,7 +3,6 @@ import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
-import DragAndDrop from '../components/DragAndDrop';
 import { UserForm } from './admin/components/UserForm';
 import { serverTimestamp } from "firebase/firestore";
 import { useData } from '../contexts/DataContext';
@@ -12,13 +11,14 @@ const CreateProfile = () => {
   const [profileImage, setProfileImage] = useState(null);
 
   const { addData, setUserProfile, uploadFile } = useData();
-  const { user } = useAuth();
+
+
+  const { user, logout } = useAuth();
   const datepickerRef = useRef(null);
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
-  const { logout } = useAuth();
   const [error, setError] = useState({
-    nameError: "",
+    fullNameError: "",
     doBError: "",
     genderError: "",
     maritalStatError: "",
@@ -61,10 +61,10 @@ const CreateProfile = () => {
     } else if (name === "repassword") {
       setError(prev => ({ ...prev, passwordError: value !== formData.password ? "Passwords do not match!" : "" }));
       setFormData(prev => ({ ...prev, repassword: value }));
-    } else if (name === "fullName") {
+    } else if (name === "name") {
       const parts = value.trim().split(" ");
       setError(prev => ({ ...prev, nameError: parts.length < 2 ? "Please enter first and last name" : "" }));
-      setFormData(prev => ({ ...prev, fullName: value }));
+      setFormData(prev => ({ ...prev, name: value }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -72,13 +72,12 @@ const CreateProfile = () => {
 
 
   const handleSubmit = async (e) => {
-     console.log("form data", formData);
   e.preventDefault();
   setSubmitting(true);
  
 
   if (!user || !user.uid) {
-    toast.error("User not authenticated");
+    toast.error(`User not authenticated`);
     return;
   }
 
@@ -98,7 +97,7 @@ const CreateProfile = () => {
 
   const updatedFormData = {
     ...formData,
-    name: formData.fullName,
+    name: formData.fullName.trim(),
     doB: new Date(formData.doB).toISOString(),
     createdAt: serverTimestamp(),
     uid: user.uid,
@@ -107,15 +106,15 @@ const CreateProfile = () => {
     status: formData.role === "student" ? "active" : "pending",
   };
 
-  delete updatedFormData.fullName;
 
   try {
     const id = await addData("users", updatedFormData, user.uid);
     if (id) {
       toast.success(`Profile created successfully`);
       if (updatedFormData.status === "pending") {
-        logout();
-        navigate('/login');
+        if(logout()){
+          navigate("/login")
+        }
         return;
       }
       setUserProfile(updatedFormData);

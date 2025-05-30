@@ -83,7 +83,7 @@ const LoginPage = () => {
           <span><img src="/sitelogo.png" alt="" /></span>
           <span>MZUMBE ACADEMIC PORTAL</span>
         </a>
-        <div className="w-full bg-white rounded-lg dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 shadow-xl shadow-slate-900/10 dark:shadow-black/40">
+        <div className="w-full md:mt-0 sm:max-w-md xl:p-0 bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-950 p-6 rounded-sm dark:text-gray-300 text-gray-800 duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white flex flex-col items-center w-full">
               Sign in
@@ -92,12 +92,12 @@ const LoginPage = () => {
               <div>
                 <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Email</label>
                 <input type="email" name="email" id="email" value={form.email}
-                  onChange={handleChange} className="bg-gray-50 border border-gray-300 text-gray-600 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"  required />
+                  onChange={handleChange} className="bg-gray-50 border border-gray-300 text-gray-700 font-bold rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "  required />
               </div>
               <div>
                 <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
                 <input type="password" value={form.password}
-                  onChange={handleChange} name="password" id="password"  className="bg-gray-50 border border-gray-300 text-gray-600 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-15" required />
+                  onChange={handleChange} name="password" id="password"  className="bg-gray-50 border border-gray-300 text-gray-700 font-bold rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-15" required />
               </div>
               
               <SiteButton text={"Sign in"} loadText="Authenticating..." loading={loading}/>

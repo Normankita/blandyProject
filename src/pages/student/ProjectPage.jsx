@@ -67,54 +67,56 @@ const ProjectPage = () => {
     if (selectedFile) setFile(selectedFile);
   };
 
-  const handleSave = async () => {
-    setLoading(true);
-    const storagePath = `StudentsProjectDocuments/${userProfile.uid}/${file?.name}`;
-    let documentUrl = "";
+const handleSave = async () => {
+  setLoading(true);
+  const storagePath = `StudentsProjectDocuments/${userProfile.uid}/${file?.name}`;
+  let documentUrl = "";
 
-    try {
-      if (file) {
-        if (currentProject?.documentUrl) {
-          deleteFile(currentProject.documentUrl);
-        }
-        documentUrl = await uploadFile(file, storagePath);
+  try {
+    if (file) {
+      if (currentProject?.documentUrl) {
+        deleteFile(currentProject.documentUrl);
       }
-
-      if (!documentUrl && currentProject?.documentUrl) {
-        documentUrl = currentProject.documentUrl;
-      }
-
-      const baseData = {
-        ...form,
-        description: editorContent,
-        studentId: userProfile.uid,
-        supervisorId: userProfile.supervisorId,
-        documentUrl,
-      };
-
-      if (currentProject) {
-        await updateData("projects", currentProject.id, {
-          ...baseData,
-          updatedAt: new Date(),
-        });
-        toast.success("Project updated");
-      } else {
-        await addData("projects", {
-          ...baseData,
-          createdAt: new Date(),
-        });
-        toast.success("Project submitted");
-      }
-
-      setLoading(false);
-      setIsModalOpen(false);
-      loadProjects();
-    } catch (err) {
-      setLoading(false);
-      toast.error("Failed to save project");
-      console.log("here", err);
+      documentUrl = await uploadFile(file, storagePath);
     }
-  };
+
+    if (!documentUrl && currentProject?.documentUrl) {
+      documentUrl = currentProject.documentUrl;
+    }
+
+    const baseData = {
+      ...form,
+      description: editorContent,
+      studentId: userProfile.uid,
+      supervisorId: userProfile.supervisorId,
+      panelId: userProfile.panelId || null, 
+      documentUrl,
+    };
+
+    if (currentProject) {
+      await updateData("projects", currentProject.id, {
+        ...baseData,
+        updatedAt: new Date(),
+      });
+      toast.success("Project updated");
+    } else {
+      await addData("projects", {
+        ...baseData,
+        createdAt: new Date(),
+      });
+      toast.success("Project submitted");
+    }
+
+    setLoading(false);
+    setIsModalOpen(false);
+    loadProjects();
+  } catch (err) {
+    setLoading(false);
+    toast.error("Failed to save project");
+    console.log("here", err);
+  }
+};
+
 
   const handleDelete = async (id) => {
     const documentToDelete = projects.find((p) => p.id === id);

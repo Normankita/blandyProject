@@ -10,58 +10,78 @@ const SupervisionPage = () => {
     const [selectedSupervisor, setSelectedSupervisor] = useState(null);
     const [assignedStudents, setAssignedStudents] = useState([]);
 
-    // Grab all supervisors (staff) from db
+
     const { formattedData: supervisors, loading: loadingSupervisors } = useTableData({
         path: 'users',
         filters: [{ field: 'role', op: '==', value: 'staff' }],
     });
 
-    // Grab all students from db
     const { formattedData: students, loading: loadingStudents } = useTableData({
         path: 'users',
         filters: [{ field: 'role', op: '==', value: 'student' }],
     });
 
-    // Only show supervisors that match what you type in the search box
+    const { formattedData: departments, loading: loadingDepartments } = useTableData({
+        path: 'departments'
+    });
+
     const filteredSupervisors = supervisors.filter(
         (sup) =>
             sup.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             sup.department?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // When you click "Assign" on a student, add them to the list for this supervisor
-    const handleAddStudentToSupervisor = (student) => {
+    const handleAddStudentToSupervisor = async (student) => {
         if (!selectedSupervisor) return;
 
-        const updatedStudent = { ...student, supervisorId: selectedSupervisor.id };
+        if (student.department !== selectedSupervisor.department) {
+            toast.warning('Student must belong to the same department as the supervisor.');
+            return;
+        }
 
-        // Don't add the same student twice
-        setAssignedStudents((prev) =>
-            prev.some((s) => s.id === student.id) ? prev : [...prev, updatedStudent]
-        );
-    };
+        const updatedStudent = {
+            ...student,
+            supervisorId: selectedSupervisor.id,
+            panelId: selectedSupervisor.panelId || null,
+        };
 
-    // When you hit "Commit Changes", actually update the db for all assigned students
-    const handleCommitChanges = async () => {
-        try {
-            await Promise.all(
-                assignedStudents.map((student) =>
-                    updateData('users', student.id, { supervisorId: selectedSupervisor.id })
-                )
-            );
-            toast.success('All students successfully assigned!');
-            setAssignedStudents([]);
-        } catch (err) {
-            console.error('Error committing assignments:', err);
-            toast.error('Failed to assign students.');
+        const alreadyAssigned = assignedStudents.some((s) => s.id === student.id);
+        if (!alreadyAssigned) {
+            try {
+                await updateData('users', student.id, {
+                    supervisorId: selectedSupervisor.id,
+                    panelId: selectedSupervisor.panelId || null,
+                });
+
+                setAssignedStudents((prev) => [...prev, updatedStudent]);
+                toast.success(`${student.name} assigned successfully.`);
+            } catch (err) {
+                toast.error(`Failed to assign ${student.name}`);
+            }
         }
     };
 
-    // Figure out which students are NOT assigned to any supervisor yet
+
+    const handleRemoveStudentFromSupervisor = async (studentId) => {
+        try {
+            await updateData('users', studentId, {
+                supervisorId: '',
+                panelId: '',
+            });
+
+            setAssignedStudents((prev) => prev.filter((s) => s.id !== studentId));
+            toast.success('Student removed from supervisor.');
+        } catch (err) {
+            toast.error('Failed to remove student.');
+        }
+    };
+
+
     const localUnassignedStudents = students.filter(
         (student) =>
-            !student.supervisorId && // no supervisor in db
-            !assignedStudents.some((s) => s.id === student.id) // not already in our local list
+            !student.supervisorId &&
+            !assignedStudents.some((s) => s.id === student.id) &&
+            selectedSupervisor && student.department === selectedSupervisor.department
     );
 
     return (
@@ -89,7 +109,6 @@ const SupervisionPage = () => {
                             key={supervisor.id}
                             onClick={() => {
                                 setSelectedSupervisor(supervisor);
-                                // When you click a supervisor, show all students already assigned to them
                                 const alreadyAssigned = students.filter(
                                     (s) => s.supervisorId === supervisor.id
                                 );
@@ -98,7 +117,7 @@ const SupervisionPage = () => {
                             className="cursor-pointer border rounded-lg p-4 hover:bg-gray-100 dark:bg-slate-900 dark:hover:bg-slate-950 duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40"
                         >
                             <h3 className="font-bold text-lg">{supervisor.name}</h3>
-                            <p className="text-sm text-gray-600">{supervisor.department || 'No Department'}</p>
+                            <p className="text-sm text-gray-600">{departments.find((d) => d.id === supervisor.department)?.name || 'No Department'}</p>
                         </div>
                     ))
                 )}
@@ -110,24 +129,29 @@ const SupervisionPage = () => {
                         <h2 className="text-xl font-semibold mb-2">Supervisor Details</h2>
                         <p><strong>Name:</strong> {selectedSupervisor.name}</p>
                         <p><strong>Email:</strong> {selectedSupervisor.email}</p>
-                        <p><strong>Department:</strong> {selectedSupervisor.department || 'N/A'}</p>
+                        <p><strong>Department:</strong> {departments.find((d) => d.id === selectedSupervisor.department)?.name || 'N/A'}</p>
                     </div>
 
                     <div className="mb-6">
                         <h2 className="text-lg font-semibold mb-2">Assigned Students</h2>
-                        {/* This table shows all students currently assigned to this supervisor */}
                         <TableComponent
                             ItemData={assignedStudents}
                             headers={['name', 'email']}
                             title="Students under Supervision"
                             isLoading={false}
-                            customActions={() => null}
+                            customActions={(student) => (
+                                <button
+                                    className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                                    onClick={() => handleRemoveStudentFromSupervisor(student.id)}
+                                >
+                                    Remove
+                                </button>
+                            )}
                         />
                     </div>
 
                     <div className="mb-6">
-                        <h2 className="text-lg font-semibold mb-2">Unassigned Students</h2>
-                        {/* This table shows students who don't have a supervisor yet */}
+                        <h2 className="text-lg font-semibold mb-2">Eligible Students for Assignment</h2>
                         <TableComponent
                             ItemData={localUnassignedStudents}
                             headers={['name', 'email']}
@@ -142,16 +166,6 @@ const SupervisionPage = () => {
                                 </button>
                             )}
                         />
-                    </div>
-
-                    <div className="mt-4">
-                        {/* When you click this, all the assignments get saved to the db */}
-                        <button
-                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                            onClick={handleCommitChanges}
-                        >
-                            Commit Changes
-                        </button>
                     </div>
                 </div>
             )}

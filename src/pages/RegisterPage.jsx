@@ -1,141 +1,186 @@
-import { useState } from "react";
-import { auth } from '../configs/firebase';
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setUser } from "../store/userSlice";
 import SiteButton from "../components/SiteButton";
-
+import { useAuth } from "@/contexts/AuthContext";
+import { useData } from "@/contexts/DataContext";
+import { toast } from "react-toastify";
 
 const RegisterPage = () => {
+  const [users, setUsers] = useState([]);
+  const [userForm, setUserForm] = useState({
+    email: "",
+    password: "",
+    rePassword: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [showSecretModal, setShowSecretModal] = useState(false);
+  const [secretInput, setSecretInput] = useState("");
+  const [matchedUser, setMatchedUser] = useState(null);
 
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const { register } = useAuth();
+  const { fetchData, addData, deleteData } = useData();
 
-    const [userForm, setUserForm] = useState({
-        email: "",
-        password: "",
-        rePassword: "",
-        acceptTerms: false
-    });
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setUserForm({
-            ...userForm,
-            [name]: value
-        });
-    };
+  const fetchUsers = async () => {
+    try {
+      const { data } = await fetchData({ path: "users" });
+      setUsers(data || []);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUserForm((prev) => ({ ...prev, [name]: value }));
+  };
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(userForm.email)) {
-            setError("Please enter a valid email address.");
-            setLoading(false);
-            return;
-        }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-        if (userForm.password !== userForm.rePassword) {
-            setError("Passwords do not match");
-            setLoading(false);
-            return;
-        }
-        try {
-            const res = await createUserWithEmailAndPassword(auth, userForm.email, userForm.password);
-            const token = await res.user.getIdToken();
+    const { email, password, rePassword } = userForm;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-            dispatch(setUser({
-                userState: {
-                    uid: res.user.uid,
-                    email: res.user.email,
-                    displayName: res.user.displayName,
-                    photoURL: res.user.photoURL,
-                },
-                token: token,
-            }));
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address.");
+      setLoading(false);
+      return;
+    }
 
-            navigate("/create-profile"); // redirect on success
-        }
-        catch (err) {
-            if (err.code === "auth/email-already-in-use") {
-                setError("This email is already in use.");
-            } else if (err.code === "auth/weak-password") {
-                setError("Password should be at least 6 characters.");
-            } else {
-                setError("An error occurred. Please try again.");
-            }
-        } finally {
-            setLoading(false);
-        }
-    };
+    if (password !== rePassword) {
+      setError("Passwords do not match.");
+      setLoading(false);
+      return;
+    }
 
-    return (
-        <>
-            <section className="bg-slate-200 dark:bg-gray-900">
-                <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-                    <a href="#" className="flex flex-col items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
-                    <span><img src="/sitelogo.png" alt="" /></span>
-                    <span>MZUMBE ACADEMIC PORTAL</span>
-                    </a>
-                    {error && <p className="text-red-500">{error}</p>}
-                    <div className="w-full bg-white rounded-lg dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 shadow-xl shadow-slate-900/10 dark:shadow-black/40 duration-300">
-                        <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-                            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white flex flex-col items-center">
-                                Create an account
-                            </h1>
-                            <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
-                                <div>
-                                    <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        id="email"
-                                        onChange={handleChange}
-                                        value={userForm.email}
-                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-                                </div>
-                                <div>
-                                    <label
-                                        htmlFor="password"
-                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                                    <input
-                                        type="password"
-                                        name="password"
-                                        id="password"
-                                    
-                                        onChange={handleChange}
-                                        value={userForm.password}
-                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-                                </div>
-                                <div>
-                                    <label htmlFor="confirm-password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm password</label>
-                                    <input
-                                        type="password"
-                                        name="rePassword"
-                                        id="confirm-password"
-                                    
-                                        onChange={handleChange}
-                                        value={userForm.rePassword}
-                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-                                </div>
-                               
-                                <SiteButton text={"Sign Up"} loadText="Creating account..." loading={loading}/>
-                                <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                                    Already have an account? <Link to="/login" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Login here</Link>
-                                </p>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </>
-    );
+    const existing = users.find((u) => u.email === email);
+
+    if (existing) {
+      if (existing.secretpass) {
+        setMatchedUser(existing);
+        setShowSecretModal(true);
+        setLoading(false);
+      } else {
+        setError("This email is already in use.");
+        setLoading(false);
+      }
+      return;
+    }
+
+    await proceedToRegister();
+  };
+
+  const proceedToRegister = async () => {
+    const { email, password } = userForm;
+    try {
+      const { user } = await register(email, password);
+      const newUser = {
+        ...matchedUser,
+        email,
+        uid: user.uid,
+      };
+      delete newUser.secretpass;
+
+      await addData("users", newUser, user.uid);
+      if (matchedUser?.id) {
+        await deleteData("users", matchedUser.id);
+      }
+
+      toast.success("Account created successfully!");
+      navigate("/create-profile");
+    } catch (err) {
+      if (err.code === "auth/email-already-in-use") {
+        setError("This email is already in use.");
+      } else if (err.code === "auth/weak-password") {
+        setError("Password should be at least 6 characters.");
+      } else {
+        setError("An error occurred. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSecretSubmit = () => {
+    if (secretInput.trim() === matchedUser.secretpass) {
+      setShowSecretModal(false);
+      proceedToRegister();
+    } else {
+      toast.error("Invalid secret key. Please contact admin or use a different email.");
+      setUserForm({ email: "", password: "", rePassword: "" });
+      setSecretInput("");
+      setShowSecretModal(false);
+    }
+  };
+
+  return (
+    <section className="bg-slate-200 dark:bg-gray-900">
+      <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        <a href="#" className="flex flex-col items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
+          <span><img src="/sitelogo.png" alt="" /></span>
+          <span>MZUMBE ACADEMIC PORTAL</span>
+        </a>
+
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+
+        <div className="w-full sm:max-w-md p-6 bg-slate-50 dark:bg-slate-900 rounded shadow">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div>
+              <label>Email</label>
+              <input type="email" name="email" value={userForm.email} onChange={handleChange}
+                className="w-full p-2 rounded border dark:bg-gray-800 dark:text-white" required />
+            </div>
+            <div>
+              <label>Password</label>
+              <input type="password" name="password" value={userForm.password} onChange={handleChange}
+                className="w-full p-2 rounded border dark:bg-gray-800 dark:text-white" required />
+            </div>
+            <div>
+              <label>Confirm Password</label>
+              <input type="password" name="rePassword" value={userForm.rePassword} onChange={handleChange}
+                className="w-full p-2 rounded border dark:bg-gray-800 dark:text-white" required />
+            </div>
+
+            <SiteButton text="Sign Up" loading={loading} loadText="Registering..." />
+            <p className="text-sm">
+              Already have an account? <Link to="/login" className="text-blue-600">Login here</Link>
+            </p>
+          </form>
+        </div>
+      </div>
+
+      {/* Secret Modal */}
+      {showSecretModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-md shadow-lg w-[90%] max-w-md text-center">
+            <h2 className="text-lg font-bold mb-4">Enter Secret Key</h2>
+            <input
+              type="text"
+              value={secretInput}
+              onChange={(e) => setSecretInput(e.target.value)}
+              className="w-full p-2 border rounded mb-4 dark:bg-gray-700 dark:text-white"
+              placeholder="Secret key"
+            />
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setShowSecretModal(false)} className="px-4 py-2 bg-gray-400 rounded text-white">
+                Cancel
+              </button>
+              <button onClick={handleSecretSubmit} className="px-4 py-2 bg-blue-600 rounded text-white">
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  );
 };
 
 export default RegisterPage;

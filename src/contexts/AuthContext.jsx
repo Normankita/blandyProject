@@ -127,6 +127,7 @@ export const AuthProvider = ({ children }) => {
       await signOut(auth); // Signs out the user
       setUser(null); // Clears the user state
       setToken(null); // Clears the token state
+      return true;
     } catch (error) {
       console.error("Logout error:", error);
       throw error; // Propagates the error to the caller

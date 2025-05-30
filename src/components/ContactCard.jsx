@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useData } from "@/contexts/DataContext";
 import Man from "@/assets/avatars/man.svg";
 import Woman from "@/assets/avatars/woman.svg";
+import { toast } from "react-toastify";
 
 const ContactCard = () => {
   const { userProfile } = useData();
@@ -25,9 +26,9 @@ const ContactCard = () => {
     status,
   } = userProfile;
 
+  console.log(photoUrl)
   const profileImage =
-    auth.currentUser?.photoURL ||
-    photoUrl || gender==="female" ? Woman : Man;
+    auth.currentUser?.photoURL ?auth.currentUser?.photoURL:photoUrl?photoUrl: gender==="female" ? Woman : Man;
 
   return (
     <div className="bg-slate-50 dark:bg-slate-900 p-6 min-h-150 max-h-400 shadow-lg shadow-slate-900/10 dark:shadow-black/40 dark:text-gray-300 text-gray-800  rounded-sm duration-300">
@@ -113,8 +114,8 @@ const ContactCard = () => {
 
       {/* Edit Button */}
       <div className="mt-6">
-        <Link to="/admin/edit-profile">
-          <button className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-bold rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-gray-600 dark:hover:bg-slate-950 dark:hover:border-gray-600 dark:focus:ring-gray-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 mt-10 ">
+        <Link to="/">
+          <button  className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-bold rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-gray-600 dark:hover:bg-slate-950 dark:hover:border-gray-600 dark:focus:ring-gray-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 mt-10 ">
             Edit Profile
           </button>
         </Link>

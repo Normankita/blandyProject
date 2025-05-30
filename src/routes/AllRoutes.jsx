@@ -1,21 +1,23 @@
 // components/AllRoutes.jsx
 import { AnimatePresence } from "framer-motion";
 import { Route, Routes, useLocation } from "react-router-dom";
-import pages from "../pages";
-import admin from "../pages/admin";
-import student from "../pages/student";
-import staff from "../pages/supervisor";
+import pages from "@/pages";
+import admin from "@/pages/admin";
+import student from "@/pages/student";
+import staff from "@/pages/supervisor";
 import ProtectedRoutes from "./ProtectedRoutes";
-import useTitle from "../hooks/useTitle";
+import useTitle from "@/hooks/useTitle";
+import coordinator from "@/pages/coordinator";
 
 const AllRoutes = () => {
   const location = useLocation();
   useTitle();
 
   const { LoginPage, RegisterPage, PageNotFound, CreateProfile, UnAuthorized, Invoice } = pages;
-  const { DashboardPage, Projects, RegisterAdmin, Users, UserProfile, SupervisionPage } = admin;
+  const { DashboardPage, Projects, RegisterAdmin, Users, UserProfile, SupervisionPage, DepartmentsPage } = admin;
   const { StudentDashboardPage, ProjectPage } = student;
   const { StaffDashboardPage, AssignedStudents } = staff;
+  const {PanelManagementPage}= coordinator;
 
   return (
     <AnimatePresence mode="wait">
@@ -28,9 +30,11 @@ const AllRoutes = () => {
         {/* Dashboards */}
         <Route path="/student-dashboard" element={<ProtectedRoutes allow={["student"]} profiled><StudentDashboardPage /></ProtectedRoutes>} />
         <Route path="/admin-dashboard" element={<ProtectedRoutes allow={["admin"]} profiled><DashboardPage /></ProtectedRoutes>} />
+        <Route path="/departments" element={<ProtectedRoutes allow={["admin"]} profiled><DepartmentsPage /></ProtectedRoutes>} />
         <Route path="/staff-dashboard" element={<ProtectedRoutes allow={["staff"]} profiled><StaffDashboardPage /></ProtectedRoutes>} />
+        <Route path="/panel-management" element={<ProtectedRoutes allow={["staff"]} profiled><PanelManagementPage /></ProtectedRoutes>} />
         <Route path="/assigned-students" element={<ProtectedRoutes allow={["staff"]} profiled><AssignedStudents /></ProtectedRoutes>} />
-        <Route path="/supervision" element={<ProtectedRoutes allow={["admin"]} profiled><SupervisionPage /></ProtectedRoutes>} />
+        <Route path="/supervision" element={<ProtectedRoutes allow={["staff"]} profiled><SupervisionPage /></ProtectedRoutes>} />
         {/* Functional Routes */}
         <Route path="/invoice" element={<ProtectedRoutes allow={["student", "staff", "admin"]} profiled><Invoice /></ProtectedRoutes>} />
         <Route path="/profile" element={<ProtectedRoutes allow={["student", "staff", "admin"]} profiled><UserProfile /></ProtectedRoutes>} />
