@@ -63,8 +63,8 @@ const CreateProfile = () => {
       setFormData(prev => ({ ...prev, repassword: value }));
     } else if (name === "fullName") {
       const parts = value.trim().split(" ");
-      setError(prev => ({ ...prev, nameError: parts.length < 2 ? "Please enter first and last name" : "" }));
-      setFormData(prev => ({ ...prev, name: value }));
+      setError(prev => ({ ...prev, fullNameError: parts.length < 2 ? "Please enter first and last name" : "" }));
+      setFormData(prev => ({ ...prev, fullName: value }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
