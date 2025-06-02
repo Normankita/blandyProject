@@ -145,7 +145,7 @@ const SupervisionPage = () => {
                             isLoading={false}
                             customActions={(student) => (
                                 <button
-                                    className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                                    className="text-gray-900 bg-white border  focus:outline-none focus:ring-4 font-bold rounded-full text-sm px-4 py-1.5 me-2 dark:bg-slate-900 dark:text-white  dark:hover:bg-slate-950 shadow-lg shadow-slate-900/10 dark:shadow-black/40 flex flex-row gap-1 items-center dark:focus:ring-red-700 dark:hover:border-red-600 dark:border-red-600 hover:bg-red-100 border-red-300 focus:ring-red-100"
                                     onClick={() => handleRemoveStudentFromSupervisor(student.id)}
                                 >
                                     Remove
@@ -163,7 +163,7 @@ const SupervisionPage = () => {
                             isLoading={loadingStudents}
                             customActions={(student) => (
                                 <button
-                                    className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                    className="text-gray-900 bg-white border  focus:outline-none focus:ring-4 font-bold rounded-full text-sm px-4 py-1.5 me-2 dark:bg-slate-900 dark:text-white  dark:hover:bg-slate-950 shadow-lg shadow-slate-900/10 dark:shadow-black/40 flex flex-row gap-1 items-center dark:focus:ring-green-700 dark:hover:border-green-600 dark:border-green-600 hover:bg-green-100 border-green-300 focus:ring-green-100"
                                     onClick={() => handleAddStudentToSupervisor(student)}
                                 >
                                     Assign
