@@ -35,7 +35,7 @@ const useTableData = ({ path, sort, filters = [], transformData }) => {
   // Load data on mount or dependency change
   useEffect(() => {
     loadData();
-  }, [loadData]);
+  }, []);
 
   // Return data, loading state, and manual refresh function
   return {

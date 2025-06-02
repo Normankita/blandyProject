@@ -44,7 +44,7 @@ const Users = () => {
     role: 'User Role',
   };
 
-  const filterOut = ['password', 'repassword', 'createdBy', 'updatedBy', 'lastLoginAt', 'id', 'githubUrl', 'photoUrl', 'isActive', 'gitHubUrl', 'uid', 'doB', 'supervisorId', 'registrationNumber', 'mobNo', 'email', 'department', 'region', 'gender', 'program'];
+  const filterOut = ['password', 'repassword', 'createdBy', 'updatedBy', 'lastLoginAt', 'id', 'githubUrl', 'photoUrl', 'isActive', 'gitHubUrl', 'uid', 'doB', 'supervisorId', 'registrationNumber', 'mobNo', 'email', 'department', 'region', 'gender', 'program','panelId','secretpass'];
 
   const handleStatusChange = async (userId, newStatus) => {
     if (userId === userProfile?.uid || userId === userProfile?.uid) {

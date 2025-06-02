@@ -39,7 +39,7 @@ const SupervisionPage = () => {
             return;
         }
         if(!selectedSupervisor.panelId){
-            toast.warning('Supervisor must be belong to a panel.');
+            toast.warning('Supervisor must be belonging to a panel.');
             return;
         }
 

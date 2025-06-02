@@ -22,7 +22,7 @@ const TableComponent = ({
   excludeFields = [],
   transformFields = {},
   headerLabels = {},
-  customActions = () => null, 
+  customActions = () => null,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [entriesPerPage, setEntriesPerPage] = useState(5);
@@ -30,7 +30,7 @@ const TableComponent = ({
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const norow = useRef();
 
-  const count=0;
+  const count = 0;
 
   const visibleHeaders = useMemo(() => {
     return headers.filter(
@@ -137,18 +137,21 @@ const TableComponent = ({
       <div className="overflow-x-auto">
         <table className="w-full table-auto">
           <thead>
-            <tr className="bg-gray-200 dark:bg-gray-700 text-left">
+            <tr className="bg-gray-200 dark:bg-gray-700 text-left ">
               <th className='cursor-pointer select-none py-4 px-4 font-medium text-black dark:text-white'>#</th>
               {visibleHeaders.map(heading => (
                 <th
                   key={heading}
                   onClick={() => handleSort(heading)}
-                  className="cursor-pointer select-none min-w-[100px] py-4 px-4 font-medium text-black dark:text-white"
+                  className="cursor-pointer select-none min-w-[110px] py-4 px-4 text-black dark:text-white font-bold uppercase text-sm "
                 >
-                  {headerLabels[heading] || heading} <span>{getSortIcon(heading)}</span>
+                  <span className='flex flex-col items-center'>
+                    {headerLabels[heading] || heading} <span>{getSortIcon(heading)}</span>
+                  </span>
+                  
                 </th>
               ))}
-              <th className="py-4 px-4 font-medium text-black dark:text-white flex flex-col items-center">Actions</th>
+              <th className="py-4 px-4 text-black dark:text-white flex flex-col items-center font-bold uppercase">Actions</th>
             </tr>
           </thead>
 
@@ -197,17 +200,25 @@ const TableComponent = ({
         <button
           onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
-          className={`px-4 py-2 rounded ${currentPage === 1 ? 'bg-gray-300 dark:bg-gray-500' : 'bg-blue-500 text-white'}`}
+          className={`flex flex-row gap-2 items-center text-slate-900 bg-white border border-blue-300 focus:outline-none hover:bg-slate-100 focus:ring-4 focus:ring-blue-100 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-blue-600 dark:hover:bg-slate-950 dark:hover:border-slate-600 dark:focus:ring-blue-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 duration-300  ${currentPage === 1 ? 'bg-gray-300 dark:bg-gray-500 cursor-not-allowed' : 'bg-blue-500 '} `}
         >
+          <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14M5 12l4-4m-4 4 4 4" />
+          </svg>
           Previous
         </button>
         <span>Page {currentPage} of {totalPages}</span>
         <button
           onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
           disabled={currentPage === totalPages}
-          className={`px-4 py-2 rounded ${currentPage === totalPages ? 'bg-gray-300 dark:bg-gray-500' : 'bg-blue-500 text-white'}`}
+          className={`flex flex-row gap-2 items-center text-slate-900 bg-white border border-blue-300 focus:outline-none hover:bg-slate-100 focus:ring-4 focus:ring-blue-100 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-blue-600 dark:hover:bg-slate-950 dark:hover:border-slate-600 dark:focus:ring-blue-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 duration-300  ${currentPage === totalPages ? 'bg-gray-300 dark:bg-gray-500 cursor-not-allowed' : 'bg-blue-500'}`}
         >
+
           Next
+          <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 12H5m14 0-4 4m4-4-4-4" />
+          </svg>
+
         </button>
       </div>
     </div>

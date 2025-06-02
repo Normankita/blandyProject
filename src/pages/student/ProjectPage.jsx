@@ -67,55 +67,55 @@ const ProjectPage = () => {
     if (selectedFile) setFile(selectedFile);
   };
 
-const handleSave = async () => {
-  setLoading(true);
-  const storagePath = `StudentsProjectDocuments/${userProfile.uid}/${file?.name}`;
-  let documentUrl = "";
+  const handleSave = async () => {
+    setLoading(true);
+    const storagePath = `StudentsProjectDocuments/${userProfile.uid}/${file?.name}`;
+    let documentUrl = "";
 
-  try {
-    if (file) {
-      if (currentProject?.documentUrl) {
-        deleteFile(currentProject.documentUrl);
+    try {
+      if (file) {
+        if (currentProject?.documentUrl) {
+          deleteFile(currentProject.documentUrl);
+        }
+        documentUrl = await uploadFile(file, storagePath);
       }
-      documentUrl = await uploadFile(file, storagePath);
+
+      if (!documentUrl && currentProject?.documentUrl) {
+        documentUrl = currentProject.documentUrl;
+      }
+
+      const baseData = {
+        ...form,
+        description: editorContent,
+        studentId: userProfile.uid,
+        supervisorId: userProfile.supervisorId,
+        panelId: userProfile.panelId || null,
+        documentUrl,
+      };
+
+      if (currentProject) {
+        await updateData("projects", currentProject.id, {
+          ...baseData,
+          updatedAt: new Date(),
+        });
+        toast.success("Project updated");
+      } else {
+        await addData("projects", {
+          ...baseData,
+          createdAt: new Date(),
+        });
+        toast.success("Project submitted");
+      }
+
+      setLoading(false);
+      setIsModalOpen(false);
+      loadProjects();
+    } catch (err) {
+      setLoading(false);
+      toast.error("Failed to save project");
+      console.log("here", err);
     }
-
-    if (!documentUrl && currentProject?.documentUrl) {
-      documentUrl = currentProject.documentUrl;
-    }
-
-    const baseData = {
-      ...form,
-      description: editorContent,
-      studentId: userProfile.uid,
-      supervisorId: userProfile.supervisorId,
-      panelId: userProfile.panelId || null, 
-      documentUrl,
-    };
-
-    if (currentProject) {
-      await updateData("projects", currentProject.id, {
-        ...baseData,
-        updatedAt: new Date(),
-      });
-      toast.success("Project updated");
-    } else {
-      await addData("projects", {
-        ...baseData,
-        createdAt: new Date(),
-      });
-      toast.success("Project submitted");
-    }
-
-    setLoading(false);
-    setIsModalOpen(false);
-    loadProjects();
-  } catch (err) {
-    setLoading(false);
-    toast.error("Failed to save project");
-    console.log("here", err);
-  }
-};
+  };
 
 
   const handleDelete = async (id) => {
@@ -166,10 +166,10 @@ const handleSave = async () => {
               {p.documentUrl && (
                 <a href={p.documentUrl} className="text-blue-500 underline ml-4" target="_blank" rel="noopener noreferrer">
                   <span className="flex">
-                    <svg className="w-8 h-8 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8v8a5 5 0 1 0 10 0V6.5a3.5 3.5 0 1 0-7 0V15a2 2 0 0 0 4 0V8" />
+                    <svg className="w-6 h-6 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2m-8 1V4m0 12-4-4m4 4 4-4" />
                     </svg>
-                    <p>Download Document</p>
+                    Document
                   </span>
                 </a>
               )}
@@ -182,7 +182,7 @@ const handleSave = async () => {
 
                   </span>
                 </button>
-                <button className="ml-auto cursor-pointer" onClick={() => handleDelete(p.id)}>
+                <button className="ml-auto cursor-pointer" onClick={() => p.status === "draft" && handleDelete(p.id)}>
                   <span>
                     <svg className={`w-6 h-6 ${p.status === "draft" ? "text-red-500 dark:text-red-600" : "text-gray-800 dark:text-gray-300"} `} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
@@ -225,12 +225,14 @@ const handleSave = async () => {
               onChange={handleChange}
             />
 
-            <input
-              type="file"
-              accept=".pdf,.doc,.docx"
-              onChange={handleFileChange}
-              className="w-full p-2 border"
-            />
+            {form.status !== "draft" &&
+              <input
+                type="file"
+                accept=".pdf,.doc,.docx"
+                onChange={handleFileChange}
+                className="w-full p-2 border"
+              />
+            }
 
             <TipTapEditor content={editorContent} setContent={setEditorContent} />
 
