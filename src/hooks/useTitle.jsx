@@ -7,7 +7,7 @@ const useTitle = (title='') => {
 
     useEffect(() => {
         // document.title = `${title? title: 'Welcome'} | Academic Portal`;
-        document.title = `${title ? title : pageTitle.charAt(0).toUpperCase() + pageTitle.slice(1)} | Academic Portal`;
+        document.title = `${title ? title : pageTitle.charAt(0).toUpperCase() + pageTitle.slice(1)} | FYP Management Portal`;
     }, [title, pageTitle]);
   return null}
 

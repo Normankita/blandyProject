@@ -125,7 +125,8 @@ const RegisterPage = () => {
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <a href="#" className="flex flex-col items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
           <span><img src="/sitelogo.png" alt="" /></span>
-          <span>MZUMBE ACADEMIC PORTAL</span>
+          <span className="uppercase">Mzumbe Fyp Management Portal</span>
+
         </a>
 
         {error && <p className="text-red-500 mb-4">{error}</p>}
