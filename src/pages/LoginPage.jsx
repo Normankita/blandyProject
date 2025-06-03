@@ -99,10 +99,11 @@ const LoginPage = () => {
                 <input type="password" value={form.password}
                   onChange={handleChange} name="password" id="password"  className="bg-gray-50 border border-gray-300 text-gray-700 font-bold rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-15" required />
               </div>
-              
-              <SiteButton text={"Sign in"} loadText="Authenticating..." loading={loading}/>
+              <div className="px-6">
+                <SiteButton text={"Sign in"} loadText="Authenticating..." loading={loading}/>
+              </div>
             </form>
-            <button  onClick={handleGoogleLogin} className={`flex items-center space-x-2 text-black border px-4 py-2 rounded-3xl bg-red-400 hover:bg-red-300 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium text-sm text-center dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-500 shadow-xl shadow-slate-900/10 dark:shadow-black/40 ${loading?'cursor-not-allowed':'cursor-pointer'}`} disabled={loading}>
+            <button  onClick={handleGoogleLogin} className={`text-gray-900 bg-red-200/40 border  focus:outline-none focus:ring-4 font-bold rounded-full text-sm px-4 py-1.5 me-2 dark:bg-slate-900 dark:text-white  dark:hover:bg-slate-950 shadow-lg shadow-slate-900/10 dark:shadow-black/40 flex flex-row gap-1 items-center dark:focus:ring-red-700 dark:hover:border-red-600 dark:border-red-600 hover:bg-red-100 border-red-300 focus:ring-red-100 ${loading?'cursor-not-allowed':'cursor-pointer'}`} disabled={loading}>
               <SiGoogle className="text-red-600 text-xl" />
               <span>Sign in with Google</span>
             </button>

@@ -18,7 +18,7 @@ const AllRoutes = () => {
   const { DashboardPage, Projects, RegisterAdmin, Users, UserProfile, SupervisionPage, DepartmentsPage } = admin;
   const { StudentDashboardPage, ProjectPage } = student;
   const { StaffDashboardPage, AssignedStudents } = staff;
-  const { MouPage, MouCreatePage, MouSignPage, ReviewerManagementPage } = mous;
+  const { MouPage, MouCreatePage, MouSignPage, ReviewerManagementPage, ReviewerMouPage } = mous;
   const {PanelManagementPage}= coordinator;
 
   return (
@@ -49,6 +49,7 @@ const AllRoutes = () => {
         <Route path="/mou-create" element={<ProtectedRoutes allow={["student", "staff", "admin"]} profiled><MouCreatePage /></ProtectedRoutes>}/>
         <Route path="/mou-sign" element={<ProtectedRoutes allow={["student", "staff", "admin"]} profiled><MouSignPage /></ProtectedRoutes>}/>
         <Route path="/mou-reviewer-management" element={<ProtectedRoutes allow={["admin"]} profiled><ReviewerManagementPage /></ProtectedRoutes>}/>
+        <Route path="/mou-reviewer-mou" element={<ProtectedRoutes allow={["staff"]} profiled><ReviewerMouPage /></ProtectedRoutes>}/>
 
 
         {/* Functional Routes */}

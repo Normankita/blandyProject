@@ -6,8 +6,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useData } from "@/contexts/DataContext";
 import { useFetchProfile } from "@/hooks/fetchProfile";
 import SideHeader from "@/components/layout/SideHeader";
+import Loading from "@/components/layout/Loading";
 
-const FullPageLoader = () => <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+const FullPageLoader = () => <Loading/>;
 
 const dashboardMap = {
   admin: "/admin-dashboard",

@@ -21,9 +21,9 @@ const MouSignPage = () => {
                 const { data: mous } = await fetchData({ path: "mous" });
 
                 const userMous = mous.filter((mou) =>
-                    mou.parties?.includes(userProfile.uid) &&
-                    !mou.signedBy?.includes(userProfile.uid)
+                    mou.parties?.some(p => p.partyId === userProfile.uid && !p.signedAt)
                 );
+
 
                 setMous(userMous);
             } catch (error) {
@@ -41,10 +41,15 @@ const MouSignPage = () => {
         setSigning((prev) => ({ ...prev, [mouId]: true }));
 
         try {
+            const mou = mous.find((mou) => mou.id === mouId);
+            const updatedParties = mou.parties.map(p =>
+                p.partyId === userProfile.uid ? { ...p, signedAt: new Date().toISOString() } : p
+            );
             await updateData("mous", mouId, {
-                signedBy: [...(mous.find((mou) => mou.id === mouId).signedBy || []), userProfile.uid],
+                parties: updatedParties,
                 updatedAt: new Date().toISOString(),
             });
+
 
             toast.success("MOU signed successfully");
 

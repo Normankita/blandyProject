@@ -18,6 +18,7 @@ const MouCreatePage = () => {
     const [submitting, setSubmitting] = useState(false);
 
 
+
     const location = useLocation();
     const { addData, updateData, userProfile, uploadFile } = useData();
 
@@ -44,28 +45,42 @@ const MouCreatePage = () => {
             setTitle(stateMou.title || '');
             setDescription(stateMou.description || '');
             setIsEditable(stateMou.status === 'pending');
-            setSelectedParties(stateMou.parties);
-            setSelectedReviewers(stateMou.reviewers);
+            setSelectedReviewers(stateMou.reviewers || []);
+            setSelectedParties((stateMou.parties || []));
+
         }
     }, [location.state]);
+
 
     const toggleParty = (user) => {
         if (!isEditable) return;
         setSelectedParties(prev =>
-            prev.some(p => p === user.id)
-                ? prev.filter(p => p !== user.id)
-                : [...prev, user.id]
+            prev.some(p => p.partyId === user.id)
+                ? prev.filter(p => p.partyId !== user.id)
+                : [...prev, { partyId: user.id, signedAt: null }]
         );
     };
 
+
     const toggleReviewer = (user) => {
         if (!isEditable) return;
-        setSelectedReviewers(prev =>
-            prev.some(r => r === user.id)
-                ? prev.filter(r => r !== user.id)
-                : [...prev, user.id]
-        );
+
+        const exists = selectedReviewers.some(r => r.reviewerId === user.id);
+        if (exists) {
+            setSelectedReviewers(prev => prev.filter(r => r.reviewerId !== user.id));
+        } else {
+            setSelectedReviewers(prev => [
+                ...prev,
+                {
+                    reviewerId: user.id,
+                    decision: null,
+                    comment: '',
+                    decidedAt: null
+                }
+            ]);
+        }
     };
+
 
     const handleSubmit = async () => {
         setSubmitting(true);
@@ -90,6 +105,7 @@ const MouCreatePage = () => {
             documentUrl,
             status: 'pending'
         };
+
 
         try {
             if (isEditMode && mouId) {
@@ -147,7 +163,7 @@ const MouCreatePage = () => {
                     onChange={handleFileChange}
                     className="max-w-xs p-2 border duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border-gray-300 rounded  cursor-pointer"
                 />
-,
+                ,
             </div>
             <div>
                 <h2 className="text-lg font-semibold mb-2">Select Involved Parties</h2>
@@ -158,11 +174,13 @@ const MouCreatePage = () => {
                     customActions={(user) => (
                         <Button
                             size="sm"
-                            variant={selectedParties.find(p => p === user.id) ? 'destructive' : 'default'}
+                            variant={selectedParties.find(p => p.partyId === user.id) ? 'destructive' : 'default'}
+
                             onClick={() => toggleParty(user)}
                             disabled={!isEditable || submitting}
                         >
-                            {selectedParties.find(p => p === user.id) ? 'Remove' : 'Add'}
+                            {selectedParties.find(p => p.partyId === user.id) ? 'Remove' : 'Add'}
+
                         </Button>
                     )}
                 />
@@ -174,17 +192,21 @@ const MouCreatePage = () => {
                     ItemData={reviewers}
                     headers={['name', 'email']}
                     isLoading={loadingUsers}
-                    customActions={(user) => (
-                        <Button
-                            size="sm"
-                            variant={selectedReviewers.find(r => r === user.id) ? 'destructive' : 'default'}
-                            onClick={() => toggleReviewer(user)}
-                            disabled={!isEditable}
-                        >
-                            {selectedReviewers.find(r => r === user.id) ? 'Remove' : 'Add'}
-                        </Button>
-                    )}
+                    customActions={(user) => {
+                        const isSelected = selectedReviewers.some(r => r.reviewerId === user.id);
+                        return (
+                            <Button
+                                size="sm"
+                                variant={isSelected ? 'destructive' : 'default'}
+                                onClick={() => toggleReviewer(user)}
+                                disabled={!isEditable || submitting}
+                            >
+                                {isSelected ? 'Remove' : 'Add'}
+                            </Button>
+                        );
+                    }}
                 />
+
             </div>
 
             {isEditable && (
