@@ -26,9 +26,8 @@ const MouSignPage = () => {
                 );
 
                 setMous(userMous);
-                console.log("MOUs awaiting signature:", userMous);
             } catch (error) {
-                console.error("Failed to fetch MOUs:", error);
+                toast.error("Failed to fetch MOUs:");
             } finally {
                 setLoading(false);
             }
@@ -51,7 +50,6 @@ const MouSignPage = () => {
 
             setMous((prev) => prev.filter((mou) => mou.id !== mouId));
         } catch (err) {
-            console.error(err);
             toast.error("Failed to sign MOU");
         } finally {
             setSigning((prev) => ({ ...prev, [mouId]: false }));
@@ -75,7 +73,7 @@ const MouSignPage = () => {
                             {mou.documentUrl && (
                                 <a href={mou.documentUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline ml-4 flex items-center gap-2 mt-2">
                                     <svg className="w-6 h-6 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2m-8 1V4m0 12-4-4m4 4 4-4" />
+                                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2m-8 1V4m0 12-4-4m4 4 4-4" />
                                     </svg>
                                     Document
                                 </a>

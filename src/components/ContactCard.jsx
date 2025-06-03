@@ -26,7 +26,6 @@ const ContactCard = ({userToDisplay=null}) => {
     status,
   } = userToDisplay??userProfile;
 
-  console.log(photoUrl)
   const profileImage =
     auth.currentUser?.photoURL ?auth.currentUser?.photoURL:photoUrl?photoUrl: gender==="female" ? Woman : Man;
 

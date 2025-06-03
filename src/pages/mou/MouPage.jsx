@@ -16,7 +16,6 @@ const MouPage = () => {
       sort: { field: 'createdAt', direction: 'desc' }
     }
   );
-  console.log(userProfile.uid);
   const navigate = useNavigate();
 
   const [selectedMou, setSelectedMou] = useState(null);
@@ -106,7 +105,7 @@ const MouPage = () => {
                     Delete
                   </Button>
                   <Button
-                    onClick={() => toast.info("Under Development, coming soon!")}
+                    onClick={() => handleEdit(selectedMou)}
                     className={`text-gray-900 bg-white border  focus:outline-none focus:ring-4 font-bold rounded-full text-sm px-4 py-1.5 me-2 dark:bg-slate-900 dark:text-white  dark:hover:bg-slate-950 shadow-lg shadow-slate-900/10 dark:shadow-black/40 flex flex-row gap-1 items-center dark:focus:ring-blue-700 dark:hover:border-blue-600 dark:border-blue-600 hover:bg-blue-100 border-blue-300 focus:ring-blue-100`}
                   >
                     Edit

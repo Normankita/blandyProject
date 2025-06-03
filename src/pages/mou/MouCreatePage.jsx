@@ -27,7 +27,10 @@ const MouCreatePage = () => {
         if (selectedFile) setFile(selectedFile);
     };
 
-    const { formattedData: users, loading: loadingUsers } = useTableData({ path: 'users' });
+    const { formattedData: users, loading: loadingUsers, refreshData } = useTableData({
+        path: 'users',
+        sort: { field: 'createdAt', direction: 'desc' },
+    });
 
     const reviewers = users.filter(user => user.role === 'staff' && user.isReviewer);
     const parties = users;
@@ -41,30 +44,26 @@ const MouCreatePage = () => {
             setTitle(stateMou.title || '');
             setDescription(stateMou.description || '');
             setIsEditable(stateMou.status === 'pending');
-
-            const selectedPartyObjs = users.filter(u => stateMou.parties.includes(u.id));
-            const selectedReviewerObjs = users.filter(u => stateMou.reviewers.includes(u.id));
-
-            setSelectedParties(selectedPartyObjs);
-            setSelectedReviewers(selectedReviewerObjs);
+            setSelectedParties(stateMou.parties);
+            setSelectedReviewers(stateMou.reviewers);
         }
-    }, [location.state, users]);
+    }, [location.state]);
 
     const toggleParty = (user) => {
         if (!isEditable) return;
         setSelectedParties(prev =>
-            prev.some(p => p.id === user.id)
-                ? prev.filter(p => p.id !== user.id)
-                : [...prev, user]
+            prev.some(p => p === user.id)
+                ? prev.filter(p => p !== user.id)
+                : [...prev, user.id]
         );
     };
 
     const toggleReviewer = (user) => {
         if (!isEditable) return;
         setSelectedReviewers(prev =>
-            prev.some(r => r.id === user.id)
-                ? prev.filter(r => r.id !== user.id)
-                : [...prev, user]
+            prev.some(r => r === user.id)
+                ? prev.filter(r => r !== user.id)
+                : [...prev, user.id]
         );
     };
 
@@ -85,8 +84,8 @@ const MouCreatePage = () => {
         const data = {
             title,
             description,
-            parties: selectedParties.map(u => u.id),
-            reviewers: selectedReviewers.map(u => u.id),
+            parties: selectedParties,
+            reviewers: selectedReviewers,
             updatedAt: new Date().toISOString(),
             documentUrl,
             status: 'pending'
@@ -148,9 +147,8 @@ const MouCreatePage = () => {
                     onChange={handleFileChange}
                     className="max-w-xs p-2 border duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border-gray-300 rounded  cursor-pointer"
                 />
-
+,
             </div>
-
             <div>
                 <h2 className="text-lg font-semibold mb-2">Select Involved Parties</h2>
                 <TableComponent
@@ -160,11 +158,11 @@ const MouCreatePage = () => {
                     customActions={(user) => (
                         <Button
                             size="sm"
-                            variant={selectedParties.some(p => p.id === user.id) ? 'destructive' : 'default'}
+                            variant={selectedParties.find(p => p === user.id) ? 'destructive' : 'default'}
                             onClick={() => toggleParty(user)}
-                            disabled={!isEditable||submitting}
+                            disabled={!isEditable || submitting}
                         >
-                            {selectedParties.some(p => p.id === user.id) ? 'Remove' : 'Add'}
+                            {selectedParties.find(p => p === user.id) ? 'Remove' : 'Add'}
                         </Button>
                     )}
                 />
@@ -179,11 +177,11 @@ const MouCreatePage = () => {
                     customActions={(user) => (
                         <Button
                             size="sm"
-                            variant={selectedReviewers.some(r => r.id === user.id) ? 'destructive' : 'default'}
+                            variant={selectedReviewers.find(r => r === user.id) ? 'destructive' : 'default'}
                             onClick={() => toggleReviewer(user)}
                             disabled={!isEditable}
                         >
-                            {selectedReviewers.some(r => r.id === user.id) ? 'Remove' : 'Add'}
+                            {selectedReviewers.find(r => r === user.id) ? 'Remove' : 'Add'}
                         </Button>
                     )}
                 />
