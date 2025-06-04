@@ -20,7 +20,7 @@ const RegisterAdmin = () => {
     fetchUsers();
   }, []);
 
-  const fetchUsers=()=>{
+  const fetchUsers = () => {
     fetchData({ path: "users" })
       .then((response) => {
         setCurrentUsers(response.data);
@@ -28,7 +28,7 @@ const RegisterAdmin = () => {
       .catch((error) => {
         console.error("Error fetching users:", error);
       });
-  }
+  };
 
   const [error, setError] = useState({
     fullNameError: "",
@@ -101,7 +101,7 @@ const RegisterAdmin = () => {
         passwordError: value !== formData.password ? " Passwords do not match! " : ""
       }));
       setFormData((prev) => ({ ...prev, [name]: value }));
-    }else if(name==="email"){
+    } else if (name === "email") {
       setError((prev) => ({
         ...prev,
         emailError: !value.includes("@") ? "Invalid email" : currentUsers.some((user) => user.email === value) ? "Email already exists" : ""
@@ -123,75 +123,81 @@ const RegisterAdmin = () => {
   async function handleSubmit(e) {
     e.preventDefault();
     setSubmitting(true);
+    if (error.fullNameError || error.doBError || error.genderError || error.roleError || error.regionError || error.isActiveError || error.NIDError || error.mobNoError || error.emailError || error.passwordError) {
+      setSubmitting(false);
+      toast.error("Please fill in all the required fields with appropriate data");
+      return;
+    } else {
 
-    let photoUrl = "";
+      let photoUrl = "";
 
-    if (profileImage) {
-      const path = `profilePics/temp_${Date.now()}.jpg`;
-      const uploadedUrl = await uploadFile(profileImage, path);
-      if (uploadedUrl) {
-        photoUrl = uploadedUrl;
-      } else {
-        toast.error("Failed to upload profile picture.");
-        setSubmitting(false);
-        return;
+      if (profileImage) {
+        const path = `profilePics/temp_${Date.now()}.jpg`;
+        const uploadedUrl = await uploadFile(profileImage, path);
+        if (uploadedUrl) {
+          photoUrl = uploadedUrl;
+        } else {
+          toast.error("Failed to upload profile picture.");
+          setSubmitting(false);
+          return;
+        }
       }
-    }
 
-    const formattedDoB = new Date(formData.doB).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-
-    const names = formData.fullName.trim().split(" ");
-    const firstName = names[0];
-    const lastName = names[names.length - 1];
-
-    const userData = {
-      uid: null,
-      name: formData.fullName,
-      role: formData.role,
-      doB: formattedDoB,
-      gender: formData.gender,
-      status: formData.isActive,
-      region: formData.region,
-      mobNo: formData.mobNo,
-      email: formData.email,
-      createdAt: new Date().toISOString(),
-      category: formData.category,
-      photoUrl, // include uploaded photo URL
-      secretpass: formData.secretpass,
-      department: formData.department,
-    };
-
-    try {
-      await addData("users", userData);
-      toast.success("User successfully added to Firestore.");
-      setSubmitting(false);
-
-      setFormData({
-        fullName: "",
-        firstName: "",
-        lastName: "",
-        doB: "",
-        gender: "",
-        role: "",
-        region: "",
-        isActive: false,
-        mobNo: "",
-        email: "",
-        password: "",
-        repassword: "",
-        category: ""
+      const formattedDoB = new Date(formData.doB).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
       });
-      setProfileImage(null);
 
-      navigate("/Users");
-    } catch (error) {
-      console.error("Firestore write error:", error);
-      toast.error("Failed to save user. Please try again.");
-      setSubmitting(false);
+      const names = formData.fullName.trim().split(" ");
+      const firstName = names[0];
+      const lastName = names[names.length - 1];
+
+      const userData = {
+        uid: null,
+        name: formData.fullName,
+        role: formData.role,
+        doB: formattedDoB,
+        gender: formData.gender,
+        status: formData.isActive,
+        region: formData.region,
+        mobNo: formData.mobNo,
+        email: formData.email,
+        createdAt: new Date().toISOString(),
+        category: formData.category,
+        photoUrl, // include uploaded photo URL
+        secretpass: formData.secretpass,
+        department: formData.department,
+      };
+
+      try {
+        await addData("users", userData);
+        toast.success("User successfully added to Firestore.");
+        setSubmitting(false);
+
+        setFormData({
+          fullName: "",
+          firstName: "",
+          lastName: "",
+          doB: "",
+          gender: "",
+          role: "",
+          region: "",
+          isActive: false,
+          mobNo: "",
+          email: "",
+          password: "",
+          repassword: "",
+          category: ""
+        });
+        setProfileImage(null);
+
+        navigate("/Users");
+      } catch (error) {
+        console.error("Firestore write error:", error);
+        toast.error("Failed to save user. Please try again.");
+        setSubmitting(false);
+      }
     }
   }
 
