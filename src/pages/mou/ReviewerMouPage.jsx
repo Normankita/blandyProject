@@ -2,22 +2,18 @@ import { useEffect, useMemo, useState } from 'react';
 import { useData } from '@/contexts/DataContext';
 import { toast } from 'react-toastify';
 import TableComponent from '../admin/components/TableComponent';
+import ProjectModal from '../admin/components/ProjectModal';
 
 const ReviewerMouPage = () => {
   const { fetchData, updateData, userProfile } = useData();
+
+  const[selectedMou, setSelectedMou]=useState(null);
 
   const [loading, setLoading] = useState(false);
   const [reviewableMOUs, setReviewableMOUs] = useState([]);
   const [users, setUsers] = useState([]);
 
-  // Build a map for quick user name lookups
-  const userMap = useMemo(() => {
-    const map = {};
-    users.forEach((user) => {
-      map[user.uid] = user.name;
-    });
-    return map;
-  }, [users]);
+
 
   // Fetch MOUs assigned to current reviewer
   const fetchMOUs = async () => {
@@ -48,6 +44,15 @@ const ReviewerMouPage = () => {
       fetchMOUs();
     }
   }, [userProfile?.uid]);
+
+    // Build a map for quick user name lookups
+  const userMap = useMemo(() => {
+    const map = {};
+    users.forEach((user) => {
+      map[user.id] = user.name;
+    });
+    return map;
+  }, [users]);
 
   // Handle Approve/Reject Action
   const handleDecision = async (mouId, decision) => {
@@ -85,6 +90,12 @@ const ReviewerMouPage = () => {
   const custom = (mou) => {
     return (
       <div className="flex gap-2">
+        <button
+          onClick={() => setSelectedMou(mou)}
+          className="text-gray-900 bg-white border font-bold rounded-full text-sm px-4 py-1.5 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-950 shadow-lg dark:shadow-black/40 flex flex-row gap-1 items-center hover:bg-gray-100 border-gray-300 dark:border-gray-600 dark:focus:ring-gray-700 dark:hover:border-gray-600 focus:ring-gray-100"
+        >
+          View
+        </button>
         <button
           onClick={() => handleDecision(mou.original.id, 'approved')}
           className="text-gray-900 bg-white border font-bold rounded-full text-sm px-4 py-1.5 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-950 shadow-lg dark:shadow-black/40 flex flex-row gap-1 items-center hover:bg-green-100 border-green-300 dark:border-green-600 dark:focus:ring-green-700 dark:hover:border-green-600 focus:ring-green-100"
@@ -126,6 +137,38 @@ const ReviewerMouPage = () => {
           customActions={custom}
         />
 
+      )}
+
+      {selectedMou && (
+        <ProjectModal
+          title={selectedMou.original.title}
+          onClose={() => setSelectedMou(null)}
+        >
+          <div className="prose dark:prose-invert max-w-none">
+            <h4>Description:</h4>
+            <p className='ml-2'><i className='text-sm'><div dangerouslySetInnerHTML={{ __html: selectedMou.original.description }} /></i></p>
+          </div>
+
+          {selectedMou.original.documentUrl && (
+            <a href={selectedMou.documentUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline ml-4 flex items-center gap-2 mt-2">
+              <svg className="w-6 h-6 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2m-8 1V4m0 12-4-4m4 4 4-4" />
+              </svg>
+              Document
+            </a>
+          )}
+          <div className="prose dark:pros-invert max-w-none">
+            <h4 className='font-bold'>Involved Parties</h4>
+            <ul>
+              {selectedMou.original.parties?.map((p) => (
+                <li key={p.partyId} className='pl-5 my-1 border-l-2 border-gray-400 border-b-5'>
+                  <span className='font-semibold'>{userMap[p.partyId] || 'Unknown'}</span> <span className='text-gray-400'>{p.signedAt ? `:->signed at ${new Date(p.signedAt).toLocaleString()}` : ''}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+        </ProjectModal>
       )}
     </div>
   );

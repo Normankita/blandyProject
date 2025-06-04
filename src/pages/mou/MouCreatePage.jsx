@@ -33,8 +33,8 @@ const MouCreatePage = () => {
         sort: { field: 'createdAt', direction: 'desc' },
     });
 
-    const reviewers = users.filter(user => user.role === 'staff' && user.isReviewer);
-    const parties = users;
+    const reviewers = users.filter(user => user.role === 'staff' && user.isReviewer && !user.secretpass && (user.uid !== userProfile?.uid));
+    const parties = users.filter(user => !user.isReviewer && !user.secretpass && (user.id !== userProfile?.id));
 
     // Populate form if editing
     useEffect(() => {
@@ -44,7 +44,7 @@ const MouCreatePage = () => {
             setMouId(stateMou.id);
             setTitle(stateMou.title || '');
             setDescription(stateMou.description || '');
-            setIsEditable(stateMou.status === 'pending');
+            setIsEditable(stateMou?.status === 'pending');
             setSelectedReviewers(stateMou.reviewers || []);
             setSelectedParties((stateMou.parties || []));
 
@@ -116,7 +116,6 @@ const MouCreatePage = () => {
                 await addData('mous', {
                     ...data,
                     createdAt: new Date().toISOString(),
-                    status: 'pending',
                     submitter: userProfile.uid
                 });
                 toast.success('MOU created successfully.');
@@ -163,7 +162,6 @@ const MouCreatePage = () => {
                     onChange={handleFileChange}
                     className="max-w-xs p-2 border duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border-gray-300 rounded  cursor-pointer"
                 />
-                ,
             </div>
             <div>
                 <h2 className="text-lg font-semibold mb-2">Select Involved Parties</h2>
@@ -177,8 +175,7 @@ const MouCreatePage = () => {
                             variant={selectedParties.find(p => p.partyId === user.id) ? 'destructive' : 'default'}
 
                             onClick={() => toggleParty(user)}
-                            disabled={!isEditable || submitting}
-                        >
+                            disabled={submitting || !title || !description}                        >
                             {selectedParties.find(p => p.partyId === user.id) ? 'Remove' : 'Add'}
 
                         </Button>
@@ -199,7 +196,7 @@ const MouCreatePage = () => {
                                 size="sm"
                                 variant={isSelected ? 'destructive' : 'default'}
                                 onClick={() => toggleReviewer(user)}
-                                disabled={!isEditable || submitting}
+                                disabled={submitting || !title || !description || selectedParties.length === 0}
                             >
                                 {isSelected ? 'Remove' : 'Add'}
                             </Button>
@@ -211,7 +208,8 @@ const MouCreatePage = () => {
 
             {isEditable && (
                 <div className="flex justify-end">
-                    <Button className="flex flex-row gap-2 items-center text-slate-900 bg-white border border-blue-300 focus:outline-none hover:bg-slate-100 focus:ring-4 focus:ring-blue-100 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-blue-600 dark:hover:bg-slate-950 dark:hover:border-slate-600 dark:focus:ring-blue-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 duration-300 " onClick={handleSubmit}>
+                    <Button className="flex flex-row gap-2 items-center text-slate-900 bg-white border border-blue-300 focus:outline-none hover:bg-slate-100 focus:ring-4 focus:ring-blue-100 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-blue-600 dark:hover:bg-slate-950 dark:hover:border-slate-600 dark:focus:ring-blue-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 duration-300 " onClick={handleSubmit}
+                        disabled={submitting || !title || !description || selectedParties.length === 0 || selectedReviewers.length === 0}>
                         {isEditMode ? 'Update MOU' : 'Submit MOU'}
                     </Button>
                 </div>

@@ -92,6 +92,15 @@ const Projects = () => {
     }
   };
 
+/**
+ * Submits a review for a project, ensuring the user hasn't already reviewed it.
+ * If the review is successful, updates the project's review data and resets the form state.
+ * 
+ * @param {string} projectId - The ID of the project being reviewed.
+ * @param {Object} review - The review object containing details like rating and comments.
+ * @throws Will display an error toast if the review submission fails.
+ */
+
   const handleReviewSubmit = async (projectId, review) => {
     const existing = selectedProject.reviews?.find(r => r.reviewerId === userProfile.uid);
     if (existing) {
