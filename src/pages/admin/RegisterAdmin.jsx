@@ -5,14 +5,30 @@ import { toast } from 'react-toastify';
 import useTitle from '../../hooks/useTitle';
 import { useData } from '@/contexts/DataContext';
 import { UserForm } from './components/UserForm';
+import { useEffect } from 'react';
 
 const RegisterAdmin = () => {
+  const [currentUsers, setCurrentUsers] = useState([]);
   useTitle("Register");
-  const { addData, uploadFile } = useData();
+  const { addData, uploadFile, fetchData } = useData();
   const datepickerRef = useRef(null);
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers=()=>{
+    fetchData({ path: "users" })
+      .then((response) => {
+        setCurrentUsers(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+      });
+  }
 
   const [error, setError] = useState({
     fullNameError: "",
@@ -83,6 +99,12 @@ const RegisterAdmin = () => {
       setError((prev) => ({
         ...prev,
         passwordError: value !== formData.password ? " Passwords do not match! " : ""
+      }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }else if(name==="email"){
+      setError((prev) => ({
+        ...prev,
+        emailError: !value.includes("@") ? "Invalid email" : currentUsers.some((user) => user.email === value) ? "Email already exists" : ""
       }));
       setFormData((prev) => ({ ...prev, [name]: value }));
     } else {
