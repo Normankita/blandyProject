@@ -142,7 +142,7 @@ export const DataProvider = ({ children }) => {
   // Logic to upload files, any file in any path 
   const uploadFile = async (file, path) => {
     try {
-      const storageRef = ref(storage, `mzumbeAcademicportal/${path}`); // e.g., 'profilePics/uid.jpg' or 'projectDocs/file.pdf'
+      const storageRef = ref(storage, `mzumbeAcademicPortal/${path}`); // e.g., 'profilePics/uid.jpg' or 'projectDocs/file.pdf'
       const snapshot = await uploadBytes(storageRef, file);
       const url = await getDownloadURL(snapshot.ref);
       return url;
