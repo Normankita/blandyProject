@@ -319,7 +319,7 @@ const Invoice = () => {
                             <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{formatTime(msg.sendTime, 'time')}</span>
                           </div>
                           <p className="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{msg.message}</p>
-                          {msg.sender.id !== userProfile.uid ? <span className="text-sm font-semibold text-gray-900 dark:text-white">You</span> : <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{msg.status}</span>}
+                          {msg.sender.id !== userProfile.uid ? <span className="text-sm font-semibold text-gray-900 dark:text-white">You</span> : <span className={`text-sm font-normal ${msg.status==="read"?'text-blue-500 dark:text-blue-400':'text-gray-500 dark:text-gray-400'}`}>{msg.status}</span>}
                         </div>
 
                       </div>
