@@ -1,4 +1,5 @@
 import { useEffect, useState }  from 'react';
+import MessagingTemplate from './MessagingTemplate';
 
 const Invoice = () => {// Custom hook to set the document title
   const messages = []
@@ -36,7 +37,10 @@ const Invoice = () => {// Custom hook to set the document title
             <p>{selectedMessage.content}</p>
           </div>
         ) : (
-          <p className="text-gray-500">Select a message to view</p>
+          <p className="text-gray-500">Select a message to view
+          <MessagingTemplate/>
+          </p>
+          
         )}
       </div>
     </div>
