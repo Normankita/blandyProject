@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
 import { db } from "../configs/firebase";
-import {storage} from '../configs/externalStorage'
+import { storage } from '../configs/externalStorage';
 import {
   ref,
   uploadBytes,
@@ -23,6 +23,7 @@ import {
   setDoc,
   limit,
   startAfter,
+  onSnapshot,
 } from "firebase/firestore";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -47,6 +48,7 @@ export const DataProvider = ({ children }) => {
     }
   };
 
+  // Fetch Data, but not real time
   const fetchData = async ({
     path,
     filters = [],
@@ -106,6 +108,56 @@ export const DataProvider = ({ children }) => {
     }
   };
 
+  //Fetch real time data
+
+  const fetchSnapshotData = ({
+    path,
+    filters = [],
+    sort = null,
+    limitNumber = null,
+    startAfterDoc = null,
+    onDataChange = () => { },
+  }) => {
+    let ref = collection(db, path);
+    const constraints = [];
+
+    filters.forEach(({ field, op, value }) =>
+      constraints.push(where(field, op, value))
+    );
+
+    if (sort) {
+      constraints.push(orderBy(sort.field, sort.direction || "asc"));
+    }
+
+    if (limitNumber) {
+      constraints.push(limit(limitNumber));
+    }
+
+    if (startAfterDoc) {
+      constraints.push(startAfter(startAfterDoc));
+    }
+
+    const q = constraints.length ? query(ref, ...constraints) : ref;
+
+    const unsubscribe = onSnapshot(
+      q,
+      snapshot => {
+        const result = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setData(result);
+        onDataChange(result); // optional callback
+      },
+      error => {
+        console.error("Snapshot error:", error);
+      }
+    );
+
+    return unsubscribe; // Call this to stop listening
+  };
+
+
   const addData = async (path, newData, id = null) => {
     try {
       if (id) {
@@ -118,7 +170,7 @@ export const DataProvider = ({ children }) => {
       }
     } catch (err) {
       console.error("Add error:", err);
-      return null;
+      throw new Error("Error adding data.");
     }
   };
 
@@ -155,7 +207,7 @@ export const DataProvider = ({ children }) => {
   // logic to delete file, any file anywhere 
   const deleteFile = async (path) => {
     try {
-      const fileRef = ref(storage,path);
+      const fileRef = ref(storage, path);
       await deleteObject(fileRef);
       return true;
     } catch (err) {
@@ -223,6 +275,7 @@ export const DataProvider = ({ children }) => {
         setUserProfile,
         uploadFile,
         deleteFile,
+        fetchSnapshotData,
       }}
     >
       {children}

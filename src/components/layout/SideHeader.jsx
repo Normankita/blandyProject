@@ -83,7 +83,7 @@ const SideHeader = ({ children, role }) => {
                                     {/* activate profile options */}
                                     <button onClick={() => setProfile(!profile)} type="button" className="flex text-sm bg-gray-100 dark:bg-gray-900 rounded-full focus:ring-4 focus:ring-gray-500 dark:focus:ring-gray-500 md:mr-10 shadow-lg shadow-slate-900/20 dark:shadow-black/40 duration-300" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="dropdown-user">
                                         <span className="sr-only">Open user menu</span>
-                                        <img className="w-10 h-10 rounded-full p-1  cursor-pointer" src={auth.currentUser.photoURL ? auth.currentUser.photoURL : userProfile.photoUrl ? userProfile.photoUrl : userProfile.gender === "female" ? Woman : Man} alt="user photo" />
+                                        <img className="w-10 h-10 rounded-full p-1  cursor-pointer" src={auth.currentUser.photoURL ? auth.currentUser.photoURL : userProfile.photoUrl ? userProfile.photoUrl : userProfile.gender === "female" ? Woman : Man} alt="user" />
                                     </button>
                                 </div>
                                 {/* Profile options */}

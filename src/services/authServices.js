@@ -1,6 +1,5 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "../configs/firebase";
-import { use } from "react";
 
 export const registerUser = async (email, password) => {
     try{
