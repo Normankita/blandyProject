@@ -1,10 +1,42 @@
 import { useEffect, useMemo, useState } from 'react';
-import MessagingTemplate from './MessagingTemplate';
+import Man from '@/assets/avatars/man.svg';
 import { Button } from '@/components/ui/button';
 import ProjectModal from './admin/components/ProjectModal';
 import { useData } from '@/contexts/DataContext';
+import { toast } from 'react-toastify';
 
 const Invoice = () => {
+
+  const markOtherParticipantMessagesAsRead = async (conversation) => {
+    if (!conversation?.messages?.length) return conversation;
+
+    const updatedMessages = conversation.messages.map(msg => {
+      if (msg.sender.email !== userProfile.email && msg.status !== "read") {
+        return {
+          ...msg,
+          status: "read",
+          readAt: new Date()
+        };
+      }
+      return msg;
+    });
+
+    const changesMade = conversation.messages.some((msg, i) =>
+      msg.status !== updatedMessages[i].status
+    );
+
+    if (!changesMade) return conversation;
+
+    try {
+      await updateData("conversations", conversation.id, { messages: updatedMessages });
+
+      return { ...conversation, messages: updatedMessages };
+    } catch (error) {
+      console.error("Failed to mark messages as read:", error);
+      toast.error("Failed to mark messages as read:", error);
+      return conversation;
+    }
+  };
 
   // Declaring usage data
   const [usersRecipients, setUserRecipients] = useState([]);
@@ -12,82 +44,122 @@ const Invoice = () => {
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [conversations, setConversations] = useState([]);
   const [newConvo, setNewConvo] = useState(null);
+  const [myMessage, setMyMessage] = useState('');
+  const [isConvSelected, setIsConvSelected] = useState(false);
 
-  const { fetchData, fetchSnapshotData, userProfile, addData } = useData();
-
+  const { fetchData, fetchSnapshotData, userProfile, addData, updateData } = useData();
 
   const handleNewConvo = async (convoRecipient) => {
-    // Defensive: skip malformed conversation entries
     const existing = conversations.find((c) =>
       Array.isArray(c.participants) &&
-      c.participants.some(
-        (p) => p.email === convoRecipient.email && p.email !== userProfile.email
-      )
+      c.participants.some(p => p.email === userProfile.email) &&
+      c.participants.some(p => p.email === convoRecipient.email)
     );
 
     if (existing) {
-      setSelectedConversation(existing);
+      const updatedConvo = await markOtherParticipantMessagesAsRead(existing);
+      setSelectedConversation(updatedConvo);
+      setIsConvSelected(true);
       setNewConvo(null);
       return;
     }
 
-    // Create new conversation
     const newConvoData = {
       participants: [
-        {
-          name: userProfile.name,
-          email: userProfile.email
-        },
-        {
-          name: convoRecipient.name,
-          email: convoRecipient.email
-        }
+        { name: userProfile.name, email: userProfile.email },
+        { name: convoRecipient.name, email: convoRecipient.email }
       ],
       subject: "",
       messages: [],
-      createdAt: new Date()
+      createdAt: new Date(),
+      status: "sent"
     };
 
     try {
-      const convoRef = await addData(
-        'conversations',
-        newConvoData
-      );
-      console.log(convoRef);
-
-      const newConvoFull = {
-        id: convoRef,
-        ...newConvoData
-      };
-
+      const convoId = await addData('conversations', newConvoData);
+      const newConvoFull = { id: convoId, ...newConvoData };
       setSelectedConversation(newConvoFull);
+      setIsConvSelected(true);
       setNewConvo(null);
     } catch (error) {
       console.error("Error creating conversation:", error);
     }
   };
 
+  const handleChange = (e) => {
+    setMyMessage(e.target.value);
+  };
 
+  const handleSend = async () => {
+    if (!myMessage.trim()) return;
+
+    const newMessage = {
+      sender: {
+        email: userProfile.email,
+        name: userProfile.name,
+        id: userProfile.uid,
+      },
+      message: myMessage,
+      sendTime: new Date(),
+      status: "sent"
+    };
+
+    const updatedMessages = [...(selectedConversation.messages || []), newMessage];
+
+    try {
+      await updateData("conversations", selectedConversation.id, {
+        messages: updatedMessages,
+        subject: newMessage.message
+      });
+
+
+      setSelectedConversation(prev => {
+        const updated = conversations.find(c => c.id === prev.id);
+        return updated ? { ...updated, messages: updatedMessages } : { ...prev, messages: updatedMessages };
+      });
+
+      setMyMessage("");
+    } catch (error) {
+      toast.error("Error sending message:", error);
+      console.error("Error sending message:", error);
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = fetchSnapshotData({
       path: "conversations",
       onDataChange: (liveData) => {
-        setConversations(liveData); // Store snapshot into local component state
+        setConversations(liveData.filter((c) =>
+          c.participants.some((r) => userProfile.email === r.email)
+        ));
+
+        setSelectedConversation(prev => {
+          if (!prev) return null;
+          const updated = liveData.find(c => c.id === prev.id);
+          if (!updated) return prev;
+          markOtherParticipantMessagesAsRead(updated).then(setSelectedConversation);
+          return updated;
+        });
       }
     });
 
-    return () => unsubscribe(); // Clean up listener on unmount
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
+
+  const handleSettingConversation = async (conversation) => {
+    setIsConvSelected(true);
+    const something = await markOtherParticipantMessagesAsRead(conversation);
+    setSelectedConversation(something);
+    setNewConvo(null);
+  };
   const fetchUsers = async () => {
     try {
       const { data: recipients } = await fetchData({ path: "users" });
-      console.log(recipients);
       setUserRecipients(recipients || []);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -108,15 +180,58 @@ const Invoice = () => {
     );
   }, [usersRecipients, searchTerm]);
 
+  const formatTime = (parsedTime, type = "date") => {
+    if (!parsedTime) return "";
+
+    try {
+      let date;
+      if (typeof parsedTime.toDate === "function") {
+        date = parsedTime.toDate();
+      } else if (parsedTime instanceof Date) {
+        date = parsedTime;
+      } else if (typeof parsedTime === 'string' || typeof parsedTime === 'number') {
+        date = new Date(parsedTime);
+      } else {
+        return "Invalid input";
+      }
+
+      if (isNaN(date.getTime())) return "Invalid date";
+
+      const optionsMap = {
+        datetime: {
+          year: "numeric", month: "short", day: "numeric",
+          hour: "2-digit", minute: "2-digit"
+        },
+        date: {
+          year: "numeric", month: "long", day: "numeric"
+        },
+        time: {
+          hour: "2-digit", minute: "2-digit"
+        },
+        day: {
+          weekday: "long"
+        }
+      };
+
+      const options = optionsMap[type] || optionsMap["date"];
+      return date.toLocaleString("en-US", options);
+
+    } catch (e) {
+      console.error("Error formatting parsedTime:", parsedTime, e);
+      return "";
+    }
+  };
+
+
   return (
     <>
       <div className="flex bg-slate-50 dark:bg-slate-900 p-6 min-h-150 max-h-screen overflow-auto shadow-lg shadow-slate-900/10 dark:shadow-black/40 dark:text-gray-300 text-gray-800 rounded-sm duration-300">
 
         {/* Left Sidebar - Conversation List */}
-        <div className="w-1/3 backdrop-blur-3xl border-0 border-r border-gray-400 dark:border-gray-700 rounded-l-lg overflow-y-auto p-4">
+        <div className={`${!isConvSelected ? 'block' : 'hidden md:block'} w-full md:w-1/3 backdrop-blur-3xl border-0 border-r border-gray-400 dark:border-gray-700 rounded-l-lg overflow-y-auto p-4`}>
           <div className='flex items-center justify-between'>
             <h2 className="text-lg font-semibold mb-4">Site Queries</h2>
-            <Button className={'bg-slate-200 dark:bg-slate-800 hover:bg-gray-100'} onClick={() => setNewConvo(true)}>
+            <Button className={'flex flex-row gap-2 items-center text-slate-900 bg-white border border-blue-300 focus:outline-none hover:bg-slate-100 focus:ring-4 focus:ring-blue-100 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-blue-600 dark:hover:bg-slate-950 dark:hover:border-slate-600 dark:focus:ring-blue-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 duration-300 '} onClick={() => setNewConvo(true)}>
               <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 7.757v8.486M7.757 12h8.486M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
               </svg>
@@ -124,110 +239,111 @@ const Invoice = () => {
           </div>
           <ul>
             {conversations.map((msg) => (
+
               <li
                 key={msg.id}
-                className="p-3 border-b border-gray-400 dark:border-gray-700 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
-                onClick={() => setSelectedConversation(msg)}
+                className={`p-3 border-b border-gray-400 dark:border-gray-700 cursor-pointer flex flex-row${(() => {
+                  const lastMsg = [...msg.messages].reverse().find(m => m.status === "sent");
+                  return (lastMsg && lastMsg.sender?.email !== userProfile.email)
+                    ? 'font-bold bg-gray-100 dark:bg-gray-800'
+                    : '';
+                })()} hover:bg-gray-200 dark:hover:bg-gray-700`}
+                onClick={() => handleSettingConversation(msg)}
               >
-                <p className="font-semibold uppercase">{msg.subject}</p>
-                <p className="text-sm text-gray-700 dark:text-gray-400">{msg.participants.find(p => p.email !== userProfile.email).name}</p>
+                {(() => {
+                  const otherParticipant = msg.participants.find(p => p.email !== userProfile.email);
+                  const recipient = usersRecipients.find(u => u.email === otherParticipant?.email);
+                  const photo = recipient?.photoUrl ?? Man;
+
+                  return (
+                    <img
+                      src={photo}
+                      alt=""
+                      className="w-10 h-10 rounded-full mr-4"
+                    />
+                  );
+                })()}
+
+
+                <span>
+                  <p className="font-semibold">{msg.participants.find(p => p.email !== userProfile.email).name}</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-400">{msg.subject}</p>
+                </span>
               </li>
             ))}
           </ul>
         </div>
 
         {/* Right Section - Conversation View */}
-        <div className="w-2/3 p-6">
+        <div className={`${isConvSelected ? 'block' : 'hidden'} md:block w-full md:w-2/3 p-6`}>
+          <Button onClick={() => setIsConvSelected(false)} className={
+            `md:hidden flex flex-row gap-2 items-center text-slate-900 bg-white border border-blue-300 focus:outline-none hover:bg-slate-100 focus:ring-4 focus:ring-blue-100 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-blue-600 dark:hover:bg-slate-950 dark:hover:border-slate-600 dark:focus:ring-blue-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 duration-300`
+          }>Conversations</Button>
           {selectedConversation ? (
             <div className='bg-white dark:bg-slate-950 h-full p-8 duration-300'>
-              <div class="w-2/3 border flex flex-col">
 
-                {/* Header */}
-                <div class="py-2 px-3 bg-grey-lighter flex flex-row justify-between items-center">
-                  <div class="flex items-center">
-                    <div>
-                      <img class="w-10 h-10 rounded-full" src="https://darrenjameseeley.files.wordpress.com/2014/09/expendables3.jpeg" />
-                    </div>
-                    <div class="ml-4">
-                      <p class="text-grey-darkest">
-                        New Movie! Expendables 4
-                      </p>
-                      <p class="text-grey-darker text-xs mt-1">
-                        Andrés, Tom, Harrison, Arnold, Sylvester
-                      </p>
-                    </div>
-                  </div>
-
-                  <div class="flex">
-                    <div>
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="#263238" fill-opacity=".5" d="M15.9 14.3H15l-.3-.3c1-1.1 1.6-2.7 1.6-4.3 0-3.7-3-6.7-6.7-6.7S3 6 3 9.7s3 6.7 6.7 6.7c1.6 0 3.2-.6 4.3-1.6l.3.3v.8l5.1 5.1 1.5-1.5-5-5.2zm-6.2 0c-2.6 0-4.6-2.1-4.6-4.6s2.1-4.6 4.6-4.6 4.6 2.1 4.6 4.6-2 4.6-4.6 4.6z"></path></svg>
-                    </div>
-                    <div class="ml-6">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="#263238" fill-opacity=".5" d="M1.816 15.556v.002c0 1.502.584 2.912 1.646 3.972s2.472 1.647 3.974 1.647a5.58 5.58 0 0 0 3.972-1.645l9.547-9.548c.769-.768 1.147-1.767 1.058-2.817-.079-.968-.548-1.927-1.319-2.698-1.594-1.592-4.068-1.711-5.517-.262l-7.916 7.915c-.881.881-.792 2.25.214 3.261.959.958 2.423 1.053 3.263.215l5.511-5.512c.28-.28.267-.722.053-.936l-.244-.244c-.191-.191-.567-.349-.957.04l-5.506 5.506c-.18.18-.635.127-.976-.214-.098-.097-.576-.613-.213-.973l7.915-7.917c.818-.817 2.267-.699 3.23.262.5.501.802 1.1.849 1.685.051.573-.156 1.111-.589 1.543l-9.547 9.549a3.97 3.97 0 0 1-2.829 1.171 3.975 3.975 0 0 1-2.83-1.173 3.973 3.973 0 0 1-1.172-2.828c0-1.071.415-2.076 1.172-2.83l7.209-7.211c.157-.157.264-.579.028-.814L11.5 4.36a.572.572 0 0 0-.834.018l-7.205 7.207a5.577 5.577 0 0 0-1.645 3.971z"></path></svg>
-                    </div>
-                    <div class="ml-6">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="#263238" fill-opacity=".6" d="M12 7a2 2 0 1 0-.001-4.001A2 2 0 0 0 12 7zm0 2a2 2 0 1 0-.001 3.999A2 2 0 0 0 12 9zm0 6a2 2 0 1 0-.001 3.999A2 2 0 0 0 12 15z"></path></svg>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Messages */}
-                <div class="flex-1 overflow-auto" >
-                  <div class="py-2 px-3">
-
-                    <div class="flex justify-center mb-2">
-                      <div class="rounded py-2 px-4" >
-                        <p class="text-sm uppercase">
-                          February 20, 2018
-                        </p>
-                      </div>
-                    </div>
-
-                    <div class="flex mb-2">
-                      <div class="rounded py-2 px-3" >
-                        <p class="text-sm text-teal">
-                          Sylverter Stallone
-                        </p>
-                        <p class="text-sm mt-1">
-                          Hi everyone! Glad you could join! I am making a new movie.
-                        </p>
-                        <p class="text-right text-xs text-grey-dark mt-1">
-                          12:45 pm
-                        </p>
-                      </div>
-                    </div>
-
-                    <div class="flex mb-2">
-                      <div class="rounded py-2 px-3" >
-                        <p class="text-sm text-purple">
-                          Tom Cruise
-                        </p>
-                        <p class="text-sm mt-1">
-                          Hi all! I have one question for the movie
-                        </p>
-                        <p class="text-right text-xs text-grey-dark mt-1">
-                          12:45 pm
-                        </p>
-                      </div>
-                    </div>
-
-
-
-                  </div>
-                </div>
-
-                {/* Input */}
-                <div class="bg-grey-lighter px-4 py-4 flex items-center">
+              {/* Header */}
+              <div className="py-2 px-3 bg-grey-lighter flex flex-row justify-between items-center">
+                <div className="flex items-center">
                   <div>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path opacity=".45" fill="#263238" d="M9.153 11.603c.795 0 1.439-.879 1.439-1.962s-.644-1.962-1.439-1.962-1.439.879-1.439 1.962.644 1.962 1.439 1.962zm-3.204 1.362c-.026-.307-.131 5.218 6.063 5.551 6.066-.25 6.066-5.551 6.066-5.551-6.078 1.416-12.129 0-12.129 0zm11.363 1.108s-.669 1.959-5.051 1.959c-3.505 0-5.388-1.164-5.607-1.959 0 0 5.912 1.055 10.658 0zM11.804 1.011C5.609 1.011.978 6.033.978 12.228s4.826 10.761 11.021 10.761S23.02 18.423 23.02 12.228c.001-6.195-5.021-11.217-11.216-11.217zM12 21.354c-5.273 0-9.381-3.886-9.381-9.159s3.942-9.548 9.215-9.548 9.548 4.275 9.548 9.548c-.001 5.272-4.109 9.159-9.382 9.159zm3.108-9.751c.795 0 1.439-.879 1.439-1.962s-.644-1.962-1.439-1.962-1.439.879-1.439 1.962.644 1.962 1.439 1.962z"></path></svg>
+                    {/* Image goes here */}
+                    <img className="w-10 h-10 rounded-full" src={usersRecipients.find(u => u.email === selectedConversation.participants.find(p => p.email !== userProfile.email).email).photoUrl ?? Man} />
                   </div>
-                  <div class="flex-1 mx-4">
-                    <input class="w-full border rounded px-2 py-2" type="text" />
-                  </div>
-                  <div>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="#263238" fill-opacity=".45" d="M11.999 14.942c2.001 0 3.531-1.53 3.531-3.531V4.35c0-2.001-1.53-3.531-3.531-3.531S8.469 2.35 8.469 4.35v7.061c0 2.001 1.53 3.531 3.53 3.531zm6.238-3.53c0 3.531-2.942 6.002-6.237 6.002s-6.237-2.471-6.237-6.002H3.761c0 4.001 3.178 7.297 7.061 7.885v3.884h2.354v-3.884c3.884-.588 7.061-3.884 7.061-7.885h-2z"></path></svg>
+                  <div className="ml-4">
+                    <p className="text-grey-darkest">
+                      {selectedConversation.participants.find(p => p.email !== userProfile.email).name}
+                    </p>
                   </div>
                 </div>
+              </div>
+
+              {/* Messages */}
+              <div className="flex-1 overflow-auto min-h-[400px] w-full" >
+                <div className="py-2 px-3">
+
+                  <div className="flex justify-center mb-2">
+                    <div className="rounded py-2 px-4" >
+                      <p className="text-sm uppercase">
+                        {/* Here goes the timestamp */}
+                        {formatTime(selectedConversation.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className='flex flex-col items-center gap-2 overflow-y-auto max-h-[350px]'>
+                    {selectedConversation.messages.map((msg) => (
+                      <div className={`flex ${msg.sender.id === userProfile.uid ? "flex-row-reverse ml-auto" : "flex-row mr-auto"} gap-2.5 my-2`}>{/*This controlls alignment*/}
+                        <img className="w-8 h-8 rounded-full" src={usersRecipients.find(u => u.uid === msg.sender.id).photoUrl ?? Man} alt="Jese image" />
+                        <div className={`flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 ${msg.sender.id === userProfile.uid ? "rounded-s-xl rounded-ee-xl" : "rounded-e-xl rounded-es-xl"} dark:bg-gray-700`}>
+                          <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                            <span className="text-sm font-semibold text-gray-900 dark:text-white">{msg.sender.name}</span>
+                            <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{formatTime(msg.sendTime, 'time')}</span>
+                          </div>
+                          <p className="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{msg.message}</p>
+                          {msg.sender.id !== userProfile.uid ? <span className="text-sm font-semibold text-gray-900 dark:text-white">You</span> : <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{msg.status}</span>}
+                        </div>
+
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Input */}
+              <div className="bg-grey-lighter px-4 md:py-4 flex items-end md:items-center">
+                <div className="flex-1  md:mx-4">
+                  <input
+                    onChange={handleChange}
+                    value={myMessage}
+                    className="md:flex md:flex-row md:gap-2 w-full items-center text-slate-900 bg-white border border-blue-300 focus:outline-none hover:bg-slate-100 focus:ring-4 focus:ring-blue-100 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-blue-600 dark:hover:bg-slate-950 dark:hover:border-slate-600 dark:focus:ring-blue-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 duration-300 " type="text" placeholder='Type a message ...' />
+                </div>
+                <Button
+                  onClick={handleSend}
+                  className={`flex flex-row gap-2 items-center text-slate-900 bg-white border border-blue-300 focus:outline-none hover:bg-slate-100 focus:ring-4 focus:ring-blue-100 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-blue-600 dark:hover:bg-slate-950 dark:hover:border-slate-600 dark:focus:ring-blue-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 duration-300 `}>
+                  <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                    <path fillRule="evenodd" d="M3 4a1 1 0 0 0-.822 1.57L6.632 12l-4.454 6.43A1 1 0 0 0 3 20h13.153a1 1 0 0 0 .822-.43l4.847-7a1 1 0 0 0 0-1.14l-4.847-7a1 1 0 0 0-.822-.43H3Z" clipRule="evenodd" />
+                  </svg>
+
+                </Button>
               </div>
             </div>
           ) : (

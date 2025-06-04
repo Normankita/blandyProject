@@ -186,7 +186,8 @@ export const DataProvider = ({ children }) => {
       const ref = doc(db, path, id);
       await updateDoc(ref, updates);
     } catch (err) {
-      throw new error("Update error:", err);
+      throw new Error("Update error: " + err.message);
+
     }
   };
 
