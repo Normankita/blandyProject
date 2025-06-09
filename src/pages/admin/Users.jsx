@@ -18,7 +18,7 @@ const Users = () => {
 
   const transform = {
     email: (value) => (
-      <a href={`mailto:${value}`} className="text-blue-600 underline">
+      <a href={`mailto:${value}`} className="text-yellow-600 underline">
         {value}
       </a>
     ),
@@ -44,7 +44,7 @@ const Users = () => {
     role: 'User Role',
   };
 
-  const filterOut = ['password', 'repassword', 'createdBy', 'updatedBy', 'lastLoginAt', 'id', 'githubUrl', 'photoUrl', 'isActive', 'gitHubUrl', 'uid', 'doB', 'supervisorId', 'registrationNumber', 'mobNo', 'email', 'department', 'region', 'gender', 'program','panelId','secretpass'];
+  const filterOut = ['password', 'repassword', 'createdBy', 'updatedBy', 'lastLoginAt', 'id', 'githubUrl', 'photoUrl', 'isActive', 'gitHubUrl', 'uid', 'doB', 'supervisorId', 'registrationNumber', 'mobNo', 'email', 'department', 'region', 'gender', 'program', 'panelId', 'secretpass'];
 
   const handleStatusChange = async (userId, newStatus) => {
     if (userId === userProfile?.uid || userId === userProfile?.uid) {
@@ -92,7 +92,7 @@ const Users = () => {
           )}
         </button>
         <button
-          className="text-gray-900 bg-white border border-blue-300 focus:outline-none hover:bg-blue-100 focus:ring-4 focus:ring-blue-100 font-bold rounded-full text-sm px-4 py-1.5 me-2 dark:bg-slate-900 dark:text-white dark:border-blue-600 dark:hover:bg-slate-950 dark:hover:border-blue-600 dark:focus:ring-gray-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 flex flex-row gap-1 items-center"
+          className="text-gray-900 bg-white border border-yellow-300 focus:outline-none hover:bg-yellow-100 focus:ring-4 focus:ring-yellow-100 font-bold rounded-full text-sm px-4 py-1.5 me-2 dark:bg-slate-900 dark:text-white dark:border-yellow-600 dark:hover:bg-slate-950 dark:hover:border-yellow-600 dark:focus:ring-gray-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 flex flex-row gap-1 items-center"
           onClick={() => setSelectedUser(user)}
         >
           <span>

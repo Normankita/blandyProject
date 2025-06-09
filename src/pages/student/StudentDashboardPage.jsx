@@ -18,7 +18,7 @@ const StudentDashboardPage = () => {
   const [mous, setMous] = useState([]);
 
   useEffect(() => {
-     fetchAllData();
+    fetchAllData();
   }, []);
 
   const fetchAllData = async () => {
@@ -91,7 +91,7 @@ const StudentDashboardPage = () => {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center gap-2 mb-2">
-            <Bell className="h-5 w-5 text-blue-600" />
+            <Bell className="h-5 w-5 text-yellow-600" />
             <h3 className="text-lg font-medium">Notifications</h3>
           </div>
           <ul className="text-sm list-disc pl-5 text-muted-foreground">

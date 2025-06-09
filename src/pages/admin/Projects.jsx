@@ -58,7 +58,7 @@ const Projects = () => {
   const filterOut = [
     "documentUrl", "published", "acceptance", "abstract", "keywords", "description",
     "createdAt", "id", "github", "photoUrl", "reviewedBy", "reviewedAt", "updatedAt",
-    "averageRating", "feedback",'panelId',
+    "averageRating", "feedback", 'panelId',
   ];
 
   const transform = {
@@ -67,7 +67,7 @@ const Projects = () => {
         value === "draft" ? "bg-gray-500/60" :
           value === "rejected" ? "bg-red-500/60" :
             value === "published" ? "bg-yellow-800/60" :
-              value === "accepted" ? "bg-green-500/60" : "bg-blue-500/60"
+              value === "accepted" ? "bg-green-500/60" : "bg-yellow-500/60"
         }`}>
         {value ?? "Unknown"}
       </span>
@@ -92,14 +92,14 @@ const Projects = () => {
     }
   };
 
-/**
- * Submits a review for a project, ensuring the user hasn't already reviewed it.
- * If the review is successful, updates the project's review data and resets the form state.
- * 
- * @param {string} projectId - The ID of the project being reviewed.
- * @param {Object} review - The review object containing details like rating and comments.
- * @throws Will display an error toast if the review submission fails.
- */
+  /**
+   * Submits a review for a project, ensuring the user hasn't already reviewed it.
+   * If the review is successful, updates the project's review data and resets the form state.
+   * 
+   * @param {string} projectId - The ID of the project being reviewed.
+   * @param {Object} review - The review object containing details like rating and comments.
+   * @throws Will display an error toast if the review submission fails.
+   */
 
   const handleReviewSubmit = async (projectId, review) => {
     const existing = selectedProject.reviews?.find(r => r.reviewerId === userProfile.uid);
@@ -151,7 +151,7 @@ const Projects = () => {
       <div className="space-x-4 flex flex-row">
 
         <button
-          className="text-gray-900 bg-white border  focus:outline-none focus:ring-4 font-bold rounded-full text-sm px-4 py-1.5 me-2 dark:bg-slate-900 dark:text-white  dark:hover:bg-slate-950 shadow-lg shadow-slate-900/10 dark:shadow-black/40 flex flex-row gap-1 items-center dark:focus:ring-blue-700 dark:hover:border-blue-600 dark:border-blue-600 hover:bg-blue-100 border-blue-300 focus:ring-blue-100"
+          className="text-gray-900 bg-white border  focus:outline-none focus:ring-4 font-bold rounded-full text-sm px-4 py-1.5 me-2 dark:bg-slate-900 dark:text-white  dark:hover:bg-slate-950 shadow-lg shadow-slate-900/10 dark:shadow-black/40 flex flex-row gap-1 items-center dark:focus:ring-yellow-700 dark:hover:border-yellow-600 dark:border-yellow-600 hover:bg-yellow-100 border-yellow-300 focus:ring-yellow-100"
           onClick={() => setSelectedProject(project)}
         >
           <svg className="w-6 h-6 text-gray-800 dark:text-white" fill="none" viewBox="0 0 24 24">
@@ -200,7 +200,7 @@ const Projects = () => {
         ) : isAdmin ? (
           <TableComponent
             ItemData={projects ?? []}
-            headers={Object.keys(projects[0]??{})}
+            headers={Object.keys(projects[0] ?? {})}
             title="All Projects"
             isLoading={loading}
             excludeFields={filterOut}
@@ -239,7 +239,7 @@ const Projects = () => {
           </div>
 
           {selectedProject.documentUrl && (
-            <a href={selectedProject.documentUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline ml-4 flex items-center gap-2 mt-2">
+            <a href={selectedProject.documentUrl} target="_blank" rel="noopener noreferrer" className="text-yellow-500 underline ml-4 flex items-center gap-2 mt-2">
               <svg className="w-6 h-6 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2m-8 1V4m0 12-4-4m4 4 4-4" />
               </svg>
@@ -308,7 +308,7 @@ const Projects = () => {
                       reviewedAt: new Date().toISOString(),
                     })
                   }
-                  className="px-4 py-2 mt-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  className="px-4 py-2 mt-2 bg-yellow-600 text-white rounded hover:bg-yellow-700"
                 >
                   Submit Review
                 </button>

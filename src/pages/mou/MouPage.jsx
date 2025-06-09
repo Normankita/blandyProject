@@ -45,7 +45,7 @@ const MouPage = () => {
     <div className="p-6">
       <div className='flex flex-row justify-between'>
         <h1 className="text-2xl font-bold mb-4">All MOUs</h1>
-        <Button onClick={() => navigate("/mou-create")} className='flex flex-row gap-2 items-center text-slate-900 bg-white border border-blue-300 focus:outline-none hover:bg-slate-100 focus:ring-4 focus:ring-blue-100 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-blue-600 dark:hover:bg-slate-950 dark:hover:border-slate-600 dark:focus:ring-blue-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 duration-300 '>
+        <Button onClick={() => navigate("/mou-create")} className='flex flex-row gap-2 items-center text-slate-900 bg-white border border-yellow-300 focus:outline-none hover:bg-slate-100 focus:ring-4 focus:ring-yellow-100 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-yellow-600 dark:hover:bg-slate-950 dark:hover:border-slate-600 dark:focus:ring-yellow-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 duration-300 '>
           <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9V4a1 1 0 0 0-1-1H8.914a1 1 0 0 0-.707.293L4.293 7.207A1 1 0 0 0 4 7.914V20a1 1 0 0 0 1 1h4M9 3v4a1 1 0 0 1-1 1H4m11 6v4m-2-2h4m3 0a5 5 0 1 1-10 0 5 5 0 0 1 10 0Z" />
           </svg>
@@ -71,7 +71,7 @@ const MouPage = () => {
               <h2 className="text-lg font-semibold">{mou.title}</h2>
               <p className="text-sm text-gray-600 line-clamp-2">{mou.description}</p>
               <span className={`inline-block mt-2 text-xs px-2 py-1 rounded-full ${mou.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                mou.status === 'approved' ? 'bg-blue-100 text-blue-800' :
+                mou.status === 'approved' ? 'bg-yellow-100 text-yellow-800' :
                   'bg-gray-200 text-gray-800'
                 }`}>
                 {mou.status}
@@ -106,7 +106,7 @@ const MouPage = () => {
                   </Button>
                   <Button
                     onClick={() => handleEdit(selectedMou)}
-                    className={`text-gray-900 bg-white border  focus:outline-none focus:ring-4 font-bold rounded-full text-sm px-4 py-1.5 me-2 dark:bg-slate-900 dark:text-white  dark:hover:bg-slate-950 shadow-lg shadow-slate-900/10 dark:shadow-black/40 flex flex-row gap-1 items-center dark:focus:ring-blue-700 dark:hover:border-blue-600 dark:border-blue-600 hover:bg-blue-100 border-blue-300 focus:ring-blue-100`}
+                    className={`text-gray-900 bg-white border  focus:outline-none focus:ring-4 font-bold rounded-full text-sm px-4 py-1.5 me-2 dark:bg-slate-900 dark:text-white  dark:hover:bg-slate-950 shadow-lg shadow-slate-900/10 dark:shadow-black/40 flex flex-row gap-1 items-center dark:focus:ring-yellow-700 dark:hover:border-yellow-600 dark:border-yellow-600 hover:bg-yellow-100 border-yellow-300 focus:ring-yellow-100`}
                   >
                     Edit
                   </Button>

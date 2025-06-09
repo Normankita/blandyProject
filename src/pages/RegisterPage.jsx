@@ -121,11 +121,11 @@ const RegisterPage = () => {
   };
 
   return (
-    <section className="bg-slate-200 dark:bg-gray-900">
+    <section className="bg-slate-200 dark:bg-gray-900 min-h-screen min-w-screen max-w-screen max-h-screen">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <a href="#" className="flex flex-col items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
           <span><img src="/sitelogo.png" alt="" /></span>
-          <span className="uppercase">Mzumbe Fyp Management Portal</span>
+          <span className="uppercase text-center">Mzumbe Fyp Management Portal</span>
 
         </a>
 
@@ -151,7 +151,7 @@ const RegisterPage = () => {
 
             <SiteButton text="Sign Up" loading={loading} loadText="Registering..." />
             <p className="text-sm">
-              Already have an account? <Link to="/login" className="text-blue-600">Login here</Link>
+              Already have an account? <Link to="/login" className="text-yellow-600">Login here</Link>
             </p>
           </form>
         </div>
@@ -173,7 +173,7 @@ const RegisterPage = () => {
               <button onClick={() => setShowSecretModal(false)} className="px-4 py-2 bg-gray-400 rounded text-white">
                 Cancel
               </button>
-              <button onClick={handleSecretSubmit} className="px-4 py-2 bg-blue-600 rounded text-white">
+              <button onClick={handleSecretSubmit} className="px-4 py-2 bg-yellow-600 rounded text-white">
                 Submit
               </button>
             </div>

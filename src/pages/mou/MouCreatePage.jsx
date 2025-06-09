@@ -208,7 +208,7 @@ const MouCreatePage = () => {
 
             {isEditable && (
                 <div className="flex justify-end">
-                    <Button className="flex flex-row gap-2 items-center text-slate-900 bg-white border border-blue-300 focus:outline-none hover:bg-slate-100 focus:ring-4 focus:ring-blue-100 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-blue-600 dark:hover:bg-slate-950 dark:hover:border-slate-600 dark:focus:ring-blue-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 duration-300 " onClick={handleSubmit}
+                    <Button className="flex flex-row gap-2 items-center text-slate-900 bg-white border border-yellow-300 focus:outline-none hover:bg-slate-100 focus:ring-4 focus:ring-yellow-100 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-yellow-600 dark:hover:bg-slate-950 dark:hover:border-slate-600 dark:focus:ring-yellow-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 duration-300 " onClick={handleSubmit}
                         disabled={submitting || !title || !description || selectedParties.length === 0 || selectedReviewers.length === 0}>
                         {isEditMode ? 'Update MOU' : 'Submit MOU'}
                     </Button>

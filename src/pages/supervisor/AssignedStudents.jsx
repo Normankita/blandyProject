@@ -74,7 +74,7 @@ const AssignedStudents = () => {
             key={student.id}
             onClick={() => handleStudentClick(student)}
             className={`cursor-pointer p-4 rounded shadow-lg ${selectedStudent?.id === student.id
-              ? "bg-blue-100 dark:bg-blue-950/50 border-blue-500"
+              ? "bg-yellow-100 dark:bg-yellow-950/50 border-yellow-500"
               : "bg-slate-50 dark:bg-slate-800"
               }  hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-950 p-6 rounded-sm dark:text-gray-300 text-gray-800 duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40`}
           >
@@ -143,7 +143,7 @@ const AssignedStudents = () => {
                 href={selectedProject.github}
                 target="_blank"
                 rel="noreferrer"
-                className="text-blue-950 underline flex items-center"
+                className="text-yellow-950 underline flex items-center"
               >
                 <svg class="w-6 h-6 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.213 9.787a3.391 3.391 0 0 0-4.795 0l-3.425 3.426a3.39 3.39 0 0 0 4.795 4.794l.321-.304m-.321-4.49a3.39 3.39 0 0 0 4.795 0l3.424-3.426a3.39 3.39 0 0 0-4.794-4.795l-1.028.961" />
@@ -157,7 +157,7 @@ const AssignedStudents = () => {
           {selectedProject.documentUrl && (
             <a
               href={selectedProject.documentUrl}
-              className="text-blue-500 underline ml-4"
+              className="text-yellow-500 underline ml-4"
               target="_blank"
               rel="noopener noreferrer"
             >

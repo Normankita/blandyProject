@@ -142,7 +142,7 @@ const ProjectPage = () => {
   return (
     <div className="p-6 space-y-6">
       {userProfile.supervisorId ? (
-        <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={() => openModal()}>
+        <button className="bg-yellow-600 text-white px-4 py-2 rounded" onClick={() => openModal()}>
           Submit New Project
         </button>
       ) : (
@@ -159,12 +159,12 @@ const ProjectPage = () => {
               <p className="italic">{p.abstract}</p>
               <div className="prose prose-sm dark:prose-invert mt-2" dangerouslySetInnerHTML={{ __html: p.description }} />
               {p.github && (
-                <a href={p.github} className="text-blue-500 underline" target="_blank" rel="noopener noreferrer">
+                <a href={p.github} className="text-yellow-500 underline" target="_blank" rel="noopener noreferrer">
                   GitHub Link
                 </a>
               )}
               {p.documentUrl && (
-                <a href={p.documentUrl} className="text-blue-500 underline ml-4" target="_blank" rel="noopener noreferrer">
+                <a href={p.documentUrl} className="text-yellow-500 underline ml-4" target="_blank" rel="noopener noreferrer">
                   <span className="flex">
                     <svg className="w-6 h-6 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2m-8 1V4m0 12-4-4m4 4 4-4" />

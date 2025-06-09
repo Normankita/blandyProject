@@ -47,7 +47,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
                 </div>
                 <div className='col-span-6 flex justify-end'>
                   <div className='sm:w-1/2 w-full mb-2'>
-                    <DragAndDrop imageFile={imageFile} setImageFile={setImageFile}/>
+                    <DragAndDrop imageFile={imageFile} setImageFile={setImageFile} />
                   </div>
                 </div>
 
@@ -346,15 +346,15 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
 
               <div data-hs-strong-password='{
           "target": "#hs-strong-password-base",
-          "stripClasses": "hs-strong-password:opacity-100 hs-strong-password-accepted:bg-teal-500 h-2 flex-auto rounded-full bg-blue-500 opacity-50 mx-1"
+          "stripClasses": "hs-strong-password:opacity-100 hs-strong-password-accepted:bg-teal-500 h-2 flex-auto rounded-full bg-yellow-500 opacity-50 mx-1"
         }' className="flex mt-2 -mx-1 md:col-span-8 h-6"></div>
 
               <div>
                 <input
-                
+
                   type="submit"
                   value={authorized ? "create user Profile" : "Create your profile"}
-                  className={`w-full ${submitting ? `cursor-not-allowed` : `cursor-pointer`} curs0r-n0t-all0wed cursor-pointer rounded-lg mb-4 px-4 py-2 bg-blue-500 lg:w-sm text-white font-semibold hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50`}
+                  className={`w-full ${submitting ? `cursor-not-allowed` : `cursor-pointer`} curs0r-n0t-all0wed cursor-pointer rounded-lg mb-4 px-4 py-2 bg-yellow-500 lg:w-sm text-white font-semibold hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50`}
                   disabled={submitting}
                 />
               </div>

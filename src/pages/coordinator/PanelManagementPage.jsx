@@ -48,30 +48,30 @@ const PanelManagementPage = () => {
   };
 
   const handleAddSupervisor = async (supervisorId) => {
-  if (!selectedPanel) return;
+    if (!selectedPanel) return;
 
-  const currentIds = selectedPanel.supervisorIds || [];
-  if (currentIds.includes(supervisorId)) return;
-  if (currentIds.length >= 3) {
-    return toast.warning('A panel can only have 3 supervisors');
-  }
+    const currentIds = selectedPanel.supervisorIds || [];
+    if (currentIds.includes(supervisorId)) return;
+    if (currentIds.length >= 3) {
+      return toast.warning('A panel can only have 3 supervisors');
+    }
 
-  const updated = [...currentIds, supervisorId];
+    const updated = [...currentIds, supervisorId];
 
-  try {
-    // Update panel with new supervisor list
-    await updateData('panels', selectedPanel.id, { supervisorIds: updated });
+    try {
+      // Update panel with new supervisor list
+      await updateData('panels', selectedPanel.id, { supervisorIds: updated });
 
-    // Update supervisor with panelId
-    await updateData('users', supervisorId, { panelId: selectedPanel.id });
+      // Update supervisor with panelId
+      await updateData('users', supervisorId, { panelId: selectedPanel.id });
 
-    setSelectedPanel({ ...selectedPanel, supervisorIds: updated });
-    toast.success('Supervisor added to panel and updated!');
-  } catch (error) {
-    console.error('Failed to add supervisor to panel:', error);
-    toast.error('Failed to add supervisor to panel');
-  }
-};
+      setSelectedPanel({ ...selectedPanel, supervisorIds: updated });
+      toast.success('Supervisor added to panel and updated!');
+    } catch (error) {
+      console.error('Failed to add supervisor to panel:', error);
+      toast.error('Failed to add supervisor to panel');
+    }
+  };
 
 
   const handleRemoveSupervisor = async (supervisorId) => {
@@ -85,10 +85,10 @@ const PanelManagementPage = () => {
 
   const availableSupervisors = selectedPanel
     ? supervisors.filter(
-        (sup) =>
-          sup.department === selectedPanel.departmentId &&
-          !selectedPanel.supervisorIds.includes(sup.id)
-      )
+      (sup) =>
+        sup.department === selectedPanel.departmentId &&
+        !selectedPanel.supervisorIds.includes(sup.id)
+    )
     : [];
 
   return (
@@ -112,9 +112,8 @@ const PanelManagementPage = () => {
             <div
               key={panel.id}
               onClick={() => setSelectedPanel(panel)}
-              className={`border p-4 rounded-lg cursor-pointer hover:bg-gray-100 dark:bg-slate-900 dark:hover:bg-slate-950 duration-300 shadow-lg ${
-                selectedPanel?.id === panel.id ? 'ring-2 ring-blue-500' : ''
-              }`}
+              className={`border p-4 rounded-lg cursor-pointer hover:bg-gray-100 dark:bg-slate-900 dark:hover:bg-slate-950 duration-300 shadow-lg ${selectedPanel?.id === panel.id ? 'ring-2 ring-yellow-500' : ''
+                }`}
             >
               <h3 className="font-bold text-lg">{panel.name}</h3>
               <p className="text-sm text-gray-500">{panel.description}</p>
@@ -208,7 +207,7 @@ const PanelManagementPage = () => {
             <div className="text-right">
               <button
                 onClick={handleCreatePanel}
-                className="bg-blue-600 text-white px-4 py-2 rounded"
+                className="bg-yellow-600 text-white px-4 py-2 rounded"
               >
                 Save Panel
               </button>

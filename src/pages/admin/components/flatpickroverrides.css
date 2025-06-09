@@ -39,7 +39,7 @@
 
   /* Selected day styles */
   .flatpickr-calendar .selected {
-      background-color: rgba(49, 130, 206, 0.8); /* Translucent blue */
+      background-color: rgba(49, 130, 206, 0.8); /* Translucent yellow */
       color: #ffffff !important; /* Ensure selected text is white */
   }
 
