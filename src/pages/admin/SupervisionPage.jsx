@@ -45,7 +45,7 @@ const SupervisionPage = () => {
 
         const updatedStudent = {
             ...student,
-            supervisorId: selectedSupervisor.id,
+            supervisorId: selectedSupervisor.uid,
             panelId: selectedSupervisor.panelId || null,
         };
 
@@ -53,7 +53,7 @@ const SupervisionPage = () => {
         if (!alreadyAssigned) {
             try {
                 await updateData('users', student.id, {
-                    supervisorId: selectedSupervisor.id,
+                    supervisorId: selectedSupervisor.uid,
                     panelId: selectedSupervisor.panelId || null,
                 });
 
@@ -114,7 +114,7 @@ const SupervisionPage = () => {
                             onClick={() => {
                                 setSelectedSupervisor(supervisor);
                                 const alreadyAssigned = students.filter(
-                                    (s) => s.supervisorId === supervisor.id
+                                    (s) => s.supervisorId === supervisor.uid
                                 );
                                 setAssignedStudents(alreadyAssigned);
                             }}

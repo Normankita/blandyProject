@@ -48,6 +48,7 @@ const PanelManagementPage = () => {
   };
 
   const handleAddSupervisor = async (supervisorId) => {
+    console.log(supervisorId);
     if (!selectedPanel) return;
 
     const currentIds = selectedPanel.supervisorIds || [];
@@ -81,13 +82,13 @@ const PanelManagementPage = () => {
     setSelectedPanel({ ...selectedPanel, supervisorIds: updated });
   };
 
-  const getSupervisorById = (id) => supervisors.find((sup) => sup.id === id);
+  const getSupervisorById = (id) => supervisors.find((sup) => sup.uid === id);
 
   const availableSupervisors = selectedPanel
     ? supervisors.filter(
       (sup) =>
         sup.department === selectedPanel.departmentId &&
-        !selectedPanel.supervisorIds.includes(sup.id)
+        !selectedPanel.supervisorIds.includes(sup.uid)
     )
     : [];
 
@@ -136,7 +137,7 @@ const PanelManagementPage = () => {
             customActions={(sup) => (
               <button
                 className="text-red-600 hover:underline"
-                onClick={() => handleRemoveSupervisor(sup.id)}
+                onClick={() => handleRemoveSupervisor(sup.uid)}
               >
                 Remove
               </button>
@@ -153,7 +154,7 @@ const PanelManagementPage = () => {
               customActions={(sup) => (
                 <button
                   className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-                  onClick={() => handleAddSupervisor(sup.id)}
+                  onClick={() => handleAddSupervisor(sup.uid)}
                 >
                   Assign
                 </button>
