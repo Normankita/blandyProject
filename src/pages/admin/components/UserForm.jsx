@@ -9,7 +9,7 @@ import { useData } from '@/contexts/DataContext';
 
 
 
-export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormData, datepickerRef, authorized, submitting=false, imageFile, setImageFile }) => {
+export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormData, datepickerRef, authorized, submitting=false, imageFile, setImageFile, title="Create your profile" }) => {
   const { fetchData } = useData();
 
 
@@ -57,7 +57,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-4 sm:p-6 shadow-lg mb-10 dark:text-gray-300 text-gray-800 rounded-sm duration-300">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
         <h2 className="text-2xl font-bold text-black dark:text-white md:text-title-xl2">
-          {authorized ? "Create New Member" : "Create your profile"}
+          {authorized ? "Create New User" : title}
         </h2>
         <div className="w-full sm:w-1/2 md:w-1/5 md:mr-10">
           <DragAndDrop imageFile={imageFile} setImageFile={setImageFile} />

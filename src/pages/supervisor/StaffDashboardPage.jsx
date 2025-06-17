@@ -55,13 +55,16 @@ const StaffDashboardPage = () => {
           <p>No recent projects submitted.</p>
         ) : (
           projects.map((project) => (
+            <>
+            
             <ActivityItem
               key={project.id}
               title={project.title}
-              studentName={students.find((student)=>student.id===project.studentId).name}
+              studentName={students.find((student)=>student.uid===project.studentId)?.name}
               createdAt={project.createdAt}
               status={project.status}
             />
+            </>
           ))
         )}
       </div>

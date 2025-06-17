@@ -115,7 +115,7 @@ const ContactCard = ({ userToDisplay = null }) => {
       <div className="mt-6">
         <Link to="/update-profile" className="inline-block">
           <button className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-bold rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-gray-600 dark:hover:bg-slate-950 dark:hover:border-gray-600 dark:focus:ring-gray-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 mt-10 ">
-            {!userToDisplay ? "Edit Profile" : "Edit User"}
+            {!userToDisplay && (!userToDisplay ? "Edit Profile" : "Edit User")}
           </button>
         </Link>
       </div>

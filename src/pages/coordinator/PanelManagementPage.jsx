@@ -23,6 +23,8 @@ const PanelManagementPage = () => {
     path: 'users',
     filters: [{ field: 'role', op: '==', value: 'staff' }],
   });
+  const { formattedData: students } = useTableData({ path: 'users', filters: [{ field: 'role', op: '==', value: 'student' }] });
+  const {formattedData: projects} = useTableData({ path: 'projects' });
 
   const handleCreatePanel = async () => {
     const { name, description, departmentId } = formData;
@@ -77,6 +79,10 @@ const PanelManagementPage = () => {
 
 
   const handleRemoveSupervisor = async (supervisorId) => {
+    if(students.find(s => s.supervisorId === supervisorId)||
+       projects.find(p => p.supervisorId === supervisorId)){
+      return toast.warning('Cannot remove supervisor as they have assigned students already.');
+    }
     if (!selectedPanel) return;
     const updated = selectedPanel.supervisorIds.filter((id) => id !== supervisorId);
     await updateData('panels', selectedPanel.id, { supervisorIds: updated });
@@ -142,7 +148,7 @@ const PanelManagementPage = () => {
             title="Assigned Supervisors"
             customActions={(sup) => (
               <button
-                className="text-red-600 hover:underline"
+                className="text-gray-900 bg-white border  focus:outline-none focus:ring-4 font-bold rounded-full text-sm px-4 py-1.5 me-2 dark:bg-slate-900 dark:text-white  dark:hover:bg-slate-950 shadow-lg shadow-slate-900/10 dark:shadow-black/40 flex flex-row gap-1 items-center dark:focus:ring-red-700 dark:hover:border-red-600 dark:border-red-600 hover:bg-red-100 border-red-300 focus:ring-red-100"
                 onClick={() => handleRemoveSupervisor(sup.uid)}
               >
                 Remove
@@ -159,7 +165,7 @@ const PanelManagementPage = () => {
               isLoading={loadingSupervisors}
               customActions={(sup) => (
                 <button
-                  className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                  className="text-gray-900 bg-white border  focus:outline-none focus:ring-4 font-bold rounded-full text-sm px-4 py-1.5 me-2 dark:bg-slate-900 dark:text-white  dark:hover:bg-slate-950 shadow-lg shadow-slate-900/10 dark:shadow-black/40 flex flex-row gap-1 items-center dark:focus:ring-green-700 dark:hover:border-green-600 dark:border-green-600 hover:bg-green-100 border-green-300 focus:ring-green-100"
                   onClick={() => handleAddSupervisor(sup.uid)}
                 >
                   {sup.panelId ? 'Re Assign' : 'Assign'}

@@ -170,6 +170,7 @@ const UpdateProfile = () => {
         datepickerRef={datepickerRef}
         auth={false}
         submitting={submitting}
+        title={'Update Profile'}
       />
     </section>
   );

@@ -25,6 +25,10 @@ const SupervisionPage = () => {
         path: 'departments'
     });
 
+    const { formattedData: projects, loading: loadingProjects } = useTableData({
+        path: 'projects'
+    });
+
     const filteredSupervisors = supervisors.filter(
         (sup) =>
             sup.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -67,6 +71,9 @@ const SupervisionPage = () => {
 
 
     const handleRemoveStudentFromSupervisor = async (studentId) => {
+        if(projects.find((p) => p.studentId === studentId || p.supervisorId === selectedSupervisor.uid)){
+            return toast.warning('Cannot remove student as they have submitted a project under this supervisor.');
+        }
         try {
             await updateData('users', studentId, {
                 supervisorId: '',
