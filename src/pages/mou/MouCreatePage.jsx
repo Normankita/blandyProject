@@ -34,7 +34,7 @@ const MouCreatePage = () => {
     });
 
     const reviewers = users.filter(user => user.role === 'staff' && user.isReviewer && !user.secretpass && (user.uid !== userProfile?.uid));
-    const parties = users.filter(user => !user.isReviewer && !user.secretpass && (user.id !== userProfile?.id));
+    const parties = users.filter(user => !user.isReviewer && !user.secretpass && (user.uid !== userProfile?.uid));
 
     // Populate form if editing
     useEffect(() => {
@@ -55,9 +55,9 @@ const MouCreatePage = () => {
     const toggleParty = (user) => {
         if (!isEditable) return;
         setSelectedParties(prev =>
-            prev.some(p => p.partyId === user.id)
-                ? prev.filter(p => p.partyId !== user.id)
-                : [...prev, { partyId: user.id, signedAt: null }]
+            prev.some(p => p.partyId === user.uid)
+                ? prev.filter(p => p.partyId !== user.uid)
+                : [...prev, { partyId: user.uid, signedAt: null }]
         );
     };
 
@@ -65,14 +65,14 @@ const MouCreatePage = () => {
     const toggleReviewer = (user) => {
         if (!isEditable) return;
 
-        const exists = selectedReviewers.some(r => r.reviewerId === user.id);
+        const exists = selectedReviewers.some(r => r.reviewerId === user.uid);
         if (exists) {
-            setSelectedReviewers(prev => prev.filter(r => r.reviewerId !== user.id));
+            setSelectedReviewers(prev => prev.filter(r => r.reviewerId !== user.uid));
         } else {
             setSelectedReviewers(prev => [
                 ...prev,
                 {
-                    reviewerId: user.id,
+                    reviewerId: user.uid,
                     decision: null,
                     comment: '',
                     decidedAt: null
@@ -172,11 +172,11 @@ const MouCreatePage = () => {
                     customActions={(user) => (
                         <Button
                             size="sm"
-                            variant={selectedParties.find(p => p.partyId === user.id) ? 'destructive' : 'default'}
+                            variant={selectedParties.find(p => p.partyId === user.uid) ? 'destructive' : 'default'}
 
                             onClick={() => toggleParty(user)}
                             disabled={submitting || !title || !description}                        >
-                            {selectedParties.find(p => p.partyId === user.id) ? 'Remove' : 'Add'}
+                            {selectedParties.find(p => p.partyId === user.uid) ? 'Remove' : 'Add'}
 
                         </Button>
                     )}
@@ -190,7 +190,7 @@ const MouCreatePage = () => {
                     headers={['name', 'email']}
                     isLoading={loadingUsers}
                     customActions={(user) => {
-                        const isSelected = selectedReviewers.some(r => r.reviewerId === user.id);
+                        const isSelected = selectedReviewers.some(r => r.reviewerId === user.uid);
                         return (
                             <Button
                                 size="sm"
