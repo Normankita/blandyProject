@@ -49,7 +49,7 @@ const SupervisionPage = () => {
             panelId: selectedSupervisor.panelId || null,
         };
 
-        const alreadyAssigned = assignedStudents.some((s) => s.id === student.id);
+        const alreadyAssigned = assignedStudents.some((s) => s.uid === student.uid);
         if (!alreadyAssigned) {
             try {
                 await updateData('users', student.id, {
@@ -73,7 +73,7 @@ const SupervisionPage = () => {
                 panelId: '',
             });
 
-            setAssignedStudents((prev) => prev.filter((s) => s.id !== studentId));
+            setAssignedStudents((prev) => prev.filter((s) => s.uid !== studentId));
             toast.success('Student removed from supervisor.');
         } catch (err) {
             toast.error('Failed to remove student.');
@@ -84,7 +84,7 @@ const SupervisionPage = () => {
     const localUnassignedStudents = students.filter(
         (student) =>
             !student.supervisorId &&
-            !assignedStudents.some((s) => s.id === student.id) &&
+            !assignedStudents.some((s) => s.uid === student.uid) &&
             selectedSupervisor && student.department === selectedSupervisor.department
     );
 
@@ -146,7 +146,7 @@ const SupervisionPage = () => {
                             customActions={(student) => (
                                 <button
                                     className="text-gray-900 bg-white border  focus:outline-none focus:ring-4 font-bold rounded-full text-sm px-4 py-1.5 me-2 dark:bg-slate-900 dark:text-white  dark:hover:bg-slate-950 shadow-lg shadow-slate-900/10 dark:shadow-black/40 flex flex-row gap-1 items-center dark:focus:ring-red-700 dark:hover:border-red-600 dark:border-red-600 hover:bg-red-100 border-red-300 focus:ring-red-100"
-                                    onClick={() => handleRemoveStudentFromSupervisor(student.id)}
+                                    onClick={() => handleRemoveStudentFromSupervisor(student.uid)}
                                 >
                                     Remove
                                 </button>

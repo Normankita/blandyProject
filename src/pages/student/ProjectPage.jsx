@@ -5,14 +5,14 @@ import Skeleton from "react-loading-skeleton";
 import TipTapEditor from "../../components/TipTapEditor";
 
 const ProjectPage = () => {
-  const { userProfile, fetchData, addData, updateData, deleteData, uploadFile, deleteFile } = useData();
+  const { userProfile, fetchData, addData, updateData, deleteData, uploadFile, deleteFile, loading, setLoading } = useData();
 
   const [projects, setProjects] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentProject, setCurrentProject] = useState(null);
   const [editorContent, setEditorContent] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [file, setFile] = useState(null);
+  const [fileDocument, setFileDocument] = useState(null);
+  const [powerPoint, setPowerPoint] = useState(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -56,32 +56,63 @@ const ProjectPage = () => {
     } else {
       setForm({ title: "", abstract: "", github: "", status: "draft" });
       setEditorContent("");
-      setFile(null);
+      setFileDocument(null);
     }
   };
 
   const handleChange = (e) => setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) setFile(selectedFile);
+    const file = e.target.files[0];
+    const inputId = e.target.id;
+
+    if (!file) return;
+
+    if (inputId === "file-upload-1") {
+      if (file.type.match(/application\/pdf|application\/msword|application\/vnd.openxmlformats-officedocument.wordprocessingml.document/)) {
+        setFileDocument(file);
+      } else {
+        toast.error("Please upload a valid document (PDF, DOC, or DOCX)");
+      }
+    }
+
+    if (inputId === "file-upload-2") {
+      if (file.type.match(/application\/vnd.ms-powerpoint|application\/vnd.openxmlformats-officedocument.presentationml.presentation|application\/vnd.oasis.opendocument.text/)) {
+        setPowerPoint(file);
+      } else {
+        toast.error("Please upload a valid PowerPoint (PPT, PPTX, or ODT)");
+      }
+    }
   };
+
 
   const handleSave = async () => {
     setLoading(true);
-    const storagePath = `StudentsProjectDocuments/${userProfile.uid}/${file?.name}`;
+    const storagePath = `StudentsProjectDocuments/${userProfile.uid}/${fileDocument?.name}`;
+    const pptStoragePath = `StudentsProjectPowerPoints/${userProfile.uid}/${powerPoint?.name}`;
+
     let documentUrl = "";
+    let powerPointUrl = "";
 
     try {
-      if (file) {
+      if (fileDocument) {
         if (currentProject?.documentUrl) {
           deleteFile(currentProject.documentUrl);
         }
-        documentUrl = await uploadFile(file, storagePath);
+        documentUrl = await uploadFile(fileDocument, storagePath);
+      }
+      if (powerPoint) {
+        if (currentProject?.powerPointUrl) {
+          deleteFile(currentProject.powerPointUrl);
+        }
+        powerPointUrl = await uploadFile(powerPoint, pptStoragePath);
       }
 
       if (!documentUrl && currentProject?.documentUrl) {
         documentUrl = currentProject.documentUrl;
+      }
+      if (!powerPointUrl && currentProject?.powerPointUrl) {
+        powerPointUrl = currentProject.powerPointUrl;
       }
 
       const baseData = {
@@ -91,6 +122,7 @@ const ProjectPage = () => {
         supervisorId: userProfile.supervisorId,
         panelId: userProfile.panelId || null,
         documentUrl,
+        powerPointUrl,
       };
 
       if (currentProject) {
@@ -129,6 +161,9 @@ const ProjectPage = () => {
           if (documentToDelete?.documentUrl) {
             deleteFile(documentToDelete.documentUrl);
           }
+          if (documentToDelete?.powerPointUrl) {
+            deleteFile(documentToDelete.powerPointUrl);
+          }
           await deleteData("projects", id);
           toast.success("Project deleted");
           loadProjects();
@@ -163,21 +198,32 @@ const ProjectPage = () => {
                   GitHub Link
                 </a>
               )}
-              {p.documentUrl && (
-                <a href={p.documentUrl} className="text-yellow-500 underline ml-4" target="_blank" rel="noopener noreferrer">
-                  <span className="flex">
-                    <svg className="w-6 h-6 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2m-8 1V4m0 12-4-4m4 4 4-4" />
-                    </svg>
-                    Document
-                  </span>
-                </a>
-              )}
+              <div className="mt-2 flex items-center">
+                {p.documentUrl && (
+                  <a href={p.documentUrl} className="bg-blue-500/20 rounded-sm shadow-lg px-2 p-1 m-1  ml-4" target="_blank" rel="noopener noreferrer">
+                    <span className="flex">
+                      <svg className="w-6 h-6 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoinn="round" strokeWidth="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2m-8 1V4m0 12-4-4m4 4 4-4" />
+                      </svg>
+                      Document
+                    </span>
+                  </a>
+                )}
+                {p.powerPointUrl && (
+                  <a href={p.powerPointUrl} className="bg-yellow-500/20 rounded-sm shadow-lg px-2 p-1 m-1  ml-4" target="_blank" rel="noopener noreferrer">
+                    <span className="flex">
+                      <svg className="w-6 h-6 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoinn="round" strokeWidth="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2m-8 1V4m0 12-4-4m4 4 4-4m4 4 4-4" />
+                      </svg> &nbsp;  PowerPoint
+                    </span>
+                  </a>
+                )}
+              </div>
               <div className="mt-2 flex space-x-2">
                 <button className="mr-auto cursor-pointer" onClick={() => openModal(p)}>
                   <span>
                     <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28" />
+                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoinn="round" strokeWidth="2" d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28" />
                     </svg>
 
                   </span>
@@ -185,7 +231,7 @@ const ProjectPage = () => {
                 <button className="ml-auto cursor-pointer" onClick={() => p.status === "draft" && handleDelete(p.id)}>
                   <span>
                     <svg className={`w-6 h-6 ${p.status === "draft" ? "text-red-500 dark:text-red-600" : "text-gray-800 dark:text-gray-300"} `} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoinn="round" strokeWidth="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
                     </svg>
 
                   </span>
@@ -199,7 +245,7 @@ const ProjectPage = () => {
       )}
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/60 flex justify-center items-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/60 flex justify-center items-center p-4 z-49">
           <div className="bg-white dark:bg-gray-900 rounded-lg p-6 w-full max-w-3xl space-y-4">
             <h2 className="text-xl font-bold">{currentProject ? "Edit Project" : "Submit New Project"}</h2>
 
@@ -225,13 +271,38 @@ const ProjectPage = () => {
               onChange={handleChange}
             />
 
-            {form.status !== "draft" &&
-              <input
-                type="file"
-                accept=".pdf,.doc,.docx"
-                onChange={handleFileChange}
-                className="w-full p-2 border"
-              />
+            {form.status === "draft" &&
+              <div className='mb-3 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-12'>
+                <div className="md:col-span-6">
+                  <label htmlFor="file-upload-1" className="block mb-1 text-sm font-medium">Upload Document (PDF/DOC/DOCX)</label>
+                  <input
+                    id="file-upload-1"
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={handleFileChange}
+                    className="w-full p-2 border bg-blue-500/10 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border-gray-300 rounded cursor-pointer
+  file:mr-4 file:py-2 file:px-4
+  file:rounded-full file:border-0
+  file:text-sm file:font-semibold
+  file:bg-blue-50 file:text-blue-700
+  hover:file:bg-blue-100"
+                  />
+                </div>
+                <div className="md:col-span-6">
+                  <label htmlFor="file-upload-2" className="block mb-1 text-sm font-medium"> Upload PowerPoint (PPT/PPTX/ODT)  </label>
+                  <input type="file"
+                    id="file-upload-2"
+                    accept=".ppt,.pptx,.odt"
+                    onChange={handleFileChange}
+                    className="w-full p-2 border bg-yellow-500/10 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border-gray-300 rounded cursor-pointer
+  file:mr-4 file:py-2 file:px-4
+  file:rounded-full file:border-0
+  file:text-sm file:font-semibold
+  file:bg-yellow-50 file:text-yellow-700
+  hover:file:bg-yellow-100"
+                  />
+                </div>
+              </div>
             }
 
             <TipTapEditor content={editorContent} setContent={setEditorContent} />

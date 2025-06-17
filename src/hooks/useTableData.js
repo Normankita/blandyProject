@@ -3,11 +3,12 @@ import { useEffect, useState, useCallback } from 'react';
 import { useData } from '../contexts/DataContext'; // Adjust the path if necessary
 
 const useTableData = ({ path, sort, filters = [], transformData }) => {
-  const { fetchData, loading } = useData();
+  const { fetchData, loading, setLoading } = useData();
   const [formattedData, setFormattedData] = useState([]);
 
-  // Define and memoize the data loading function
+  // Define and memoize the data , setLoading function
   const loadData = useCallback(async () => {
+    setLoading(true);
     try {
       const res = await fetchData({ path, sort, filters });
       if (!res || !res.data) return;
@@ -29,6 +30,8 @@ const useTableData = ({ path, sort, filters = [], transformData }) => {
       setFormattedData(cleaned);
     } catch (error) {
       console.error("Failed to load data in useTableData:", error);
+    } finally {
+      setLoading(false);
     }
   }, [fetchData, path, sort, filters, transformData]);
 
@@ -37,7 +40,7 @@ const useTableData = ({ path, sort, filters = [], transformData }) => {
     loadData();
   }, []);
 
-  // Return data, loading state, and manual refresh function
+  // Return data, , setLoading state, and manual refresh function
   return {
     formattedData,
     loading,

@@ -19,7 +19,7 @@ const PanelManagementPage = () => {
 
   const { formattedData: panels, refreshData: refreshPanels } = useTableData({ path: 'panels' });
   const { formattedData: departments } = useTableData({ path: 'departments' });
-  const { formattedData: supervisors, loading: loadingSupervisors } = useTableData({
+  const { formattedData: supervisors, loading: loadingSupervisors, refreshData: refreshSupervisors } = useTableData({
     path: 'users',
     filters: [{ field: 'role', op: '==', value: 'staff' }],
   });
@@ -48,7 +48,6 @@ const PanelManagementPage = () => {
   };
 
   const handleAddSupervisor = async (supervisorId) => {
-    console.log(supervisorId);
     if (!selectedPanel) return;
 
     const currentIds = selectedPanel.supervisorIds || [];
@@ -62,9 +61,11 @@ const PanelManagementPage = () => {
     try {
       // Update panel with new supervisor list
       await updateData('panels', selectedPanel.id, { supervisorIds: updated });
-
+      refreshPanels();
       // Update supervisor with panelId
+      
       await updateData('users', supervisorId, { panelId: selectedPanel.id });
+      refreshSupervisors();
 
       setSelectedPanel({ ...selectedPanel, supervisorIds: updated });
       toast.success('Supervisor added to panel and updated!');
@@ -79,6 +80,9 @@ const PanelManagementPage = () => {
     if (!selectedPanel) return;
     const updated = selectedPanel.supervisorIds.filter((id) => id !== supervisorId);
     await updateData('panels', selectedPanel.id, { supervisorIds: updated });
+    refreshPanels();
+    await updateData('users', supervisorId, { panelId: null });
+    refreshSupervisors();
     setSelectedPanel({ ...selectedPanel, supervisorIds: updated });
   };
 
@@ -88,9 +92,11 @@ const PanelManagementPage = () => {
     ? supervisors.filter(
       (sup) =>
         sup.department === selectedPanel.departmentId &&
-        !selectedPanel.supervisorIds.includes(sup.uid)
+        !selectedPanel.supervisorIds.includes(sup.uid)&&
+        !sup.panelId 
     )
     : [];
+    console.log(availableSupervisors);
 
   return (
     <div className="p-4">
@@ -156,7 +162,7 @@ const PanelManagementPage = () => {
                   className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700"
                   onClick={() => handleAddSupervisor(sup.uid)}
                 >
-                  Assign
+                  {sup.panelId ? 'Re Assign' : 'Assign'}
                 </button>
               )}
             />

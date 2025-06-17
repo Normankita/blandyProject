@@ -7,7 +7,7 @@ import Woman from "@/assets/avatars/woman.svg";
 import Man from "@/assets/avatars/man.svg";
 
 const SideHeader = ({ children, role }) => {
-    const { userProfile } = useData();
+    const { userProfile, notifications } = useData();
 
     const [isMou, setIsMou] = useState(false);
 
@@ -51,7 +51,7 @@ const SideHeader = ({ children, role }) => {
         <div>
 
 
-            <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+            <nav className="fixed top-0 z-40 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
                 <div className="px-3 py-3 lg:px-5 lg:pl-3">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center justify-start rtl:justify-end">
@@ -87,7 +87,7 @@ const SideHeader = ({ children, role }) => {
                                     </button>
                                 </div>
                                 {/* Profile options */}
-                                <div className={`z-50 ${profile ? "block" : "hidden"} absolute top-16 right-4 w-44 rounded-lg shadow-xl bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-600`} id="dropdown-user" role="menu" aria-orientation="vertical" aria-labelledby="dropdown-user">
+                                <div className={`z-40 ${profile ? "block" : "hidden"} absolute top-16 right-4 w-44 rounded-lg shadow-xl bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-600`} id="dropdown-user" role="menu" aria-orientation="vertical" aria-labelledby="dropdown-user">
                                     <div className="px-4 py-3" role="none">
                                         <p className="text-sm text-gray-900 dark:text-white" role="none">
                                             {`${auth.currentUser.displayName ? auth.currentUser.displayName : `User Account`}`}
@@ -118,7 +118,7 @@ const SideHeader = ({ children, role }) => {
                     </div>
                 </div>
             </nav>
-            <aside id="logo-sidebar" className={`fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform bg-white border-r border-gray-200
+            <aside id="logo-sidebar" className={`fixed top-0 left-0 z-30 w-64 h-screen pt-20 transition-transform bg-white border-r border-gray-200
   ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
   md:translate-x-0
   dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-between`}
@@ -168,7 +168,7 @@ const SideHeader = ({ children, role }) => {
                                     <path d="m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z" />
                                 </svg>
                                 <span className="flex-1 ms-3 whitespace-nowrap">Communicate</span>
-                                <span className="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-yellow-800 bg-yellow-100 rounded-full dark:bg-yellow-900 dark:text-yellow-300">3</span>
+                                <span className="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-yellow-800 bg-yellow-100 rounded-full dark:bg-yellow-900 dark:text-yellow-300">{notifications.length}</span>
                             </NavLink>
                         </li>
 

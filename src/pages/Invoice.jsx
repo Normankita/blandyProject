@@ -47,7 +47,7 @@ const Invoice = () => {
   const [myMessage, setMyMessage] = useState('');
   const [isConvSelected, setIsConvSelected] = useState(false);
 
-  const { fetchData, fetchSnapshotData, userProfile, addData, updateData } = useData();
+  const { fetchData, fetchSnapshotData, userProfile, addData, updateData, notifications, setNotifications } = useData();
 
   const handleNewConvo = async (convoRecipient) => {
     const existing = conversations.find((c) =>
@@ -126,6 +126,8 @@ const Invoice = () => {
   };
 
   useEffect(() => {
+    setNotifications([]);
+    console.log(notifications)
     const unsubscribe = fetchSnapshotData({
       path: "conversations",
       onDataChange: (liveData) => {

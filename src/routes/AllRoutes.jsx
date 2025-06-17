@@ -14,7 +14,7 @@ const AllRoutes = () => {
   const location = useLocation();
   useTitle();
 
-  const { LoginPage, RegisterPage, PageNotFound, CreateProfile, UnAuthorized, Invoice } = pages;
+  const { LoginPage, RegisterPage, PageNotFound, CreateProfile, UnAuthorized, Invoice, UpdateProfile } = pages;
   const { DashboardPage, Projects, RegisterAdmin, Users, UserProfile, SupervisionPage, DepartmentsPage } = admin;
   const { StudentDashboardPage, ProjectPage } = student;
   const { StaffDashboardPage, AssignedStudents } = staff;
@@ -55,6 +55,7 @@ const AllRoutes = () => {
         {/* Functional Routes */}
         <Route path="/invoice" element={<ProtectedRoutes allow={["student", "staff", "admin"]} profiled><Invoice /></ProtectedRoutes>} />
         <Route path="/profile" element={<ProtectedRoutes allow={["student", "staff", "admin"]} profiled><UserProfile /></ProtectedRoutes>} />
+        <Route path="/update-profile" element={<ProtectedRoutes allow={["student", "staff", "admin"]} profiled><UpdateProfile /></ProtectedRoutes>} />
         <Route path="/projects" element={<ProtectedRoutes allow={["admin", "staff"]} profiled><Projects /></ProtectedRoutes>} />
         <Route path="/admin-register" element={<ProtectedRoutes allow={["admin"]} profiled><RegisterAdmin /></ProtectedRoutes>} />
         <Route path="/student-projects" element={<ProtectedRoutes allow={["student"]} profiled><ProjectPage /></ProtectedRoutes>} />

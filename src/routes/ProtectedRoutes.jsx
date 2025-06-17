@@ -107,7 +107,7 @@ const useAccessControl = ({
 
 const ProtectedRoutes = ({ children, allow = [], profiled = false, blockProfiled = false }) => {
   const { token, loading: authLoading, logout } = useAuth();
-  const { userProfile, setUserProfile, userProfileLoading } = useData();
+  const { userProfile, setUserProfile, userProfileLoading, loading:componentLoading } = useData();
   const fetchProfile = useFetchProfile();
 
   useEffect(() => {
@@ -152,6 +152,7 @@ const ProtectedRoutes = ({ children, allow = [], profiled = false, blockProfiled
         exit={{ opacity: 0 }}
         transition={{ duration: 0.5 }}
       >
+      {componentLoading && <FullPageLoader />}
         {children}
       </motion.div>
     </SideHeader>

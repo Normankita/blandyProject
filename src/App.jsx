@@ -7,9 +7,11 @@ import { removeUser, setUser } from './store/userSlice';
 import { useEffect } from 'react';
 import { onMessage } from 'firebase/messaging';
 import { messaging } from './configs/firebase';
+import { useData } from './contexts/DataContext';
 
 function App() {
   const dispatch = useDispatch();
+  const {fetchSnapshotData, setNotifications, userProfile} = useData();
 
   useEffect(() => {
     generateToken();
@@ -36,6 +38,33 @@ function App() {
     });
     return () => unsubscribe();
   }, []);
+
+
+ useEffect(() => {
+  if (!userProfile?.email) return; // Wait for email to be available
+
+  const unsubscribe = fetchSnapshotData({
+    path: "conversations",
+    onDataChange: (liveData) => {
+      // Only show conversations the user is NOT in
+      const newNotifications = liveData.filter(
+        (c) => c.participants.some((r) => r.email === userProfile.email)
+      );
+
+      // Remove duplicates based on conversation ID (assuming c.id exists)
+      setNotifications((prev) => {
+        const existingIds = new Set(prev.map((n) => n.id));
+        const filtered = newNotifications.filter((n) => !existingIds.has(n.id));
+        return [...prev, ...filtered];
+      });
+
+      console.log("Fetched notifications");
+    }
+  });
+
+  return () => unsubscribe();
+}, [userProfile?.email]);
+
 
   return (
     <>

@@ -37,7 +37,6 @@ const StudentDashboardPage = () => {
         filters: [{ field: "supervisorId", op: "==", value: userProfile.uid }],
       }),
     ]);
-    console.log("damn it", projectData);
     setStudents(studentData.data);
     setProjects(projectData.data);
     setMous(mouData.data);

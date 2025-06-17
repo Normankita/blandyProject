@@ -30,9 +30,11 @@ import { useAuth } from "../contexts/AuthContext";
 const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [userProfile, setUserProfile] = useState(null);
   const [userProfileLoading, setUserProfileLoading] = useState(true);
+  const [notifications, setNotifications] = useState([]);
 
   const { user } = useAuth();
 
@@ -187,7 +189,6 @@ export const DataProvider = ({ children }) => {
       await updateDoc(ref, updates);
     } catch (err) {
       throw new Error("Update error: " + err.message);
-
     }
   };
 
@@ -277,6 +278,10 @@ export const DataProvider = ({ children }) => {
         uploadFile,
         deleteFile,
         fetchSnapshotData,
+        notifications,
+        setNotifications,
+        loading,
+        setLoading,
       }}
     >
       {children}

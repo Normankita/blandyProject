@@ -6,7 +6,11 @@ const DragAndDrop = ({ imageFile, setImageFile }) => {
     }
   };
 
-  const backgroundImage = imageFile ? `url(${URL.createObjectURL(imageFile)})` : '';
+  const backgroundImage = imageFile
+    ? typeof imageFile === 'string'
+      ? `url(${imageFile})` // already uploaded image URL
+      : `url(${URL.createObjectURL(imageFile)})` // newly selected file
+    : '';
 
   return (
     <div className="flex items-center justify-center w-full">
