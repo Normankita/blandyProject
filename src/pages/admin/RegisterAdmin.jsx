@@ -71,13 +71,22 @@ const RegisterAdmin = () => {
     if (name === "mobNo") {
       if (value.length <= 13) {
         if (value.length <= 4 || value.slice(0, 4) === "+255") {
-          setFormData((prev) => ({ ...prev, [name]: "+".concat(ensureNumber(value)) }));
+          setFormData((prev) => ({
+            ...prev,
+            [name]: "+".concat(value.replace(/[^0-9]/g, "").slice(0, 12)),
+          }));
 
           if (value.length !== 13) {
             if (value.length <= 4 && value.slice(0, 4) !== "+255") {
-              setError((prev) => ({ ...prev, mobNoError: "Invalid Country Code" }));
+              setError((prev) => ({
+                ...prev,
+                mobNoError: "Invalid Country Code",
+              }));
             } else {
-              setError((prev) => ({ ...prev, mobNoError: "Phone number incomplete" }));
+              setError((prev) => ({
+                ...prev,
+                mobNoError: "Phone number incomplete",
+              }));
             }
           } else {
             setError((prev) => ({ ...prev, mobNoError: "" }));
@@ -88,37 +97,72 @@ const RegisterAdmin = () => {
       let point = 0;
       if (value.length >= 6) {
         let arrayTest = [/[0-9]/, /[a-z]/, /[A-Z]/, /[^0-9a-zA-Z]/];
-        arrayTest.forEach((item) => { if (item.test(value)) point++; });
+        arrayTest.forEach((item) => {
+          if (item.test(value)) point++;
+        });
       }
       setError((prev) => ({
         ...prev,
-        passwordError: point < 4 ? " Weak Password " : ""
+        passwordError: point < 4 ? " Weak Password " : "",
       }));
       setFormData((prev) => ({ ...prev, [name]: value }));
     } else if (name === "repassword") {
       setError((prev) => ({
         ...prev,
-        passwordError: value !== formData.password ? " Passwords do not match! " : ""
+        passwordError: value !== formData.password
+          ? " Passwords do not match! "
+          : "",
       }));
       setFormData((prev) => ({ ...prev, [name]: value }));
     } else if (name === "email") {
       setError((prev) => ({
         ...prev,
-        emailError: !value.includes("@") ? "Invalid email" : currentUsers.some((user) => user.email === value) ? "Email already exists" : ""
+        emailError: !value.includes("@")
+          ? "Invalid email"
+          : currentUsers.some((user) => user.email === value)
+            ? "Email already exists"
+            : "",
       }));
       setFormData((prev) => ({ ...prev, [name]: value }));
+    } else if (name === "registrationNumber") {
+      let formatted = value.replace(/[^0-9Tt\/.]/g, "").toUpperCase();
+
+      // Auto-insert '/T.' after 8 digits if not already present
+      if (/^\d{8}$/.test(formatted)) {
+        formatted += "/T.";
+      }
+
+      // Limit to max 13 characters
+      if (formatted.length > 13) {
+        formatted = formatted.slice(0, 13);
+      }
+
+      const validPattern = /^\d{8}\/T\.\d{2}$/;
+
+      setFormData((prev) => ({ ...prev, registrationNumber: formatted }));
+      setError((prev) => ({
+        ...prev,
+        registrationNumberError: validPattern.test(formatted)
+          ? ""
+          : "Expected format: 12345678/T.22",
+      }));
     } else {
       if (name === "fullName") {
         const fullNamecon = value.trim().split(" ");
         if (fullNamecon.length === 3) {
           setError((prev) => ({ ...prev, fullNameError: "" }));
         } else {
-          setError((prev) => ({ ...prev, fullNameError: "Must Have three names" }));
+          setError((prev) => ({
+            ...prev,
+            fullNameError: "Must Have three names",
+          }));
         }
       }
+
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
+
 
   async function handleSubmit(e) {
     e.preventDefault();

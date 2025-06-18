@@ -9,7 +9,7 @@ import { useData } from '@/contexts/DataContext';
 
 
 
-export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormData, datepickerRef, authorized, submitting=false, imageFile, setImageFile, title="Create your profile" }) => {
+export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormData, datepickerRef, authorized, submitting = false, imageFile, setImageFile, title = "Create your profile" }) => {
   const { fetchData } = useData();
 
 
@@ -152,7 +152,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
           </div>
 
           {/* Coordinator specification */}
-          {authorized &&formData.role==="staff" && (
+          {authorized && formData.role === "staff" && (
             <div className="col-span-1">
               <label className="block mb-2 font-medium text-black dark:text-white">Category</label>
               <select
@@ -166,15 +166,40 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
               </select>
             </div>
           )}
+          {formData.role !== "admin" && (
+            <div className="col-span-1">
+              <label className={`block mb-2 font-medium ${error.department ? "text-red" : "text-black dark:text-white"}`}>Department</label>
+              <select
+                name="department"
+                value={formData.department}
+                onChange={handleChange}
+                required
+                className={`w-full rounded-lg border bg-transparent py-3 px-4 outline-none text-black dark:bg-meta-5 dark:text-white ${error.department ? "border-red" : "border-stroke dark:border-form-strokedark focus:border-primary"}`}
+              >
+                <option value="">Select Department</option>
+                {Array.isArray(departments) &&
+                  departments.map((dept) => (
+                    <option key={dept.id} value={dept.id}>
+                      {dept.name}
+                    </option>
+                  ))}
+              </select>
+              {error.department && (
+                <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                  <span className="font-medium">Oops! </span> {error.department}
+                </p>
+              )}
+            </div>
+          )}
 
-          {formData.role === "student" && (
+          {formData.role === "student" && formData.department && (
             <>
               <div className="col-span-1">
                 <label className={`block mb-2 font-medium ${error.registrationNumber ? "text-red" : "text-black dark:text-white"}`}>Registration Number</label>
                 <input
                   type="text"
                   name="registrationNumber"
-                  placeholder="T-XXXXX"
+                  placeholder="12345678/T.22"
                   className={`w-full rounded-lg border bg-transparent py-3 px-4 outline-none text-black dark:bg-meta-5 dark:text-white ${error.registrationNumber ? "border-red" : "border-stroke dark:border-form-strokedark focus:border-primary"}`}
                   value={formData.registrationNumber}
                   onChange={handleChange}
@@ -189,15 +214,20 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
 
               <div className="col-span-1">
                 <label className={`block mb-2 font-medium ${error.program ? "text-red" : "text-black dark:text-white"}`}>Program Name</label>
-                <input
-                  type="text"
-                  name="program"
-                  placeholder="Bachelor of Science in IT"
-                  className={`w-full rounded-lg border bg-transparent py-3 px-4 outline-none text-black dark:bg-meta-5 dark:text-white ${error.program ? "border-red" : "border-stroke dark:border-form-strokedark focus:border-primary"}`}
+                <select name="program"
                   value={formData.program}
                   onChange={handleChange}
                   required
-                />
+                  className={`w-full rounded-lg border bg-transparent py-3 px-4 outline-none text-black dark:bg-meta-5 dark:text-white ${error.department ? "border-red" : "border-stroke dark:border-form-strokedark focus:border-primary"}`}
+                >
+                  {/* Loop from department courses */}
+                  <option value="" disabled>Select Program</option>
+                  {Array.isArray(departments) && departments.find(dept => dept.id === formData.department)?.availableCourses.map((course) => (
+                    <option key={course} value={course} onChange={handleChange}>
+                      {course}
+                    </option>
+                  ))}
+                </select>
                 {error.program && (
                   <p className="mt-2 text-sm text-red-600 dark:text-red-500">
                     <span className="font-medium">Oops! </span> {error.program}
@@ -252,7 +282,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
                 placeholder="secret key"
                 className={`w-full rounded-lg border bg-transparent py-3 px-4 outline-none text-black dark:bg-meta-5 dark:text-white ${error.secretpass ? "border-red" : "border-stroke dark:border-form-strokedark focus:border-primary"}`} name='secretpass' value={formData.secretpass} onChange={handleChange} required autoComplete='off'
               />
-              
+
             </div>
             {error.secretpassError && <p className='mt-2 text-sm text-red-600 dark:text-red-500'><span className='font-medium'>Oops!  </span> {error.secretpassError}</p>}
             <span className='absolute right-4 top-4'>
@@ -277,31 +307,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
               </select>
             </div>}
 
-          {formData.role !== "admin" && (
-            <div className="col-span-1">
-              <label className={`block mb-2 font-medium ${error.department ? "text-red" : "text-black dark:text-white"}`}>Department</label>
-              <select
-                name="department"
-                value={formData.department}
-                onChange={handleChange}
-                required
-                className={`w-full rounded-lg border bg-transparent py-3 px-4 outline-none text-black dark:bg-meta-5 dark:text-white ${error.department ? "border-red" : "border-stroke dark:border-form-strokedark focus:border-primary"}`}
-              >
-                <option value="">Select Department</option>
-                {Array.isArray(departments) &&
-                  departments.map((dept) => (
-                    <option key={dept.id} value={dept.id}>
-                      {dept.name}
-                    </option>
-                  ))}
-              </select>
-              {error.department && (
-                <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                  <span className="font-medium">Oops! </span> {error.department}
-                </p>
-              )}
-            </div>
-          )}
+
 
           {formData.role === "student" && (
             <div className="col-span-1">

@@ -7,13 +7,20 @@ import { UserForm } from './admin/components/UserForm';
 import { serverTimestamp } from "firebase/firestore";
 import { useData } from '../contexts/DataContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useEffect } from 'react';
 const CreateProfile = () => {
-  const [profileImage, setProfileImage] = useState(null);
+  const { user, logout } = useAuth();
 
+  const [profileImage, setProfileImage] = useState(null); // Initialize with user's photoURL if available
+  useEffect(() => {
+    if (user?.photoURL) {
+      console.log("User photoURL:", user.photoURL.trim());
+      setProfileImage(user.photoURL.trim());
+    }
+  }, [user]);
   const { addData, setUserProfile, uploadFile } = useData();
 
 
-  const { user, logout } = useAuth();
   const datepickerRef = useRef(null);
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
@@ -33,101 +40,154 @@ const CreateProfile = () => {
     gitHubUrl: ""
   });
 
+  console.log("user", user?.photoURL?.trim());
   const [formData, setFormData] = useState({
-    fullName: "",
+    fullName: user?.displayName || "",
     doB: "",
     gender: "",
     role: "",
     isActive: false,
-    mobNo: "",
+    mobNo: user?.phoneNumber || "",
     department: "",
     program: "",
     gitHubUrl: "",
-    photoUrl: "",
+    photoUrl: user?.photoURL?.trim() || "",
     registrationNumber: "",
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
 
-    if (name === "mobNo") {
-      const cleaned = "+" + value.replace(/[^0-9]/g, '').slice(0, 12);
-      setFormData(prev => ({ ...prev, mobNo: cleaned }));
-      setError(prev => ({ ...prev, mobNoError: cleaned.length !== 13 ? "Invalid phone number" : "" }));
-    } else if (name === "password") {
-      const strength = [/[0-9]/, /[a-z]/, /[A-Z]/, /[^0-9a-zA-Z]/].reduce((acc, regex) => acc + regex.test(value), 0);
-      setError(prev => ({ ...prev, passwordError: strength < 4 ? "Weak Password" : "" }));
-      setFormData(prev => ({ ...prev, password: value }));
-    } else if (name === "repassword") {
-      setError(prev => ({ ...prev, passwordError: value !== formData.password ? "Passwords do not match!" : "" }));
-      setFormData(prev => ({ ...prev, repassword: value }));
-    } else if (name === "fullName") {
-      const parts = value.trim().split(" ");
-      setError(prev => ({ ...prev, fullNameError: parts.length < 2 ? "Please enter first and last name" : "" }));
-      setFormData(prev => ({ ...prev, fullName: value }));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
-  };
+ const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  switch (name) {
+    case 'mobNo':
+      const cleaned = '+' + value.replace(/[^0-9]/g, '').slice(0, 12);
+      setFormData((prev) => ({ ...prev, mobNo: cleaned }));
+      setError((prev) => ({
+        ...prev,
+        mobNoError: cleaned.length !== 13 ? 'Invalid phone number' : '',
+      }));
+      break;
+
+    case 'password':
+      const strength = [/[0-9]/, /[a-z]/, /[A-Z]/, /[^0-9a-zA-Z]/].reduce(
+        (acc, regex) => acc + regex.test(value),
+        0
+      );
+      setError((prev) => ({
+        ...prev,
+        passwordError: strength < 4 ? 'Weak Password' : '',
+      }));
+      setFormData((prev) => ({ ...prev, password: value }));
+      break;
+
+    case 'repassword':
+      setError((prev) => ({
+        ...prev,
+        passwordError: value !== formData.password ? 'Passwords do not match!' : '',
+      }));
+      setFormData((prev) => ({ ...prev, repassword: value }));
+      break;
+
+    case 'fullName':
+      const parts = value.trim().split(' ');
+      setError((prev) => ({
+        ...prev,
+        fullNameError: parts.length < 2 ? 'Please enter first and last name' : '',
+      }));
+      setFormData((prev) => ({ ...prev, fullName: value }));
+      break;
+
+    case 'registrationNumber':
+      let formattedValue = value.replace(/[^0-9\/T\.]/gi, ''); // Clean unwanted chars
+
+      // Auto-insert "/T." after 8 digits
+      if (/^\d{8}$/.test(formattedValue)) {
+        formattedValue += '/T.';
+      }
+
+      // Limit to full format length
+      if (formattedValue.length > 13) {
+        formattedValue = formattedValue.slice(0, 13);
+      }
+
+      const regNumPattern = /^\d{8}\/T\.\d{2}$/;
+      setFormData((prev) => ({ ...prev, registrationNumber: formattedValue }));
+      setError((prev) => ({
+        ...prev,
+        registrationNumberError: regNumPattern.test(formattedValue)
+          ? ''
+          : 'Expected format: 12345678/T.22',
+      }));
+      break;
+
+    default:
+      setFormData((prev) => ({ ...prev, [name]: value }));
+  }
+};
 
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setSubmitting(true);
- 
+    e.preventDefault();
+    setSubmitting(true);
 
-  if (!user || !user.uid) {
-    toast.error(`User not authenticated`);
-    return;
-  }
 
-  let photoUrl = "";
-
-  if (profileImage) {
-    const path = `profilePics/${user.uid}.jpg`;
-    const uploadedUrl = await uploadFile(profileImage, path);
-    if (uploadedUrl) {
-      photoUrl = uploadedUrl;
-    } else {
-      toast.error("Failed to upload profile picture");
-      setSubmitting(false);
+    if (!user || !user.uid) {
+      toast.error(`User not authenticated`);
       return;
     }
-  }
 
-  const updatedFormData = {
-    ...formData,
-    name: formData.fullName.trim(),
-    doB: new Date(formData.doB).toISOString(),
-    createdAt: serverTimestamp(),
-    uid: user.uid,
-    email: user.email,
-    photoUrl, 
-    status: formData.role === "student" ? "active" : "pending",
-  };
+    let photoUrl = "";
 
-
-  try {
-    const id = await addData("users", updatedFormData, user.uid);
-    if (id) {
-      toast.success(`Profile created successfully`);
-      if (updatedFormData.status === "pending") {
-        if(logout()){
-          navigate("/login")
+    if (profileImage) {
+      if (typeof profileImage === "string") {
+        photoUrl = profileImage;
+      } else {
+        const path = `profilePics/${user.uid}.jpg`;
+        const uploadedUrl = await uploadFile(profileImage, path);
+        if (uploadedUrl) {
+          photoUrl = uploadedUrl;
+        } else {
+          toast.error("Failed to upload profile picture");
+          setSubmitting(false);
+          return;
         }
-        return;
       }
-      setUserProfile(updatedFormData);
-      sessionStorage.setItem("userProfile", JSON.stringify(updatedFormData));
-      navigate("/admin-dashboard");
     }
-  } catch (err) {
-    console.error("Error creating profile:", err);
-    toast.error("Failed to create profile");
-  } finally {
-    setSubmitting(false);
-  }
-};
+
+    const updatedFormData = {
+      ...formData,
+      name: formData.fullName.trim(),
+      doB: new Date(formData.doB).toISOString(),
+      createdAt: serverTimestamp(),
+      uid: user.uid,
+      email: user.email,
+      photoUrl,
+      status: formData.role === "student" ? "active" : "pending",
+    };
+
+
+    try {
+      const id = await addData("users", updatedFormData, user.uid);
+      if (id) {
+        toast.success(`Profile created successfully`);
+        if (updatedFormData.status === "pending") {
+          if (logout()) {
+            navigate("/login");
+          }
+          return;
+        }
+        setUserProfile(updatedFormData);
+        sessionStorage.setItem("userProfile", JSON.stringify(updatedFormData));
+        navigate("/admin-dashboard");
+      }
+    } catch (err) {
+      console.error("Error creating profile:", err);
+      toast.error("Failed to create profile");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
 
   return (

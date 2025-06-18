@@ -16,6 +16,7 @@ const DepartmentsPage = () => {
     description: '',
     headOfDepartment: '',
     officeLocation: '',
+    availableCourses: [],
   });
 
   // Load all departments
@@ -60,6 +61,7 @@ const DepartmentsPage = () => {
       description: dept.description || '',
       headOfDepartment: dept.headOfDepartment || '',
       officeLocation: dept.officeLocation || '',
+      availableCourses: dept.availableCourses || [],
     });
     setSelectedDepartment(dept);
     setIsEditing(true);
@@ -190,6 +192,7 @@ const DepartmentsPage = () => {
           <p><strong>Description:</strong> {selectedDepartment.description || 'N/A'}</p>
           <p><strong>Head of Department:</strong> {getHeadOfDepartmentName(selectedDepartment.headOfDepartment)}</p>
           <p><strong>Office Location:</strong> {selectedDepartment.officeLocation || 'N/A'}</p>
+          <p><strong>Available Courses:</strong> {selectedDepartment.availableCourses.length > 0 ? selectedDepartment.availableCourses.join(', ') : 'None'}</p>
         </ProjectModal>
       )}
 
@@ -250,6 +253,21 @@ const DepartmentsPage = () => {
               }
               className="w-full border p-2 rounded"
             />
+            <div className="flex flex-col">
+              <label className="mb-2">Available Courses (comma-separated):</label>
+              <input
+                type="text"
+                placeholder="Course 1, Course 2, ..."
+                value={departmentForm.availableCourses.join(', ')}
+                onChange={(e) =>
+                  setDepartmentForm({
+                    ...departmentForm,
+                    availableCourses: e.target.value.split(',').map((course) => course.trim()),
+                  })
+                }
+                className="w-full border p-2 rounded"
+              />
+            </div>
             <div className="flex justify-end">
               <button
                 onClick={handleSaveDepartment}
