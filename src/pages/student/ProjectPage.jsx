@@ -271,7 +271,7 @@ const ProjectPage = () => {
               onChange={handleChange}
             />
 
-            {form.status === "draft" &&
+            {form.status !== "draft" &&
               <div className='mb-3 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-12'>
                 <div className="md:col-span-6">
                   <label htmlFor="file-upload-1" className="block mb-1 text-sm font-medium">Upload Document (PDF/DOC/DOCX)</label>
@@ -280,12 +280,7 @@ const ProjectPage = () => {
                     type="file"
                     accept=".pdf,.doc,.docx"
                     onChange={handleFileChange}
-                    className="w-full p-2 border bg-blue-500/10 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border-gray-300 rounded cursor-pointer
-  file:mr-4 file:py-2 file:px-4
-  file:rounded-full file:border-0
-  file:text-sm file:font-semibold
-  file:bg-blue-50 file:text-blue-700
-  hover:file:bg-blue-100"
+                    className="w-full p-2 border bg-blue-500/10 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border-gray-300 rounded cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   />
                 </div>
                 <div className="md:col-span-6">
@@ -294,12 +289,7 @@ const ProjectPage = () => {
                     id="file-upload-2"
                     accept=".ppt,.pptx,.odt"
                     onChange={handleFileChange}
-                    className="w-full p-2 border bg-yellow-500/10 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border-gray-300 rounded cursor-pointer
-  file:mr-4 file:py-2 file:px-4
-  file:rounded-full file:border-0
-  file:text-sm file:font-semibold
-  file:bg-yellow-50 file:text-yellow-700
-  hover:file:bg-yellow-100"
+                    className="w-full p-2 border bg-yellow-500/10 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border-gray-300 rounded cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100"
                   />
                 </div>
               </div>
