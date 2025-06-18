@@ -49,6 +49,7 @@ const AssignedStudents = () => {
         status: newStatus,
         reviewedAt: Timestamp.now(),
         reviewedBy: userProfile.uid,
+        acceptance: newStatus === "published",
       });
 
       toast.success(`Project ${newStatus}`);

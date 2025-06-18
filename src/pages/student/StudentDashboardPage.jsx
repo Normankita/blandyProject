@@ -6,26 +6,27 @@ import { useData } from "@/contexts/DataContext";
 
 const STATUS_PROGRESS_MAP = {
   draft: 0,
-  in_progress: 40,
+  published: 40,
   reviewed: 70,
   approved: 100,
 };
 
 const StudentDashboardPage = () => {
-  const { userProfile, fetchData } = useData();
+  const { userProfile, fetchData, notifications } = useData();
   const [projects, setProjects] = useState([]);
-  const [students, setStudents] = useState([]);
+  const [supervisor, setSupervisor] = useState([]);
   const [mous, setMous] = useState([]);
+
 
   useEffect(() => {
     fetchAllData();
   }, []);
 
   const fetchAllData = async () => {
-    const [studentData, projectData, mouData] = await Promise.all([
+    const [supervisorData, projectData, mouData] = await Promise.all([
       fetchData({
         path: "users",
-        filters: [{ field: "supervisorId", op: "==", value: userProfile.uid }],
+        filters: [{ field: "uid", op: "==", value: userProfile.supervisorId }],
       }),
       fetchData({
         path: "projects",
@@ -34,10 +35,10 @@ const StudentDashboardPage = () => {
       }),
       fetchData({
         path: "mous",
-        filters: [{ field: "supervisorId", op: "==", value: userProfile.uid }],
+        filters: [{ field: "supervisorId", op: "==", value: userProfile.supervisorId }],
       }),
     ]);
-    setStudents(studentData.data);
+    setSupervisor(supervisorData.data);
     setProjects(projectData.data);
     setMous(mouData.data);
   };
@@ -46,7 +47,6 @@ const StudentDashboardPage = () => {
   const progressValues = projects
     .filter((p) => p.acceptance)
     .map((p) => STATUS_PROGRESS_MAP[p.status?.toLowerCase()] ?? 0);
-
   const averageProgress =
     progressValues.length > 0
       ? Math.round(progressValues.reduce((a, b) => a + b, 0) / progressValues.length)
@@ -72,8 +72,8 @@ const StudentDashboardPage = () => {
               <p className="text-muted-foreground">{currentProject.title}</p>
               <div className="mt-4 text-sm">
                 <p>Status: <span className="font-semibold text-yellow-600 capitalize">{currentProject.status}</span></p>
-                <p>Supervisor: {currentProject.supervisor || "TBA"}</p>
-                <p>Next Deadline: <span className="font-medium">{currentProject.deadline || "TBD"}</span></p>
+                <p>Supervisor: {supervisor.find((s)=> s.uid===currentProject.supervisorId)?.name || "TBA"}</p>
+                {/* <p>Next Deadline: <span className="font-medium">{currentProject.deadline || "TBD"}</span></p> */}
               </div>
               <div className="mt-4 flex gap-4">
                 <Button>View Project</Button>
@@ -94,9 +94,11 @@ const StudentDashboardPage = () => {
             <h3 className="text-lg font-medium">Notifications</h3>
           </div>
           <ul className="text-sm list-disc pl-5 text-muted-foreground">
-            <li>Supervisor commented on your last report.</li>
-            <li>Upcoming submission deadline: Final Report - May 30</li>
-            <li>Profile verification complete.</li>
+            {
+              Array.isArray(notifications) && notifications.map((one)=>(
+            <li key={one.id}> <strong>{one.participants.find(o=>o.email !==userProfile.email)?.name}: </strong> {one.subject}</li>
+              ))
+            }
           </ul>
         </CardContent>
       </Card>
@@ -141,7 +143,7 @@ const StudentDashboardPage = () => {
             <h3 className="text-lg font-medium">Supervisor Comments</h3>
           </div>
           <div className="text-sm text-muted-foreground">
-            <p><strong>Dr. Zubeda:</strong> "Good progress so far. Ensure your methodology chapter is well aligned with your objectives. Let's meet on Thursday."</p>
+            <p><strong>{supervisor.find((s)=>s.uid === currentProject.supervisorId)?.name}: </strong> {currentProject?.feedback}</p>
           </div>
         </CardContent>
       </Card>

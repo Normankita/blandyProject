@@ -97,7 +97,7 @@ const Invoice = () => {
     setSelectedConversation(newConvoFull);
     const recipient = newConvoData.participants.find(p => p.email !== userProfile.email);
     const recipientUser = usersRecipients.find(u => u.email === recipient?.email);
-
+    
     let image = recipientUser?.photoUrl?.trim()
       ? recipientUser.photoUrl.trim()
       : recipientUser?.gender === "female"
@@ -108,6 +108,7 @@ const Invoice = () => {
       name: recipient?.name || "",
       image,
     });
+    setNewConvo(null);
 
     setIsConvSelected(true);
   } catch (error) {
