@@ -72,7 +72,7 @@ const SupervisionPage = () => {
 
 
     const handleRemoveStudentFromSupervisor = async (studentId) => {
-        if(projects.find((p) => p.studentId === studentId || p.supervisorId === selectedSupervisor.uid)){
+        if(projects.find((p) => p.studentId === studentId && p.supervisorId === selectedSupervisor.uid)){
             return toast.warning('Cannot remove student as they have submitted a project under this supervisor.');
         }
         try {
