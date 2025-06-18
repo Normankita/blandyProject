@@ -56,7 +56,7 @@ const SupervisionPage = () => {
         const alreadyAssigned = assignedStudents.some((s) => s.uid === student.uid);
         if (!alreadyAssigned) {
             try {
-                await updateData('users', student.id, {
+                await updateData('users', student.uid, {
                     supervisorId: selectedSupervisor.uid,
                     panelId: selectedSupervisor.panelId || null,
                 });
@@ -64,6 +64,7 @@ const SupervisionPage = () => {
                 setAssignedStudents((prev) => [...prev, updatedStudent]);
                 toast.success(`${student.name} assigned successfully.`);
             } catch (err) {
+                console.log(err);
                 toast.error(`Failed to assign ${student.name}`);
             }
         }
