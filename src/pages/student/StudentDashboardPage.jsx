@@ -143,7 +143,10 @@ const StudentDashboardPage = () => {
             <h3 className="text-lg font-medium">Supervisor Comments</h3>
           </div>
           <div className="text-sm text-muted-foreground">
-            <p><strong>{supervisor.find((s)=>s.uid === currentProject.supervisorId)?.name}: </strong> {currentProject?.feedback}</p>
+            {currentProject? 
+            <p><strong>{supervisor.find((s)=>s.uid === currentProject?.supervisorId)?.name}: </strong> {currentProject?.feedback}</p>
+            : 'there are no comments yet'
+          }
           </div>
         </CardContent>
       </Card>
