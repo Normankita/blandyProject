@@ -33,7 +33,7 @@ const DepartmentsPage = () => {
   // Helper to show the head of department's name by ID (if available)
   const getHeadOfDepartmentName = (headId) => {
     if (!headId) return 'N/A';
-    const user = staffUsers.find((staff) => staff.id === headId);
+    const user = staffUsers.find((staff) => staff.uid === headId);
     return user ? user.name : 'N/A';
   };
 
@@ -238,7 +238,7 @@ const DepartmentsPage = () => {
                 <option disabled>Loading staff...</option>
               ) : (
                 staffUsers.map((staff) => (
-                  <option key={staff.id} value={staff.id}>
+                  <option key={staff.uid} value={staff.uid}>
                     {staff.name} ({staff.email})
                   </option>
                 ))

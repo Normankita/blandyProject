@@ -33,6 +33,7 @@ const AssignedStudents = () => {
       setStudents(studentsRes.data);
       setProjects(projectsRes.data);
     } catch (err) {
+      console.error("Failed to load students or projects:", err);
       toast.error("Failed to load data");
     }
   };
