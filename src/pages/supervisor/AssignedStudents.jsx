@@ -24,7 +24,10 @@ const AssignedStudents = () => {
           path: "users",
           filters: [{ field: "supervisorId", op: "==", value: userProfile.uid }],
         }),
-        fetchData({ path: "projects" }),
+        fetchData({ 
+          path: "projects" ,
+          filters: [{ field: "supervisorId", op: "==", value: userProfile.uid }],
+        }),
       ]);
 
       setStudents(studentsRes.data);
@@ -62,9 +65,8 @@ const AssignedStudents = () => {
   };
 
   const filteredProjects = selectedStudent
-    ? projects.filter((p) => p.studentId === selectedStudent.id)
+    ? projects.filter((p) => p.studentId === selectedStudent.uid)
     : [];
-
   return (
     <div className="p-6 space-y-6">
       <h2 className="text-2xl font-bold">My Assigned Students</h2>
@@ -72,9 +74,9 @@ const AssignedStudents = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {students.map((student) => (
           <div
-            key={student.id}
+            key={student.uid}
             onClick={() => handleStudentClick(student)}
-            className={`cursor-pointer p-4 rounded shadow-lg ${selectedStudent?.id === student.id
+            className={`cursor-pointer p-4 rounded shadow-lg ${selectedStudent?.uid === student.uid
               ? "bg-yellow-100 dark:bg-yellow-950/50 border-yellow-500"
               : "bg-slate-50 dark:bg-slate-800"
               }  hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-950 p-6 rounded-sm dark:text-gray-300 text-gray-800 duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40`}
@@ -89,8 +91,8 @@ const AssignedStudents = () => {
               {student.program}
             </p>
             <span>
-              {projects.filter((p) => p.studentId === student.id && p.status !== "draft").length}/
-              {projects.filter((p) => p.studentId === student.id).length}
+              {projects.filter((p) => p.studentId === student.uid && p.status !== "draft").length}/
+              {projects.filter((p) => p.studentId === student.uid).length}
             </span>
           </div>
         ))}
