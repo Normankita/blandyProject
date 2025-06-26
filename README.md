@@ -1,12 +1,40 @@
-# React + Vite
+# Academic Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a web application for managing academic tasks and information. Built with React and Vite, it provides a robust platform for students, staff, and administrators.
 
-Currently, two official plugins are available:
+## Key Features
+- **Role-Based Access:** Implemented via `react-router-dom`, with protected routes for different user roles.
+- **Firebase Integration:** Utilizes Firebase Authentication for Google Sign-In and Cloud Messaging for notifications.
+- **Redux for State Management:** State is centralized using Redux Toolkit, making it manageable and predictable.
+- **Responsive Design:** TailwindCSS is used for styling, ensuring a modern and responsive user experience.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Installation and Setup
 
-## Expanding the ESLint configuration
+1. **Clone the Repository:**
+   ```bash
+   git clone https://your-repo-url.git
+   cd academic-portal
+   ```
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+2. **Install Dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Run the Development Server:**
+   ```bash
+   npm start
+   ```
+4. **Build the Project:**
+   ```bash
+   npm run build
+   ```
+
+## Scripts
+- `npm start`: Starts the development server.
+- `npm run build`: Builds the application for production.
+- `npm run lint`: Lints the codebase.
+
+## Contributors
+- **Your Name**
+
+For further information, see the project documentation or contact the maintainer.
