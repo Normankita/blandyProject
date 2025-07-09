@@ -278,7 +278,7 @@ const Invoice = () => {
 
   return (
     <>
-      <div className="flex bg-slate-50 dark:bg-slate-900 p-6 min-h-150 max-h-screen overflow-auto shadow-lg shadow-slate-900/10 dark:shadow-black/40 dark:text-gray-300 text-gray-800 rounded-sm duration-300">
+      <div className="flex bg-white dark:bg-gray-800 p-6 min-h-150 max-h-screen overflow-auto shadow-lg shadow-slate-900/10 dark:shadow-black/40 dark:text-gray-300 text-gray-800 rounded-sm duration-300">
 
         {/* Left Sidebar - Conversation List */}
         <div className={`${!isConvSelected ? 'block' : 'hidden md:block'} w-full md:w-1/3 backdrop-blur-3xl border-0 border-r border-gray-400 dark:border-gray-700 rounded-l-lg overflow-y-auto p-4`}>

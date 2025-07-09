@@ -107,7 +107,7 @@ const TableComponent = ({
   };
 
   return (
-    <div className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-950 p-6 rounded-sm dark:text-gray-300 text-gray-800 duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border">
+    <div className="bg-white dark:bg-gray-800 hover:bg-slate-100  dark:hover:bg-slate-950 p-6 rounded-sm dark:text-gray-300 text-gray-800 duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border">
       <div className="flex justify-center items-center mb-4 ">
         <h1 className="text-2xl font-bold text-gray-600 dark:text-gray-400">{title} Table</h1>
       </div>
