@@ -30,7 +30,7 @@ const ContactCard = ({ userToDisplay = null }) => {
     auth.currentUser?.photoURL ? auth.currentUser?.photoURL : photoUrl ? photoUrl : gender === "female" ? Woman : Man;
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-900 p-6 min-h-150 max-h-400 shadow-lg shadow-slate-900/10 dark:shadow-black/40 dark:text-gray-300 text-gray-800  rounded-sm duration-300">
+    <div className="bg-white dark:bg-gray-800 p-6 min-h-150 max-h-400 shadow-lg shadow-slate-900/10 dark:shadow-black/40 dark:text-gray-300 text-gray-800  rounded-sm duration-300">
       {/* Header */}
       <div className="flex items-center space-x-4">
         <div className="w-30 h-30 rounded-full overflow-hidden bg-slate-300 dark:bg-slate-800 p-2 shadow-lg shadow-slate-900/10 dark:shadow-black/40 dark:text-gray-300 text-gray-800 duration-300">
