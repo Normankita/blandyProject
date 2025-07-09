@@ -25,6 +25,7 @@ const LoginPage = () => {
             return;
           }
           if (userDoc.role) {
+            toast.success(`👍 welcome back ${userDoc.name.split(' ')[0]}`)
             navigate(`/${userDoc.role}-dashboard`);
             return true;
           } else {

@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signOut } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import {getMessaging, getToken} from "firebase/messaging";
+import { toast } from "react-toastify";
 
 
 const firebaseConfig = {
@@ -56,6 +57,7 @@ export const db = getFirestore(app);
 export const signOutUser = () => {
   signOut(auth)
     .then(() => {
+      toast.success(`👋 good bye ${JSON.parse(sessionStorage.getItem('userProfile')).name.split(' ')[0]}`);
       sessionStorage.removeItem("userProfile");
       console.log("User signed out successfully");
     })
