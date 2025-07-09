@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useData } from "@/contexts/DataContext";
 import Woman from "@/assets/avatars/woman.svg";
 import Man from "@/assets/avatars/man.svg";
+import ProjectTitle from "../ProjectTitle";
 
 const SideHeader = ({ children, role }) => {
     const { userProfile, notifications } = useData();
@@ -65,7 +66,7 @@ const SideHeader = ({ children, role }) => {
                             </button>
                             <Link to="/" className="flex ms-2 md:me-24">
                                 <img src="/sitelogo.png" className="h-8 me-3" alt="FlowBite Logo" />
-                                <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Mzumber Academic Portal</span>
+                                <ProjectTitle/>
                             </Link>
                             <button onClick={toggleDarkMode} type="button" className="hidden sm:flex items-center p-2 text-sm text-gray-500 rounded-lg sm:ml-6 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
                                 <span>
