@@ -4,6 +4,7 @@ import SiteButton from "../components/SiteButton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useData } from "@/contexts/DataContext";
 import { toast } from "react-toastify";
+import ProjectTitle from "@/components/ProjectTitle";
 
 const RegisterPage = () => {
   const [users, setUsers] = useState([]);
@@ -123,12 +124,7 @@ const RegisterPage = () => {
   return (
     <section className="bg-slate-200 dark:bg-gray-900 min-h-screen min-w-screen max-w-screen max-h-screen">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        <a href="#" className="flex flex-col items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
-          <span><img src="/sitelogo.png" alt="" /></span>
-          <span className="uppercase text-center">Mzumbe Fyp Management Portal</span>
-
-        </a>
-
+        <ProjectTitle/>
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
         <div className="w-full sm:max-w-md p-6 bg-slate-50 dark:bg-slate-900 rounded shadow">

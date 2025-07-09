@@ -6,6 +6,7 @@ import { useAuth } from "../contexts/AuthContext";
 import SiteButton from "../components/SiteButton";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
+import ProjectTitle from "@/components/ProjectTitle";
 
 const LoginPage = () => {
   const { fetchSingleDoc } = useData();
@@ -79,10 +80,7 @@ const LoginPage = () => {
     >
       <section className="bg-slate-200 dark:bg-gray-900 min-h-screen min-w-screen max-w-screen max-h-screen">
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-          <a href="#" className="flex flex-col items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
-            <span><img src="/sitelogo.png" alt="" /></span>
-            <span className="uppercase flex flex-col items-center overflow-auto text-center"><p>Mzumbe Fyp Management Portal</p></span>
-          </a>
+          <ProjectTitle/>
           <div className="w-full md:mt-0 sm:max-w-md xl:p-0 bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-950 p-6 rounded-sm dark:text-gray-300 text-gray-800 duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
               <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white flex flex-col items-center w-full">
