@@ -171,6 +171,7 @@ const CreateProfile = () => {
       const id = await addData("users", updatedFormData, user.uid);
       if (id) {
         toast.success(`Profile created successfully`);
+        toast.success(`Welcome ${updatedFormData.name.split(' ')[0]}`);
         if (updatedFormData.status === "pending") {
           if (logout()) {
             navigate("/login");
