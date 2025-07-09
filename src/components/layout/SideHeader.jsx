@@ -65,7 +65,8 @@ const SideHeader = ({ children, role }) => {
                             </button>
                             <Link to="/" className="flex ms-2 md:me-24">
                                 <img src="/sitelogo.png" className="h-8 me-3" alt="FlowBite Logo" />
-                                <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Mzumbe University Final Year Projects Management Portal</span>
+                                <span className="md:block self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Mzumbe University Final Year Projects Management Portal</span>
+                                <span className="md:hidden self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">MU FYP Management Portal</span>
                             </Link>
                             <button onClick={toggleDarkMode} type="button" className="hidden sm:flex items-center p-2 text-sm text-gray-500 rounded-lg sm:ml-6 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
                                 <span>
