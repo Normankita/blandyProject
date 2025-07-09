@@ -333,7 +333,7 @@ const Invoice = () => {
             `md:hidden flex flex-row gap-2 items-center text-slate-900 bg-white border border-yellow-300 focus:outline-none hover:bg-slate-100 focus:ring-4 focus:ring-yellow-100 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-yellow-600 dark:hover:bg-slate-950 dark:hover:border-slate-600 dark:focus:ring-yellow-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 duration-300`
           }>Conversations</Button>
           {selectedConversation ? (
-            <div className='bg-white dark:bg-slate-950 h-full p-8 duration-300'>
+            <div className='rounded-xl bg-linear-to-bl from-yellow-200/50 via-yellow-500/50 to-green-200/50 dark:bg-linear-to-bl dark:from-green-950/50 dark:via-yellow-800/50 dark:to-yellow-950/50 h-full p-8 duration-300'>
 
               {/* Header */}
               <div className="py-2 px-3 bg-grey-lighter flex flex-row justify-between items-center">
