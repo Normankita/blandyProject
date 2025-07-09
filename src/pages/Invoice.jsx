@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import ProjectModal from './admin/components/ProjectModal';
 import { useData } from '@/contexts/DataContext';
 import { toast } from 'react-toastify';
+import { useRef } from 'react';
 
 const Invoice = () => {
 
@@ -51,73 +52,73 @@ const Invoice = () => {
 
   const { fetchData, fetchSnapshotData, userProfile, addData, updateData, notifications, setNotifications } = useData();
 
- const handleNewConvo = async (convoRecipient) => {
-  const existing = conversations.find((c) =>
-    Array.isArray(c.participants) &&
-    c.participants.some(p => p.email === userProfile.email) &&
-    c.participants.some(p => p.email === convoRecipient.email)
-  );
+  const handleNewConvo = async (convoRecipient) => {
+    const existing = conversations.find((c) =>
+      Array.isArray(c.participants) &&
+      c.participants.some(p => p.email === userProfile.email) &&
+      c.participants.some(p => p.email === convoRecipient.email)
+    );
 
-  if (existing) {
-    const updatedConvo = await markOtherParticipantMessagesAsRead(existing);
-    setSelectedConversation(updatedConvo);
-    const recipient = existing.participants.find(p => p.email !== userProfile.email); // changed from 'something'
-    const recipientUser = usersRecipients.find(u => u.email === recipient?.email);
+    if (existing) {
+      const updatedConvo = await markOtherParticipantMessagesAsRead(existing);
+      setSelectedConversation(updatedConvo);
+      const recipient = existing.participants.find(p => p.email !== userProfile.email); // changed from 'something'
+      const recipientUser = usersRecipients.find(u => u.email === recipient?.email);
 
-    let image = recipientUser?.photoUrl?.trim()
-      ? recipientUser.photoUrl.trim()
-      : recipientUser?.gender === "female"
-        ? Woman
-        : Man;
+      let image = recipientUser?.photoUrl?.trim()
+        ? recipientUser.photoUrl.trim()
+        : recipientUser?.gender === "female"
+          ? Woman
+          : Man;
 
-    setChatRecipientData({
-      name: recipient?.name || "",
-      image,
-    });
+      setChatRecipientData({
+        name: recipient?.name || "",
+        image,
+      });
 
-    setIsConvSelected(true);
-    setNewConvo(null);
-    return;
-  }
+      setIsConvSelected(true);
+      setNewConvo(null);
+      return;
+    }
 
-  const newConvoData = {
-    participants: [
-      { name: userProfile.name, email: userProfile.email },
-      { name: convoRecipient.name, email: convoRecipient.email }
-    ],
-    subject: "",
-    messages: [],
-    createdAt: new Date(),
-    status: "sent"
+    const newConvoData = {
+      participants: [
+        { name: userProfile.name, email: userProfile.email },
+        { name: convoRecipient.name, email: convoRecipient.email }
+      ],
+      subject: "",
+      messages: [],
+      createdAt: new Date(),
+      status: "sent"
+    };
+
+    try {
+      const convoId = await addData('conversations', newConvoData);
+      const newConvoFull = { id: convoId, ...newConvoData };
+      setSelectedConversation(newConvoFull);
+      const recipient = newConvoData.participants.find(p => p.email !== userProfile.email);
+      const recipientUser = usersRecipients.find(u => u.email === recipient?.email);
+
+      let image = recipientUser?.photoUrl?.trim()
+        ? recipientUser.photoUrl.trim()
+        : recipientUser?.gender === "female"
+          ? Woman
+          : Man;
+
+      setChatRecipientData({
+        name: recipient?.name || "",
+        image,
+      });
+      setNewConvo(null);
+
+      setIsConvSelected(true);
+    } catch (error) {
+      console.error("Error creating conversation:", error);
+    } finally {
+      // Ensure this always runs regardless of success or failure
+      setNewConvo(null);
+    }
   };
-
-  try {
-    const convoId = await addData('conversations', newConvoData);
-    const newConvoFull = { id: convoId, ...newConvoData };
-    setSelectedConversation(newConvoFull);
-    const recipient = newConvoData.participants.find(p => p.email !== userProfile.email);
-    const recipientUser = usersRecipients.find(u => u.email === recipient?.email);
-    
-    let image = recipientUser?.photoUrl?.trim()
-      ? recipientUser.photoUrl.trim()
-      : recipientUser?.gender === "female"
-        ? Woman
-        : Man;
-
-    setChatRecipientData({
-      name: recipient?.name || "",
-      image,
-    });
-    setNewConvo(null);
-
-    setIsConvSelected(true);
-  } catch (error) {
-    console.error("Error creating conversation:", error);
-  } finally {
-    // Ensure this always runs regardless of success or failure
-    setNewConvo(null);
-  }
-};
 
 
   const handleChange = (e) => {
@@ -141,22 +142,43 @@ const Invoice = () => {
     const updatedMessages = [...(selectedConversation.messages || []), newMessage];
 
     try {
+      const tempoMessage= myMessage;
+      setMyMessage("");
       await updateData("conversations", selectedConversation.id, {
         messages: updatedMessages,
         subject: newMessage.message
       });
-
+      setMyMessage("");
       setSelectedConversation(prev => {
         const updated = conversations.find(c => c.id === prev.id);
         return updated ? { ...updated, messages: updatedMessages } : { ...prev, messages: updatedMessages };
       });
 
-      setMyMessage("");
+      
+      scrollToBottom();
     } catch (error) {
+      setMyMessage(tempoMessage);
       toast.error("Error sending message:", error);
       console.error("Error sending message:", error);
     }
   };
+
+  const scrollToBottom = () => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollTo({
+        top: messageEndRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+      messageEndRef.current.scrollTop = messageEndRef.current.scrollHeight;
+    }
+  };
+
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [selectedConversation?.messages?.length]);
+
+
 
   useEffect(() => {
     setNotifications([]);
@@ -274,6 +296,7 @@ const Invoice = () => {
       return "";
     }
   };
+  const messageEndRef = useRef(null);
 
 
   return (
@@ -328,7 +351,7 @@ const Invoice = () => {
         </div>
 
         {/* Right Section - Conversation View */}
-        <div className={`${isConvSelected ? 'block' : 'hidden'} md:block w-full md:w-2/3 p-6`}>
+        <div className={`${isConvSelected ? 'block' : 'hidden'} md:block w-full md:w-2/3 px-3 py-2`}>
           <Button onClick={() => setIsConvSelected(false)} className={
             `md:hidden flex flex-row gap-2 items-center text-slate-900 bg-white border border-yellow-300 focus:outline-none hover:bg-slate-100 focus:ring-4 focus:ring-yellow-100 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-yellow-600 dark:hover:bg-slate-950 dark:hover:border-slate-600 dark:focus:ring-yellow-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 duration-300`
           }>Conversations</Button>
@@ -352,7 +375,7 @@ const Invoice = () => {
               </div>
 
               {/* Messages */}
-              <div className="flex-1 overflow-auto min-h-[400px] w-full" >
+              <div className="flex-1 overflow-auto min-h-[400px] w-full " >
                 <div className="py-2 px-3">
 
                   <div className="flex justify-center mb-2">
@@ -363,7 +386,9 @@ const Invoice = () => {
                       </p>
                     </div>
                   </div>
-                  <div className='flex flex-col items-center gap-2 overflow-y-auto max-h-[350px]'>
+                  <div
+                    ref={messageEndRef}
+                    className='flex flex-col items-center gap-2 overflow-y-auto max-h-[350px]  border-t-2'>
                     {selectedConversation.messages.map((msg) => (
                       <div className={`flex ${msg.sender.id === userProfile.uid ? "flex-row-reverse ml-auto" : "flex-row mr-auto"} gap-2.5 my-2`}>{/*This controlls alignment*/}
                         <img className="w-8 h-8 rounded-full" src={msg.sender.id !== userProfile.uid ? chatRecipientData.image : userProfile.photoUrl} alt="Jese image" />
@@ -383,10 +408,16 @@ const Invoice = () => {
               </div>
 
               {/* Input */}
-              <div className="bg-grey-lighter px-4 md:py-4 flex items-end md:items-center">
+              <div className="bg-grey-lighter px-4 md:py-1 flex items-end md:items-center">
                 <div className="flex-1  md:mx-4">
-                  <input
+                  <textarea
                     onChange={handleChange}
+                    onKeyDown={async (e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        await handleSend();
+                      }
+                    }}
                     value={myMessage}
                     className="md:flex md:flex-row md:gap-2 w-full items-center text-slate-900 bg-white border border-yellow-300 focus:outline-none hover:bg-slate-100 focus:ring-4 focus:ring-yellow-100 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-yellow-600 dark:hover:bg-slate-950 dark:hover:border-slate-600 dark:focus:ring-yellow-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 duration-300 " type="text" placeholder='Type a message ...' />
                 </div>
@@ -407,7 +438,7 @@ const Invoice = () => {
       </div>
 
       {/* Modal for Creating New Conversation */}
-      {!newConvo? '': (
+      {!newConvo ? '' : (
         <ProjectModal
           title={"Select Recipient"}
           onClose={() => setNewConvo(null)}
@@ -427,16 +458,16 @@ const Invoice = () => {
             <ul className='flex flex-col gap-2 overflow-y-auto max-h-[400px] '>
               {filteredData.filter(user => user.email !== userProfile.email).map((user) => (
                 <li className=' mx-30 rounded-lg' key={user.id}>
-                
+
                   <button
                     onClick={() => handleNewConvo(user)}
                     key={user.id}
                     className="p-2 border-b border-gray-400 dark:border-gray-700 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 min-w-full flex flex-row items-center gap-2 duration-300"
                   >
-                  <img src={user.photoUrl?user.photoUrl: user.gender==="male"?Man:Woman } alt="" className='h-10 w-10 rounded-full' />
+                    <img src={user.photoUrl ? user.photoUrl : user.gender === "male" ? Man : Woman} alt="" className='h-10 w-10 rounded-full' />
                     <span>
                       <p className="font-semibold min-w-full">{user.name}</p>
-                    <p className="text-sm text-gray-700 dark:text-gray-400">{user.email}</p>
+                      <p className="text-sm text-gray-700 dark:text-gray-400">{user.email}</p>
                     </span>
                   </button>
                 </li>

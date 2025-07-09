@@ -79,8 +79,8 @@ const AssignedStudents = () => {
             onClick={() => handleStudentClick(student)}
             className={`cursor-pointer p-4 rounded shadow-lg ${selectedStudent?.uid === student.uid
               ? "bg-yellow-100 dark:bg-yellow-950/50 border-yellow-500"
-              : "bg-slate-50 dark:bg-slate-800"
-              }  hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-950 p-6 rounded-sm dark:text-gray-300 text-gray-800 duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40`}
+              : "bg-white dark:bg-gray-800"
+              }  hover:bg-yellow-50 dark:bg-slate-900 dark:hover:bg-slate-950 p-6 rounded-sm dark:text-gray-300 text-gray-800 duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40`}
           >
             <h3 className="text-lg font-semibold dark:text-gray-100">
               {student.name}
@@ -112,7 +112,7 @@ const AssignedStudents = () => {
                 <li
                   key={project.id}
                   onClick={() => handleProjectClick(project)}
-                  className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-950 p-6 rounded-sm dark:text-gray-300 text-gray-800 duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40"
+                  className=" hover:bg-slate-100 bg-white dark:bg-gray-800 dark:hover:bg-slate-950 p-6 rounded-sm dark:text-gray-300 text-gray-800 duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40"
                 >
                   <h4 className="font-semibold">{project.title}</h4>
                   <p className="text-sm text-gray-500">{project.abstract}</p>
