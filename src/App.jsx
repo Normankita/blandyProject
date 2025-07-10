@@ -58,7 +58,6 @@ function App() {
         return [...prev, ...filtered];
       });
 
-      console.log("Fetched notifications");
     }
   });
 

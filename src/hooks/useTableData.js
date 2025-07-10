@@ -2,6 +2,11 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useData } from '../contexts/DataContext'; // Adjust the path if necessary
 
+/**
+ * hook to process and format data as to be used in a table
+ * @param { path, sort, filters = [], transformData } object 
+ * @returns 
+ */
 const useTableData = ({ path, sort, filters = [], transformData }) => {
   const { fetchData, loading, setLoading } = useData();
   const [formattedData, setFormattedData] = useState([]);

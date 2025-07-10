@@ -1,4 +1,3 @@
-// Customized CreateProfile with correct field mappings and createdAt timestamp
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -10,8 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useEffect } from 'react';
 const CreateProfile = () => {
   const { user, logout } = useAuth();
-
-  const [profileImage, setProfileImage] = useState(null); // Initialize with user's photoURL if available
+  const [profileImage, setProfileImage] = useState(null);
   useEffect(() => {
     if (user?.photoURL) {
       console.log("User photoURL:", user.photoURL.trim());
@@ -19,11 +17,10 @@ const CreateProfile = () => {
     }
   }, [user]);
   const { addData, setUserProfile, uploadFile } = useData();
-
-
   const datepickerRef = useRef(null);
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
+  
   const [error, setError] = useState({
     fullNameError: "",
     doBError: "",
@@ -40,7 +37,6 @@ const CreateProfile = () => {
     gitHubUrl: ""
   });
 
-  console.log("user", user?.photoURL?.trim());
   const [formData, setFormData] = useState({
     fullName: user?.displayName || "",
     doB: "",
@@ -56,87 +52,85 @@ const CreateProfile = () => {
   });
 
 
- const handleChange = (e) => {
-  const { name, value } = e.target;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
 
-  switch (name) {
-    case 'mobNo':
-      const cleaned = '+' + value.replace(/[^0-9]/g, '').slice(0, 12);
-      setFormData((prev) => ({ ...prev, mobNo: cleaned }));
-      setError((prev) => ({
-        ...prev,
-        mobNoError: cleaned.length !== 13 ? 'Invalid phone number' : '',
-      }));
-      break;
+    switch (name) {
+      case 'mobNo':
+        const cleaned = '+' + value.replace(/[^0-9]/g, '').slice(0, 12);
+        setFormData((prev) => ({ ...prev, mobNo: cleaned }));
+        setError((prev) => ({
+          ...prev,
+          mobNoError: cleaned.length !== 13 ? 'Invalid phone number' : '',
+        }));
+        break;
 
-    case 'password':
-      const strength = [/[0-9]/, /[a-z]/, /[A-Z]/, /[^0-9a-zA-Z]/].reduce(
-        (acc, regex) => acc + regex.test(value),
-        0
-      );
-      setError((prev) => ({
-        ...prev,
-        passwordError: strength < 4 ? 'Weak Password' : '',
-      }));
-      setFormData((prev) => ({ ...prev, password: value }));
-      break;
+      case 'password':
+        const strength = [/[0-9]/, /[a-z]/, /[A-Z]/, /[^0-9a-zA-Z]/].reduce(
+          (acc, regex) => acc + regex.test(value),
+          0
+        );
+        setError((prev) => ({
+          ...prev,
+          passwordError: strength < 4 ? 'Weak Password' : '',
+        }));
+        setFormData((prev) => ({ ...prev, password: value }));
+        break;
 
-    case 'repassword':
-      setError((prev) => ({
-        ...prev,
-        passwordError: value !== formData.password ? 'Passwords do not match!' : '',
-      }));
-      setFormData((prev) => ({ ...prev, repassword: value }));
-      break;
+      case 'repassword':
+        setError((prev) => ({
+          ...prev,
+          passwordError: value !== formData.password ? 'Passwords do not match!' : '',
+        }));
+        setFormData((prev) => ({ ...prev, repassword: value }));
+        break;
 
-    case 'fullName':
-      const parts = value.trim().split(' ');
-      setError((prev) => ({
-        ...prev,
-        fullNameError: parts.length < 2 ? 'Please enter first and last name' : '',
-      }));
-      setFormData((prev) => ({ ...prev, fullName: value }));
-      break;
+      case 'fullName':
+        const parts = value.trim().split(' ');
+        setError((prev) => ({
+          ...prev,
+          fullNameError: parts.length < 2 ? 'Please enter first and last name' : '',
+        }));
+        setFormData((prev) => ({ ...prev, fullName: value }));
+        break;
 
-    case 'registrationNumber':
-      let formattedValue = value.replace(/[^0-9\/T\.]/gi, ''); // Clean unwanted chars
+      case 'registrationNumber':
+        let formattedValue = value.replace(/[^0-9\/T\.]/gi, ''); // Clean unwanted chars
 
-      // Auto-insert "/T." after 8 digits
-      if (/^\d{8}$/.test(formattedValue)) {
-        formattedValue += '/T.';
-      }
+        // Auto-insert "/T." after 8 digits
+        if (/^\d{8}$/.test(formattedValue)) {
+          formattedValue += '/T.';
+        }
 
-      // Limit to full format length
-      if (formattedValue.length > 13) {
-        formattedValue = formattedValue.slice(0, 13);
-      }
+        // Limit to full format length
+        if (formattedValue.length > 13) {
+          formattedValue = formattedValue.slice(0, 13);
+        }
 
-      const regNumPattern = /^\d{8}\/T\.\d{2}$/;
-      setFormData((prev) => ({ ...prev, registrationNumber: formattedValue }));
-      setError((prev) => ({
-        ...prev,
-        registrationNumberError: regNumPattern.test(formattedValue)
-          ? ''
-          : 'Expected format: 12345678/T.22',
-      }));
-      break;
+        const regNumPattern = /^\d{8}\/T\.\d{2}$/;
+        setFormData((prev) => ({ ...prev, registrationNumber: formattedValue }));
+        setError((prev) => ({
+          ...prev,
+          registrationNumberError: regNumPattern.test(formattedValue)
+            ? ''
+            : 'Expected format: 12345678/T.22',
+        }));
+        break;
 
-    default:
-      setFormData((prev) => ({ ...prev, [name]: value }));
-  }
-};
+      default:
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
 
-
     if (!user || !user.uid) {
       toast.error(`User not authenticated`);
       return;
     }
-
     let photoUrl = "";
 
     if (profileImage) {

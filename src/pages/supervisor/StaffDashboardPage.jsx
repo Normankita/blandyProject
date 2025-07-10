@@ -55,8 +55,6 @@ const StaffDashboardPage = () => {
           <p>No recent projects submitted.</p>
         ) : (
           projects.map((project) => (
-            <>
-            
             <ActivityItem
               key={project.id}
               title={project.title}
@@ -64,7 +62,6 @@ const StaffDashboardPage = () => {
               createdAt={project.createdAt}
               status={project.status}
             />
-            </>
           ))
         )}
       </div>

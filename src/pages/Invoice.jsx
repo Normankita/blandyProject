@@ -182,7 +182,6 @@ const Invoice = () => {
 
   useEffect(() => {
     setNotifications([]);
-    console.log(notifications);
     const unsubscribe = fetchSnapshotData({
       path: "conversations",
       onDataChange: (liveData) => {
@@ -364,7 +363,6 @@ const Invoice = () => {
                   <div>
                     {/* Image goes here */}
                     <img className="w-10 h-10 rounded-full" src={chatRecipientData.image} />
-                    {console.log(`I am the image ${chatRecipientData.image}`)}
                   </div>
                   <div className="ml-4">
                     <p className="text-grey-darkest">
@@ -390,7 +388,9 @@ const Invoice = () => {
                     ref={messageEndRef}
                     className='flex flex-col items-center gap-2 overflow-y-auto max-h-[350px]  border-t-2'>
                     {selectedConversation.messages.map((msg) => (
-                      <div className={`flex ${msg.sender.id === userProfile.uid ? "flex-row-reverse ml-auto" : "flex-row mr-auto"} gap-2.5 my-2`}>{/*This controlls alignment*/}
+                      <div 
+                      key={msg.id}
+                      className={`flex ${msg.sender.id === userProfile.uid ? "flex-row-reverse ml-auto" : "flex-row mr-auto"} gap-2.5 my-2`}>{/*This controlls alignment*/}
                         <img className="w-8 h-8 rounded-full" src={msg.sender.id !== userProfile.uid ? chatRecipientData.image : userProfile.photoUrl} alt="Jese image" />
                         <div className={`flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 ${msg.sender.id === userProfile.uid ? "rounded-s-xl rounded-ee-xl" : "rounded-e-xl rounded-es-xl"} dark:bg-gray-700`}>
                           <div className="flex items-center space-x-2 rtl:space-x-reverse">

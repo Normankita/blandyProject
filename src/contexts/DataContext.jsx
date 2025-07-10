@@ -38,6 +38,12 @@ export const DataProvider = ({ children }) => {
 
   const { user } = useAuth();
 
+  /**
+   * Function to fetch single document from the data storage but not real time
+   * @param {*} path 
+   * @param {*} id 
+   * @returns 
+   */
   const fetchSingleDoc = async (path, id) => {
     try {
       const ref = doc(db, path, id);
@@ -50,7 +56,11 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  // Fetch Data, but not real time
+  /**
+   * Fetch all Data from a collection, but not real time
+   * @param {path, filters, sort, limitNumber, startAfterDoc} param0 
+   * @returns 
+   */
   const fetchData = async ({
     path,
     filters = [],
@@ -110,7 +120,11 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  //Fetch real time data
+ /**
+   * Fetch real time data from the firebase collection
+   * @param {path, filters, sort, limitNumber, startAfterDoc} param0 
+   * @returns 
+   */
 
   const fetchSnapshotData = ({
     path,
@@ -160,6 +174,13 @@ export const DataProvider = ({ children }) => {
   };
 
 
+  /**
+   * Write | post new data to a firebase collection
+   * @param {*} path 
+   * @param {*} newData 
+   * @param {*} id 
+   * @returns 
+   */
   const addData = async (path, newData, id = null) => {
     try {
       if (id) {
@@ -193,7 +214,12 @@ export const DataProvider = ({ children }) => {
   };
 
 
-  // Logic to upload files, any file in any path 
+  /**
+   * Logic to upload files, any file in any path 
+   * @param {*} file 
+   * @param {*} path 
+   * @returns 
+   */
   const uploadFile = async (file, path) => {
     try {
       const storageRef = ref(storage, `mzumbeAcademicPortal/${path}`); // e.g., 'profilePics/uid.jpg' or 'projectDocs/file.pdf'
@@ -206,7 +232,11 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  // logic to delete file, any file anywhere 
+  /**
+   * function to delete file, any file anywhere in a specified path
+   * @param {*} path 
+   * @returns 
+   */ 
   const deleteFile = async (path) => {
     try {
       const fileRef = ref(storage, path);
@@ -219,6 +249,11 @@ export const DataProvider = ({ children }) => {
   };
 
 
+  /**
+   * delete data from a firebase collection | shall exist 
+   * @param {*} path 
+   * @param {*} id 
+   */
   const deleteData = async (path, id) => {
     try {
       await deleteDoc(doc(db, path, id));

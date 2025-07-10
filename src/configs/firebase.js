@@ -55,13 +55,14 @@ export const auth = getAuth(app);
 export const loginGoogle = new GoogleAuthProvider();
 export const db = getFirestore(app);
 export const signOutUser = () => {
-  signOut(auth)
+if(confirm('are you sure you want to sign out?')){
+    signOut(auth)
     .then(() => {
       toast.success(`👋 good bye ${JSON.parse(sessionStorage.getItem('userProfile')).name.split(' ')[0]}`);
       sessionStorage.removeItem("userProfile");
-      console.log("User signed out successfully");
     })
     .catch((error) => {
       console.error("Error signing out: ", error);
     });
+}
 };
