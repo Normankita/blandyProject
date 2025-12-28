@@ -67,10 +67,7 @@ function App() {
 
   return (
     <>
-      {/* <SideHeader> */}
       <AllRoutes />
-      {/* </SideHeader> */}
-
     </>
   );
 }

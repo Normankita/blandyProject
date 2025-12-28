@@ -1,66 +1,49 @@
-// components/AllRoutes.jsx
 import { AnimatePresence } from "framer-motion";
 import { Route, Routes, useLocation } from "react-router-dom";
 import pages from "@/pages";
 import admin from "@/pages/admin";
-import student from "@/pages/student";
-import staff from "@/pages/supervisor";
-import mous from "@/pages/mou";
 import ProtectedRoutes from "./ProtectedRoutes";
 import useTitle from "@/hooks/useTitle";
-import coordinator from "@/pages/coordinator";
+
+// New Modules
+import VehicleList from "@/pages/vehicles/VehicleList";
+import VehicleDetails from "@/pages/vehicles/VehicleDetails";
+import PartsInventory from "@/pages/inventory/PartsInventory";
 
 const AllRoutes = () => {
   const location = useLocation();
   useTitle();
 
   const { LoginPage, RegisterPage, PageNotFound, CreateProfile, UnAuthorized, Invoice, UpdateProfile } = pages;
-  const { DashboardPage, Projects, RegisterAdmin, Users, UserProfile, SupervisionPage, DepartmentsPage } = admin;
-  const { StudentDashboardPage, ProjectPage } = student;
-  const { StaffDashboardPage, AssignedStudents } = staff;
-  const { MouPage, MouCreatePage, MouSignPage, ReviewerManagementPage, ReviewerMouPage } = mous;
-  const {PanelManagementPage}= coordinator;
+  const { DashboardPage, RegisterAdmin, Users, UserProfile } = admin;
 
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
 
         {/* Auth routes */}
-        <Route path="/" element={<ProtectedRoutes blockProfiled><LoginPage /></ProtectedRoutes>} />
         <Route path="/login" element={<ProtectedRoutes blockProfiled><LoginPage /></ProtectedRoutes>} />
         <Route path="/register" element={<ProtectedRoutes blockProfiled><RegisterPage /></ProtectedRoutes>} />
         <Route path="/create-profile" element={<ProtectedRoutes blockProfiled><CreateProfile /></ProtectedRoutes>} />
-        
-        {/* Dashboards */}
-        <Route path="/student-dashboard" element={<ProtectedRoutes allow={["student"]} profiled><StudentDashboardPage /></ProtectedRoutes>} />
-        <Route path="/admin-dashboard" element={<ProtectedRoutes allow={["admin"]} profiled><DashboardPage /></ProtectedRoutes>} />
-        <Route path="/staff-dashboard" element={<ProtectedRoutes allow={["staff"]} profiled><StaffDashboardPage /></ProtectedRoutes>} />
 
-        {/* Management Routes */}
-        <Route path="/departments" element={<ProtectedRoutes allow={["admin"]} profiled><DepartmentsPage /></ProtectedRoutes>} />
-        <Route path="/panel-management" element={<ProtectedRoutes allow={["staff"]} profiled><PanelManagementPage /></ProtectedRoutes>} />
-        <Route path="/assigned-students" element={<ProtectedRoutes allow={["staff"]} profiled><AssignedStudents /></ProtectedRoutes>} />
-        <Route path="/supervision" element={<ProtectedRoutes allow={["staff"]} profiled><SupervisionPage /></ProtectedRoutes>} />
+        {/* Main Dashboard */}
+        <Route path="/" element={<ProtectedRoutes allow={["admin", "staff"]} profiled><DashboardPage /></ProtectedRoutes>} />
+        <Route path="/dashboard" element={<ProtectedRoutes allow={["admin", "staff"]} profiled><DashboardPage /></ProtectedRoutes>} />
 
+        {/* Garage Modules */}
+        <Route path="/vehicles" element={<ProtectedRoutes allow={["admin", "staff"]} profiled><VehicleList /></ProtectedRoutes>} />
+        <Route path="/vehicles/:id" element={<ProtectedRoutes allow={["admin", "staff"]} profiled><VehicleDetails /></ProtectedRoutes>} />
 
-        {/* Mou Routes */}
-        <Route path="/mou" element={<ProtectedRoutes allow={["student", "staff", "admin"]} profiled><MouPage /></ProtectedRoutes>}/>
-        <Route path="/mou-edit" element={<ProtectedRoutes allow={["student", "staff", "admin"]} profiled><MouCreatePage /></ProtectedRoutes>}/>
-        <Route path="/mou-create" element={<ProtectedRoutes allow={["student", "staff", "admin"]} profiled><MouCreatePage /></ProtectedRoutes>}/>
-        <Route path="/mou-sign" element={<ProtectedRoutes allow={["student", "staff", "admin"]} profiled><MouSignPage /></ProtectedRoutes>}/>
-        <Route path="/mou-reviewer-management" element={<ProtectedRoutes allow={["admin"]} profiled><ReviewerManagementPage /></ProtectedRoutes>}/>
-        <Route path="/mou-reviewer-mou" element={<ProtectedRoutes allow={["staff"]} profiled><ReviewerMouPage /></ProtectedRoutes>}/>
+        <Route path="/inventory" element={<ProtectedRoutes allow={["admin", "staff"]} profiled><PartsInventory /></ProtectedRoutes>} />
 
-
-        {/* Functional Routes */}
-        <Route path="/invoice" element={<ProtectedRoutes allow={["student", "staff", "admin"]} profiled><Invoice /></ProtectedRoutes>} />
-        <Route path="/profile" element={<ProtectedRoutes allow={["student", "staff", "admin"]} profiled><UserProfile /></ProtectedRoutes>} />
-        <Route path="/update-profile" element={<ProtectedRoutes allow={["student", "staff", "admin"]} profiled><UpdateProfile /></ProtectedRoutes>} />
-        <Route path="/projects" element={<ProtectedRoutes allow={["admin", "staff"]} profiled><Projects /></ProtectedRoutes>} />
-        <Route path="/admin-register" element={<ProtectedRoutes allow={["admin"]} profiled><RegisterAdmin /></ProtectedRoutes>} />
-        <Route path="/student-projects" element={<ProtectedRoutes allow={["student"]} profiled><ProjectPage /></ProtectedRoutes>} />
+        {/* User Management */}
         <Route path="/users" element={<ProtectedRoutes allow={["admin"]} profiled><Users /></ProtectedRoutes>} />
+        <Route path="/admin-register" element={<ProtectedRoutes allow={["admin"]} profiled><RegisterAdmin /></ProtectedRoutes>} />
+        <Route path="/profile" element={<ProtectedRoutes allow={["admin", "staff"]} profiled><UserProfile /></ProtectedRoutes>} />
+        <Route path="/update-profile" element={<ProtectedRoutes allow={["admin", "staff"]} profiled><UpdateProfile /></ProtectedRoutes>} />
 
+        {/* Support */}
+        <Route path="/invoice" element={<ProtectedRoutes allow={["admin", "staff"]} profiled><Invoice /></ProtectedRoutes>} />
 
         {/* Error & Default Routes */}
         <Route path="/unauthorized" element={<UnAuthorized />} />

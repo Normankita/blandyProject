@@ -8,12 +8,11 @@ import { useFetchProfile } from "@/hooks/fetchProfile";
 import SideHeader from "@/components/layout/SideHeader";
 import Loading from "@/components/layout/Loading";
 
-const FullPageLoader = () => <Loading/>;
+const FullPageLoader = () => <Loading />;
 
 const dashboardMap = {
-  admin: "/admin-dashboard",
-  student: "/student-dashboard",
-  staff: "/staff-dashboard",
+  admin: "/dashboard",
+  staff: "/dashboard",
 };
 
 const useAccessControl = ({
@@ -107,7 +106,7 @@ const useAccessControl = ({
 
 const ProtectedRoutes = ({ children, allow = [], profiled = false, blockProfiled = false }) => {
   const { token, loading: authLoading, logout } = useAuth();
-  const { userProfile, setUserProfile, userProfileLoading, loading:componentLoading } = useData();
+  const { userProfile, setUserProfile, userProfileLoading, loading: componentLoading } = useData();
   const fetchProfile = useFetchProfile();
 
   useEffect(() => {
@@ -152,7 +151,7 @@ const ProtectedRoutes = ({ children, allow = [], profiled = false, blockProfiled
         exit={{ opacity: 0 }}
         transition={{ duration: 0.5 }}
       >
-      {componentLoading && <FullPageLoader />}
+        {componentLoading && <FullPageLoader />}
         {children}
       </motion.div>
     </SideHeader>

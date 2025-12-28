@@ -1,11 +1,10 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import useTitle from '../../hooks/useTitle';
 import { useData } from '@/contexts/DataContext';
 import { UserForm } from './components/UserForm';
-import { useEffect } from 'react';
 
 const RegisterAdmin = () => {
   const [currentUsers, setCurrentUsers] = useState([]);
@@ -33,13 +32,9 @@ const RegisterAdmin = () => {
   const [error, setError] = useState({
     fullNameError: "",
     doBError: "",
-    doJError: "",
     genderError: "",
-    maritalStatError: "",
     roleError: "",
-    regionError: "",
     isActiveError: "",
-    NIDError: "",
     mobNoError: "",
     emailError: "",
     passwordError: "",
@@ -47,73 +42,28 @@ const RegisterAdmin = () => {
 
   const [formData, setFormData] = useState({
     fullName: "",
-    firstName: "",
-    lastName: "",
     doB: "",
     gender: "",
     role: "",
-    region: "",
     isActive: "active",
     mobNo: "",
     email: "",
-    password: "",
-    repassword: "",
-    category: "",
-    secretpass: "",
-    department: "",
+    specialization: "",
   });
-
-  const ensureNumber = (confusedString) => confusedString.replace(/[^0-9]/g, '');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (name === "mobNo") {
-      if (value.length <= 13) {
-        if (value.length <= 4 || value.slice(0, 4) === "+255") {
-          setFormData((prev) => ({
-            ...prev,
-            [name]: "+".concat(value.replace(/[^0-9]/g, "").slice(0, 12)),
-          }));
+      const cleaned = '+' + value.replace(/[^0-9]/g, '').slice(0, 12);
+      setFormData((prev) => ({ ...prev, [name]: cleaned }));
 
-          if (value.length !== 13) {
-            if (value.length <= 4 && value.slice(0, 4) !== "+255") {
-              setError((prev) => ({
-                ...prev,
-                mobNoError: "Invalid Country Code",
-              }));
-            } else {
-              setError((prev) => ({
-                ...prev,
-                mobNoError: "Phone number incomplete",
-              }));
-            }
-          } else {
-            setError((prev) => ({ ...prev, mobNoError: "" }));
-          }
-        }
+      if (cleaned.length !== 13) {
+        setError((prev) => ({ ...prev, mobNoError: "Phone number incomplete" }));
+      } else {
+        setError((prev) => ({ ...prev, mobNoError: "" }));
       }
-    } else if (name === "password") {
-      let point = 0;
-      if (value.length >= 6) {
-        let arrayTest = [/[0-9]/, /[a-z]/, /[A-Z]/, /[^0-9a-zA-Z]/];
-        arrayTest.forEach((item) => {
-          if (item.test(value)) point++;
-        });
-      }
-      setError((prev) => ({
-        ...prev,
-        passwordError: point < 4 ? " Weak Password " : "",
-      }));
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    } else if (name === "repassword") {
-      setError((prev) => ({
-        ...prev,
-        passwordError: value !== formData.password
-          ? " Passwords do not match! "
-          : "",
-      }));
-      setFormData((prev) => ({ ...prev, [name]: value }));
+
     } else if (name === "email") {
       setError((prev) => ({
         ...prev,
@@ -124,37 +74,15 @@ const RegisterAdmin = () => {
             : "",
       }));
       setFormData((prev) => ({ ...prev, [name]: value }));
-    } else if (name === "registrationNumber") {
-      let formatted = value.replace(/[^0-9Tt\/.]/g, "").toUpperCase();
-
-      // Auto-insert '/T.' after 8 digits if not already present
-      if (/^\d{8}$/.test(formatted)) {
-        formatted += "/T.";
-      }
-
-      // Limit to max 13 characters
-      if (formatted.length > 13) {
-        formatted = formatted.slice(0, 13);
-      }
-
-      const validPattern = /^\d{8}\/T\.\d{2}$/;
-
-      setFormData((prev) => ({ ...prev, registrationNumber: formatted }));
-      setError((prev) => ({
-        ...prev,
-        registrationNumberError: validPattern.test(formatted)
-          ? ""
-          : "Expected format: 12345678/T.22",
-      }));
     } else {
       if (name === "fullName") {
         const fullNamecon = value.trim().split(" ");
-        if (fullNamecon.length === 3) {
+        if (fullNamecon.length >= 2) { // Changed to allow 2 names minimum
           setError((prev) => ({ ...prev, fullNameError: "" }));
         } else {
           setError((prev) => ({
             ...prev,
-            fullNameError: "Must Have three names",
+            fullNameError: "Please enter at least two names",
           }));
         }
       }
@@ -167,9 +95,9 @@ const RegisterAdmin = () => {
   async function handleSubmit(e) {
     e.preventDefault();
     setSubmitting(true);
-    if (error.fullNameError || error.doBError || error.genderError || error.roleError || error.regionError || error.isActiveError || error.NIDError || error.mobNoError || error.emailError || error.passwordError) {
+    if (error.fullNameError || error.doBError || error.genderError || error.roleError || error.isActiveError || error.mobNoError || error.emailError) {
       setSubmitting(false);
-      toast.error("Please fill in all the required fields with appropriate data");
+      toast.error("Please fill in all the required fields");
       return;
     } else {
 
@@ -193,25 +121,18 @@ const RegisterAdmin = () => {
         day: "numeric",
       });
 
-      const names = formData.fullName.trim().split(" ");
-      const firstName = names[0];
-      const lastName = names[names.length - 1];
-
       const userData = {
-        uid: null,
+        uid: null, // Let Firestore generate ID or manage it separately
         name: formData.fullName,
         role: formData.role,
         doB: formattedDoB,
         gender: formData.gender,
         status: formData.isActive,
-        region: formData.region,
         mobNo: formData.mobNo,
         email: formData.email,
         createdAt: new Date().toISOString(),
-        category: formData.category,
-        photoUrl, // include uploaded photo URL
-        secretpass: formData.secretpass,
-        department: formData.department,
+        photoUrl,
+        specialization: formData.specialization,
       };
 
       try {
@@ -221,22 +142,17 @@ const RegisterAdmin = () => {
 
         setFormData({
           fullName: "",
-          firstName: "",
-          lastName: "",
           doB: "",
           gender: "",
           role: "",
-          region: "",
-          isActive: false,
+          isActive: "active",
           mobNo: "",
           email: "",
-          password: "",
-          repassword: "",
-          category: ""
+          specialization: "",
         });
         setProfileImage(null);
 
-        navigate("/Users");
+        navigate("/users");
       } catch (error) {
         console.error("Firestore write error:", error);
         toast.error("Failed to save user. Please try again.");
