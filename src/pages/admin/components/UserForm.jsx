@@ -162,7 +162,7 @@ export const UserForm = ({ error, handleSubmit, handleChange, formData, setFormD
         </div>
 
         <div className="pt-4 flex flex-col items-center w-full">
-          <button disabled={submitting} type="submit" className={`w-xl text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-gray-600 dark:hover:bg-slate-950 dark:hover:border-gray-600 dark:focus:ring-gray-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}>
+          <button disabled={submitting} type="submit" className={`w-full sm:w-auto sm:min-w-[12rem] text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:text-white dark:border-gray-600 dark:hover:bg-slate-950 dark:hover:border-gray-600 dark:focus:ring-gray-700 shadow-lg shadow-slate-900/10 dark:shadow-black/40 ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}>
             <p className='font-bold'>{submitting ? "Saving..." : "Submit"}</p>
           </button>
         </div>

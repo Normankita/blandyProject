@@ -122,9 +122,9 @@ const RegisterPage = () => {
   };
 
   return (
-    <section className="bg-slate-200 dark:bg-gray-900 min-h-screen min-w-screen max-w-screen max-h-screen">
+    <section className="bg-slate-200 dark:bg-gray-900 min-h-screen w-full">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        <ProjectTitle/>
+        <ProjectTitle />
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
         <div className="w-full sm:max-w-md p-6 bg-slate-50 dark:bg-slate-900 rounded shadow">

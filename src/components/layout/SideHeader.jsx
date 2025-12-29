@@ -77,6 +77,15 @@ const SideHeader = ({ children, role }) => {
                 </div>
             </nav>
 
+            {/* Overlay for mobile */}
+            {sidebarOpen && (
+                <div
+                    onClick={() => setSidebarOpen(false)}
+                    className="fixed inset-0 z-20 bg-black/50 md:hidden transition-opacity"
+                    aria-hidden="true"
+                />
+            )}
+
             <aside className={`fixed top-0 left-0 z-30 w-64 h-screen pt-20 transition-transform bg-white border-r border-gray-200 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-between`}>
                 <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
                     <ul className="space-y-2 font-medium">
@@ -124,9 +133,11 @@ const SideHeader = ({ children, role }) => {
                 </div>
             </aside>
 
-            <div onClick={() => setSidebarOpen(false)} className="md:pl-64 pt-20 bg-gray-50 dark:bg-gray-900 min-h-screen">
+            <div className="md:pl-64 pt-20 bg-gray-50 dark:bg-gray-900 min-h-screen transition-all">
                 <Goback />
-                {children}
+                <div className="p-4">
+                    {children}
+                </div>
             </div>
         </div>
     );

@@ -79,7 +79,7 @@ const LoginPage = () => {
       exit={{ opacity: 0 }}
       transition={{ type: "tween", duration: 0.5 }}
     >
-      <section className="bg-slate-200 dark:bg-gray-900 min-h-screen min-w-screen max-w-screen max-h-screen">
+      <section className="bg-slate-200 dark:bg-gray-900 min-h-screen w-full">
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
           <ProjectTitle />
           <div className="w-full md:mt-0 sm:max-w-md xl:p-0 bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-950 p-6 rounded-sm dark:text-gray-300 text-gray-800 duration-300 shadow-lg shadow-slate-900/10 dark:shadow-black/40 border">

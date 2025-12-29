@@ -18,7 +18,7 @@ const ProjectModal = ({ title, onClose, children }) => {
 
   return (
     <Dialog open={open} onOpenChange={(val) => !val && handleClose()}>
-      <DialogContent className="min-w-xl max-h-screen overflow-y-auto p-6">
+      <DialogContent className="w-full sm:max-w-xl max-h-[90vh] overflow-y-auto p-6">
         <DialogHeader>
           <div className="flex justify-between items-center w-full">
             <DialogTitle className="text-xl font-bold">{title}</DialogTitle>
